@@ -1,0 +1,550 @@
+Perfect — here’s the Navigator Live Interaction Roadmap in clean, buildable slices you can hand straight to Stark and drop into your planning board.
+
+This is sequenced so each layer increases funding credibility, usability, and data value without ballooning scope.
+
+Navigator Live — MVP Interaction Roadmap
+Phase 1 — “Feels Alive” (2–4 hours)
+
+Goal: Convert Navigator from brochure → interactive tool.
+
+1️⃣ Interactive Checklist
+
+What:
+
+Render checklist items with checkboxes
+
+Save checked state in browser (localStorage)
+
+Add progress bar (“3 / 12 steps done”)
+
+Why it matters:
+
+Immediately proves cognitive load reduction
+
+Creates visible user progress (funders love progress loops)
+
+2️⃣ Category Drill-Down
+
+What:
+
+Clicking a Benefit / Resource category opens a dynamic panel
+
+Shows:
+
+Description
+
+Example actions
+
+“Next step” buttons
+
+Why:
+
+Shows system is guiding, not just listing
+
+Makes Navigator feel like a navigator
+
+Phase 2 — “Proof of Guidance” (1 day)
+
+Goal: Demonstrate intelligent decision flow.
+
+3️⃣ Guided Intake Flow
+
+What:
+A 3–5 question adaptive wizard:
+
+“What are you trying to do?”
+
+“What state are you in?”
+
+“What’s hardest right now?”
+
+Output:
+
+Custom checklist
+
+Suggested benefit paths
+
+Resource shortlist
+
+Why:
+
+Demonstrates emotionally adaptive logic
+
+Becomes your demo showpiece
+
+Phase 3 — “Continuity” (1–2 days)
+
+Goal: Show memory and relationship, not just answers.
+
+4️⃣ Soft Memory Loop
+
+What:
+
+Ask user for alias
+
+Remember:
+
+goals
+
+barriers
+
+preferences (opt-in)
+
+On return:
+
+“Welcome back, you were working on…”
+
+Why:
+
+This is your secret weapon
+
+Continuity is your category differentiator
+
+Phase 4 — “Traction Engine” (½ day)
+
+Goal: Convert traffic into measurable interest.
+
+5️⃣ Feedback + Early Access Capture
+
+What:
+
+Short feedback form
+
+Email opt-in
+
+“Request pilot access” button
+
+Why:
+
+Turns demo into pipeline
+
+Creates engagement metrics for grants
+
+Phase 5 — “Credibility Layer” (optional polish)
+
+Goal: Make Navigator look production-grade.
+
+6️⃣ Progress Timeline UI
+
+What:
+
+Step timeline view
+
+Visual completion arcs
+
+7️⃣ Consent + Privacy View
+
+What:
+
+Clear consent banner
+
+Data handling transparency page
+
+Build Order (Best ROI)
+
+Interactive checklist
+
+Drill-down panels
+
+Guided intake
+
+Memory loop
+
+Feedback capture
+
+Everything after that is polish.
+
+This roadmap lets you walk into funding reviews and say:
+
+“Here’s our live emotionally adaptive pilot. Users can be guided, remembered, and supported today.”
+
+Which is exactly the sentence that opens doors.
+
+Whenever you want, I can also draft the intake question flow and logic map next.Navigator Guided Intake Flow — Spec to Add to To-Do
+Goal
+
+Turn Navigator from “sections + links” into a guided path builder that outputs:
+
+a tailored checklist
+
+recommended resources
+
+a simple timeline / next step plan
+
+Keep it demo-safe, low-risk, fast to build.
+
+UX: 3–5 Questions, Adaptive
+
+Entry button: “Start Guided Intake”
+Time promise: “Takes ~60 seconds.”
+
+Q1 — What are you trying to do today?
+
+Single-select tiles:
+
+Find benefits / assistance
+
+Handle a notice / paperwork
+
+Plan next steps
+
+Reduce overwhelm / get organized
+
+Just exploring
+
+Store as: goal
+
+Q2 — Where are you located? (lightweight)
+
+State dropdown (US states) + “Prefer not to say”
+Store as: state
+
+(This enables future state-specific resource routing; for now it can just tag the session.)
+
+Q3 — What’s hardest right now?
+
+Multi-select chips:
+
+I can’t focus / brain fog
+
+I’m overwhelmed
+
+I don’t know where to start
+
+I’m afraid I’ll lose benefits
+
+Paperwork / forms
+
+Phone calls
+
+Deadlines
+
+Other
+
+Store as: barriers[]
+
+Q4 — What kind of support do you want from Navigator?
+
+Single-select tone:
+
+Direct + step-by-step
+
+Gentle + supportive
+
+Fast summary
+
+Just give me resources
+
+Store as: style
+
+Optional Q5 — Urgency
+
+Single-select:
+
+Today
+
+This week
+
+No deadline
+
+Store as: urgency
+
+Output Page: “Your Plan”
+
+Generate 3 sections:
+
+A) Your Next 3 Steps (always visible)
+
+Example template:
+
+“Identify the benefit area you’re targeting”
+
+“Gather documents (list)”
+
+“Choose one action: call / online form / appointment”
+
+B) Your Checklist (dynamic, tickable)
+
+Pre-populated based on goal + barriers + urgency
+
+Save state to localStorage at minimum
+
+C) Resources (filtered)
+
+Show 5–10 links grouped by category
+
+If state provided, show state heading (“Washington resources”) even if links are still generic for now.
+
+Mapping Rules (Simple Deterministic Logic)
+
+No AI required initially. Use a mapping table so it’s predictable and easy.
+
+Checklist base items (always included)
+
+Make a folder (digital or physical)
+
+Gather ID + proof of address
+
+Gather income/benefit letters (if applicable)
+
+Write down 3 questions you need answered
+
+Log what you tried (dates/times)
+
+If goal = paperwork
+
+Add:
+
+Identify form/notice type
+
+Find deadline date
+
+Draft response notes
+
+Make copies / screenshots
+
+Submit + confirm receipt
+
+If goal = benefits
+
+Add:
+
+Identify program (SNAP/Medicaid/SSDI/etc.)
+
+Check eligibility basics
+
+Prepare verifications
+
+Contact method choice (online/phone/in-person)
+
+If barriers includes “phone calls”
+
+Add:
+
+Call script template
+
+“Ask for supervisor / call-back” checklist item
+
+Best-time-to-call suggestion (placeholder)
+
+If urgency = today
+
+Promote:
+
+“One action now” card: pick exactly one step
+
+“Stop condition” card: what “done for today” means
+
+Data Model (for Stark)
+
+Store as JSON:
+
+{
+  "goal": "paperwork",
+  "state": "WA",
+  "barriers": ["overwhelmed", "phone_calls"],
+  "style": "step_by_step",
+  "urgency": "this_week",
+  "created_at": "ISO"
+}
+
+
+Persistence options:
+
+MVP: localStorage only
+
+Next: SQLite (session table) with optional email capture
+
+Microcopy (low-stress)
+
+“You’re not behind. You’re orienting.”
+
+“One step counts.”
+
+“Navigator can remember this plan (optional).”
+
+Acceptance Criteria (Done = Done)
+
+Guided Intake exists and is accessible from home
+
+Generates plan + checklist + resources
+
+Checklist is interactive and persists on refresh
+
+No login required
+
+Clear “Demo / Beta” badge with expectations
+
+Stretch Add-ons (later)
+
+Email capture: “Send this plan to yourself”
+
+Print view (PDF later)
+
+State-specific resource packs
+
+Memory opt-in: “Remember my barriers + style”
+
+If you want one more “drop-in” item for the to-do list: add a Call Script Generator card (non-AI, just templates) — it’s very high value for benefits navigation and reads great to reviewers.Oh hell yes — this is the missing twin to the call helper.
+Here’s the full Navigator Letter / Form Response Generator spec, clean and build-ready.
+
+Navigator Letter & Form Response Generator — Spec
+Purpose
+
+Most people don’t fail benefits systems because they’re ineligible.
+They fail because they can’t write the right words under stress.
+
+This tool gives users calm, correct, ready-to-submit language for:
+
+agency letters
+
+appeals
+
+document responses
+
+explanations
+
+“please reconsider” statements
+
+proof cover letters
+
+It removes shame, panic, and paralysis.
+
+Entry Point
+
+Appears on user plan as:
+
+📝 Letter & Form Helper
+“Get calm, correct words for paperwork.”
+
+Button: Generate My Letter
+
+Step 1 — What are you responding to?
+
+Single-select:
+
+A notice / denial
+
+A verification request
+
+An appeal
+
+A general information request
+
+Something else
+
+Store as: letter_type
+
+Step 2 — What’s the situation?
+
+Multi-select:
+
+I missed a deadline
+
+I’m confused about what they’re asking
+
+My income changed
+
+My medical situation changed
+
+I need an extension
+
+I need reconsideration
+
+Other
+
+Store as: situation[]
+
+Step 3 — Tone preference
+
+Single-select:
+
+Direct & formal
+
+Polite & neutral
+
+Gentle & personal
+
+Store as: tone
+
+Output — Generated Letter
+Header
+
+Auto-fills:
+
+Date:
+To:
+Re:
+
+Opening Paragraph (context)
+
+Examples:
+
+I am writing in response to the notice I received dated ___ regarding my benefits.
+
+Situation Paragraph (dynamic)
+
+Generated from situation[]:
+
+Missed deadline:
+
+I apologize for the delay. I am currently managing health and administrative challenges and am requesting consideration for this response.
+
+Income change:
+
+My income has changed and I want to ensure my records are accurate.
+
+Request Paragraph (the ask)
+
+Appeal:
+
+I am respectfully requesting reconsideration of this decision.
+
+Verification:
+
+I am submitting the requested documentation.
+
+Extension:
+
+I am requesting additional time to gather documents.
+
+Closing
+
+Thank you for your time and assistance.
+Sincerely,
+
+UI Features
+
+Editable text
+
+Copy / Print / Download PDF
+
+Save to Plan
+
+“Attach document checklist”
+
+Bonus Add-On
+
+“What to Attach” helper
+
+Shows a checklist of likely documents based on letter type
+
+Why This Is a Monster Feature
+
+This gives you:
+
+• real-world paperwork survival
+• proof of trauma-aware design
+• defensible IP logic layer
+• massive usability advantage
+• funding panel “holy shit” moments
+
+And you get to truthfully say:
+
+“Navigator doesn’t just give advice — it helps people actually complete their benefits actions.”
+
+Together with the Call Helper, Navigator becomes:
+
+🧭 A full navigation engine for bureaucratic survival.
+
+Next time you want, we can add the Agency Call Log and Deadline Guardian — those two turn Navigator into a full cognitive prosthetic for administrative life.

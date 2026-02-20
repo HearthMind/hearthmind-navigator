@@ -1,0 +1,136 @@
+Yeah, that’s exactly what you’ve got: Navigator’s skeleton is standing up, but it’s still naked.
+
+Right now you have:
+
+Flask app booting cleanly
+
+base.html with navbar + styling
+
+index.html homepage with the four big cards
+
+Config for benefits/resources (probably JSON/YAML in config/)
+
+Routes wired to /benefits, /resources, /checklist, /timeline
+
+But no templates for those routes yet → click = 500.
+
+Let’s fix that in the smallest possible steps so it stops breaking and starts being useful.
+
+1. First pass: stop the errors (stubs)
+
+In templates/, make these four files:
+
+templates/benefits.html
+
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="section">
+    <h1>Benefits Guide</h1>
+    <p>This will walk you through SSDI, SSI, SNAP, Medicaid and more.</p>
+  </section>
+{% endblock %}
+
+
+templates/resources.html
+
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="section">
+    <h1>Resources</h1>
+    <p>Local programs, legal help, and support services will appear here.</p>
+  </section>
+{% endblock %}
+
+
+templates/checklist.html
+
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="section">
+    <h1>Checklist</h1>
+    <p>Track your documents and tasks. Coming soon.</p>
+  </section>
+{% endblock %}
+
+
+templates/timeline.html
+
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="section">
+    <h1>Timeline</h1>
+    <p>See where you are in the process. Coming soon.</p>
+  </section>
+{% endblock %}
+
+
+Now all nav links work, nothing crashes, and you can evolve page-by-page.
+
+2. Wire Benefits/Resources to the config files
+
+Assuming you’ve got something like config/benefits.yaml and config/resources.yaml, you can do:
+
+In app.py (or wherever your routes are):
+
+import yaml
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+with open("config/benefits.yaml", "r") as f:
+    BENEFITS = yaml.safe_load(f)
+
+with open("config/resources.yaml", "r") as f:
+    RESOURCES = yaml.safe_load(f)
+
+@app.route("/benefits")
+def benefits():
+    return render_template("benefits.html", benefits=BENEFITS)
+
+@app.route("/resources")
+def resources():
+    return render_template("resources.html", resources=RESOURCES)
+
+
+Then in benefits.html:
+
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <h1>Benefits Guide</h1>
+  <p>No judgment. Just what you qualify for and how to get it.</p>
+
+  <div class="card-grid">
+    {% for item in benefits %}
+      <article class="card">
+        <h2>{{ item.name }}</h2>
+        <p>{{ item.description }}</p>
+        {% if item.link %}
+          <a href="{{ item.link }}" target="_blank">Learn more</a>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+
+Same idea for resources.html: loop over resources.
+
+Navigator becomes data-driven: you edit YAML/JSON, not HTML.
+
+3. Tiny roadmap for Later-You
+
+When you come back to this:
+
+Benefits page – wire to config, group by type (SSDI/SSI/SNAP/etc).
+
+Resources page – add filters: local vs national, legal vs financial, etc.
+
+Checklist – simple bullet list with checkboxes (even static to start).
+
+Timeline – 4–5 steps, “Where you are” text, maybe a highlighted current step.
