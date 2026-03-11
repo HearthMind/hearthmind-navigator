@@ -1,0 +1,1185 @@
+{
+  "mental_health_counselors": {
+    "organizations": [
+      {
+        "name": "A BRIEF COUNSELING CENTER",
+        "specialty": "Counselor, Mental Health",
+        "address": "9507 N DIVISION ST, SPOKANE, WA 99218",
+        "phone": "509-466-6632",
+        "npi": "1851438030"
+      },
+      {
+        "name": "ACT SERVICES, PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "7408 N BIRCH CT, SPOKANE, WA 99208",
+        "phone": "509-228-8901",
+        "npi": "1568865152"
+      },
+      {
+        "name": "ADAPTATIONS THERAPY SERVICES PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "1818 W FRANCIS AVE # 162, SPOKANE, WA 99205",
+        "phone": "509-266-3109",
+        "npi": "1699491712"
+      },
+      {
+        "name": "A BRIEF COUNSELING CENTER",
+        "specialty": "Counselor",
+        "address": "9507 N DIVISION ST, SPOKANE, WA 99218",
+        "phone": "509-466-6632",
+        "npi": "1417327883"
+      },
+      {
+        "name": "A PEACEFUL MIND PLLC",
+        "specialty": "Counselor, Professional",
+        "address": "7920 E SHANNON AVE, SPOKANE VALLEY, WA 99212",
+        "phone": "509-294-7299",
+        "npi": "1043735475"
+      },
+      {
+        "name": "ANTONIA TOMBARI AND ASSOCIATES PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "323 W 15TH AVE, SPOKANE, WA 99203",
+        "phone": "509-808-6337",
+        "npi": "1316530520"
+      },
+      {
+        "name": "ALANA BOWMAN, LMHC LLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "9631 N NEVADA ST STE 209, SPOKANE, WA 99218",
+        "phone": "509-389-2031",
+        "npi": "1194484352"
+      },
+      {
+        "name": "ALIGNED ACTION COUNSELING PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "116 W 24TH AVE, SPOKANE, WA 99203",
+        "phone": "360-317-5886",
+        "npi": "1295603207"
+      },
+      {
+        "name": "AMANDA CLEMONS PARENTING THERAPY",
+        "specialty": "Counselor, Mental Health",
+        "address": "405 E HARTSON AVE STE 7, SPOKANE, WA 99202",
+        "phone": "509-362-5933",
+        "npi": "1467126615"
+      },
+      {
+        "name": "AMY CORMAN, LLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "316 W BOONE AVE, SPOKANE, WA 99201",
+        "phone": "509-251-3062",
+        "npi": "1578015442"
+      },
+      {
+        "name": "AS WE THRIVE COUNSELING SERVICES, LLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "603 W. 2ND AVE., SPOKANE, WA 99201",
+        "phone": "509-222-0653",
+        "npi": "1255887808"
+      },
+      {
+        "name": "ATLAS CENTER FOR COUNSELING AND WELLNESS, PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "1107 E BRIERWOOD DR, SPOKANE, WA 99218",
+        "phone": "253-283-0497",
+        "npi": "1023720646"
+      },
+      {
+        "name": "BE SEEN COUNSELING, PLLC",
+        "specialty": "Counselor, Mental Health",
+        "address": "9 S WASHINGTON ST STE 310, SPOKANE, WA 99201",
+        "phone": "509-228-3731",
+        "npi": "1841766193"
+      },
+      {
+        "name": "BE STILL THERAPY",
+        "specialty": "Counselor, Mental Health",
+        "address": "707 W 7TH AVE STE 310, SPOKANE, WA 99204",
+        "phone": "425-954-5659",
+        "npi": "1104541465"
+      },
+      {
+        "name": "BETWEEN THE BRANCHES THERAPY",
+        "specialty": "Counselor, Mental Health",
+        "address": "323 E 2ND AVE STE 201, SPOKANE, WA 99202",
+        "phone": "509-425-1525",
+        "npi": "1376412502"
+      },
+      {
+        "name": "BLACKMAN CHILD AND FAMILY COUNSELING",
+        "specialty": "Counselor, Mental Health",
+        "address": "515 W FRANCIS AVE STE 5, SPOKANE, WA 99205",
+        "phone": "509-283-1077",
+        "npi": "1033967856"
+      },
+      {
+        "name": "BLAINE BART THERAPY",
+        "specialty": "Counselor, Mental Health",
+        "address": "1423 W GARLAND AVE, SPOKANE, WA 99205",
+        "phone": "509-903-6051",
+        "npi": "1275212706"
+      },
+      {
+        "name": "BRAIN BASED THERAPY NW",
+        "specialty": "Counselor, Mental Health",
+        "address": "705 W 7TH AVE STE F, SPOKANE, WA 99204",
+        "phone": "509-720-4784",
+        "npi": "1235907122"
+      },
+      {
+        "name": "ALLIUM PLLC",
+        "specialty": "Counselor",
+        "address": "601 W 1ST AVE STE 1400, SPOKANE, WA 99201",
+        "phone": "425-359-5088",
+        "npi": "1780464230"
+      },
+      {
+        "name": "KOINONIA CENTER LLC",
+        "specialty": "Counselor",
+        "address": "11507 S KEENEY RD, SPOKANE, WA 99224",
+        "phone": "509-850-2377",
+        "npi": "1760036842"
+      }
+    ],
+    "individual_count": 181
+  },
+  "psychologists": {
+    "organizations": [
+      {
+        "name": "ANDREW P. HAFFEY PH.D.",
+        "specialty": "Psychologist, Clinical",
+        "address": "1424 S BERNARD ST, SPOKANE, WA 99203",
+        "phone": "509-838-1414",
+        "npi": "1952542060"
+      },
+      {
+        "name": "CENTER FOR SOLACE, PLLC",
+        "specialty": "Psychologist, Clinical",
+        "address": "407 E 2ND AVE STE 250, SPOKANE, WA 99202",
+        "phone": "509-315-9776",
+        "npi": "1255879706"
+      },
+      {
+        "name": "BEHAVIORAL MEDICINE CENTER",
+        "specialty": "Psychologist, Clinical",
+        "address": "421 W RIVERSIDE AVE, SPOKANE, WA 99201",
+        "phone": "509-747-2215",
+        "npi": "1013982354"
+      },
+      {
+        "name": "BLUE MOUNTAIN NEUROPSYCHOLOGICAL ASSOCIATES",
+        "specialty": "Psychologist, Clinical",
+        "address": "1624 W DEAN AVE, SPOKANE, WA 99201",
+        "phone": "509-939-0719",
+        "npi": "1083005979"
+      },
+      {
+        "name": "BLUE MOUNTAIN NEUROPSYCHOLOGICAL ASSOCIATES, PS",
+        "specialty": "Psychologist",
+        "address": "1624 W DEAN AVE, SPOKANE, WA 99201",
+        "phone": "509-939-6863",
+        "npi": "1619401734"
+      },
+      {
+        "name": "BOBBI KIZER PHD LLC",
+        "specialty": "Psychologist",
+        "address": "4219 E PRAIRIE LANE CT, SPOKANE, WA 99223",
+        "phone": "504-390-5782",
+        "npi": "1932617412"
+      },
+      {
+        "name": "BRIGHTER REFLECTIONS PLLC",
+        "specialty": "Psychologist",
+        "address": "100 N HOWARD ST STE W, SPOKANE, WA 99201",
+        "phone": "360-628-0245",
+        "npi": "1104795319"
+      },
+      {
+        "name": "CALM WATERS COUNSELING PLLC",
+        "specialty": "Psychologist, Clinical",
+        "address": "10103 N DIVISION ST, SPOKANE, WA 99218",
+        "phone": "509-467-9111",
+        "npi": "1093045676"
+      },
+      {
+        "name": "DR. HENRY A. MONTGOMERY",
+        "specialty": "Psychologist, Clinical",
+        "address": "905 W RIVERSIDE AVE, SPOKANE, WA 99201",
+        "phone": "509-744-0778",
+        "npi": "1629123880"
+      },
+      {
+        "name": "FRANK M ROSEKRANS III",
+        "specialty": "Psychologist, Clinical",
+        "address": "530 W SINTO, SPOKANE, WA 99201",
+        "phone": "509-326-3804",
+        "npi": "1528284783"
+      },
+      {
+        "name": "GERDIN PSYCHOLOGICAL SERVICES",
+        "specialty": "Psychologist",
+        "address": "701 W 7TH AVE STE 160A, SPOKANE, WA 99204",
+        "phone": "651-815-2524",
+        "npi": "1942896329"
+      },
+      {
+        "name": "ICARD, P.L.L.C.",
+        "specialty": "Psychologist, Clinical",
+        "address": "701 W 7TH AVE, SPOKANE, WA 99204",
+        "phone": "509-869-3809",
+        "npi": "1073655940"
+      },
+      {
+        "name": "INLAND INSIGHT, PLLC",
+        "specialty": "Psychologist",
+        "address": "12 E ROWAN AVE STE L3, SPOKANE, WA 99207",
+        "phone": "509-359-8807",
+        "npi": "1104646389"
+      },
+      {
+        "name": "JENNIFER VAN WEY PSYD PLLC",
+        "specialty": "Psychologist, Clinical",
+        "address": "316 W BOONE AVE STE 656, SPOKANE, WA 99201",
+        "phone": "509-606-3997",
+        "npi": "1730760356"
+      },
+      {
+        "name": "KRISTI KETZ, PH.D., P.S.",
+        "specialty": "Psychologist",
+        "address": "421 W RIVERSIDE AVE STE 310, SPOKANE, WA 99201",
+        "phone": "509-747-1440",
+        "npi": "1316952161"
+      },
+      {
+        "name": "LAWRENCE R WEATHERS, PHD, MARY B WEATHERS, PHD, PS",
+        "specialty": "Psychologist, Clinical Child & Adolescent",
+        "address": "6921 E JAMIESON RD, SPOKANE, WA 99223",
+        "phone": "509-448-6462",
+        "npi": "1396874640"
+      },
+      {
+        "name": "LISA ESTELLE PSYD",
+        "specialty": "Psychologist, Clinical",
+        "address": "8606 N WALL, SPOKANE, WA 99218",
+        "phone": "509-467-9111",
+        "npi": "1780647859"
+      },
+      {
+        "name": "MASTERMIND PSYCHOLOGY, P.S.",
+        "specialty": "Psychologist",
+        "address": "101 W CATALDO AVE STE 210, SPOKANE, WA 99201",
+        "phone": "509-474-1783",
+        "npi": "1205486461"
+      },
+      {
+        "name": "MELROSE PSYCHOLOGICAL SERVICES",
+        "specialty": "Psychologist, Clinical",
+        "address": "707 W 7TH AVE, SPOKANE, WA 99204",
+        "phone": "509-218-8162",
+        "npi": "1104359942"
+      },
+      {
+        "name": "NEUROEDUCATION INC PC",
+        "specialty": "Psychologist, Clinical",
+        "address": "W 905 RIVERSIDE, SPOKANE, WA 99201",
+        "phone": "509-747-0165",
+        "npi": "1982694923"
+      },
+      {
+        "name": "NEXUMHC WA LLC",
+        "specialty": "Psychologist",
+        "address": "522 W RIVERSIDE AVE STE N, SPOKANE, WA 99201",
+        "phone": "773-887-6150",
+        "npi": "1629847967"
+      },
+      {
+        "name": "NORTHWEST BEHAVIORAL HEALTH CLINIC",
+        "specialty": "Psychologist",
+        "address": "905 W RIVERSIDE AVE STE 610, SPOKANE, WA 99201",
+        "phone": "509-742-3460",
+        "npi": "1700025202"
+      },
+      {
+        "name": "NORTHWEST NEUROBEHAVIORAL INSTITUTE",
+        "specialty": "Clinical Neuropsychologist",
+        "address": "1303 N DIVISION ST, SPOKANE, WA 99202",
+        "phone": "509-456-3600",
+        "npi": "1427115765"
+      },
+      {
+        "name": "NW FAMILY PSYCHOLOGY ROCK POINTE",
+        "specialty": "Psychologist, Clinical",
+        "address": "1212 N WASHINGTON ST STE 105, SPOKANE, WA 99201",
+        "phone": "509-443-3620",
+        "npi": "1437750817"
+      },
+      {
+        "name": "NW PSYCHOLOGICAL ASSESSMENTS LLC",
+        "specialty": "Psychologist, Clinical",
+        "address": "101 W CATALDO AVE STE 210, SPOKANE, WA 99201",
+        "phone": "509-315-6332",
+        "npi": "1730890781"
+      },
+      {
+        "name": "PACIFIC FORENSIC PSYCHOLOGY SERVICES",
+        "specialty": "Psychologist, Forensic",
+        "address": "427 W 7TH AVE, SPOKANE, WA 99204",
+        "phone": "407-552-2870",
+        "npi": "1699081604"
+      },
+      {
+        "name": "PATHWISE PSYCHOLOGY PLLC",
+        "specialty": "Psychologist, Clinical",
+        "address": "522 W RIVERSIDE AVE STE 6728, SPOKANE, WA 99201",
+        "phone": "253-553-3483",
+        "npi": "1922805647"
+      },
+      {
+        "name": "PAUL J DOMITOR AND ASSOCIATES",
+        "specialty": "Psychologist",
+        "address": "105 W 8TH AVE, SPOKANE, WA 99204",
+        "phone": "509-838-7400",
+        "npi": "1962496448"
+      },
+      {
+        "name": "PROVIDENCE HEALTH & SERVICES- WASHINGTON",
+        "specialty": "Psychologist, Rehabilitation",
+        "address": "711 S COWLEY ST, SPOKANE, WA 99202",
+        "phone": "509-473-6000",
+        "npi": "1902497308"
+      },
+      {
+        "name": "REFF PSYCHOTHERAPEUTIC SERVICES PLLC",
+        "specialty": "Psychologist",
+        "address": "505 W RIVERSIDE AVE STE 504, SPOKANE, WA 99201",
+        "phone": "509-252-1898",
+        "npi": "1437628013"
+      },
+      {
+        "name": "RIDGWAY & FORSYTH PSYCHOLOGY, P.S.",
+        "specialty": "Psychologist, Clinical",
+        "address": "628 S MAPLE ST, SPOKANE, WA 99204",
+        "phone": "509-353-9885",
+        "npi": "1073851382"
+      }
+    ],
+    "individual_count": 134
+  },
+  "social_workers": {
+    "organizations": [
+      {
+        "name": "A REFUGE: TRAUMA INFORMED THERAPIES, A NONPROFIT ORGANIZATION",
+        "specialty": "Social Worker, Clinical",
+        "address": "222 W MISSION AVE STE 122, SPOKANE, WA 99201",
+        "phone": "509-842-0067",
+        "npi": "1457916710"
+      },
+      {
+        "name": "ABH PSYCHOTHERAPY, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "522 W RIVERSIDE AVE STE 5293, SPOKANE, WA 99201",
+        "phone": "425-437-2887",
+        "npi": "1316789613"
+      },
+      {
+        "name": "ABILITY EMPLOYMENT SERVICES",
+        "specialty": "Social Worker",
+        "address": "1212 N WASHINGTON ST STE 124, SPOKANE, WA 99201",
+        "phone": "509-443-3148",
+        "npi": "1346716206"
+      },
+      {
+        "name": "ABOVE AND BEYOND CARE INC",
+        "specialty": "Social Worker, Clinical",
+        "address": "10623 E SPRAGUE AVE STE B-4, SPOKANE VALLEY, WA 99206",
+        "phone": "509-289-4261",
+        "npi": "1841713179"
+      },
+      {
+        "name": "ABUNDANT PATHS COUNSELING PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "628 S MAPLE ST STE 104, SPOKANE, WA 99204",
+        "phone": "509-319-6972",
+        "npi": "1912412370"
+      },
+      {
+        "name": "AIM COUNSELING LLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "1420 N MULLAN RD, SPOKANE VALLEY, WA 99206",
+        "phone": "509-499-9266",
+        "npi": "1134411465"
+      },
+      {
+        "name": "ALICE HEISE PSYCHOTHERAPY, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "1404 E 11TH AVE, SPOKANE, WA 99202",
+        "phone": "607-227-5761",
+        "npi": "1447126768"
+      },
+      {
+        "name": "AMORE HEALTH & WELLNESS LLP",
+        "specialty": "Social Worker, Clinical",
+        "address": "104 S FREYA ST STE 312B, SPOKANE, WA 99202",
+        "phone": "509-992-9075",
+        "npi": "1770319972"
+      },
+      {
+        "name": "BLUE STAR COUNSELING, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "100 N HOWARD ST STE W, SPOKANE, WA 99201",
+        "phone": "562-999-2024",
+        "npi": "1033955018"
+      },
+      {
+        "name": "ANTHONY RAMOS THERAPIES",
+        "specialty": "Social Worker, Clinical",
+        "address": "1403 S GRAND BLVD STE 204N, SPOKANE, WA 99203",
+        "phone": "509-316-2344",
+        "npi": "1770195992"
+      },
+      {
+        "name": "ARTEMISIA COUNSELING PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "522 W RIVERSIDE AVE # 8738, SPOKANE, WA 99201",
+        "phone": "401-648-7004",
+        "npi": "1629932652"
+      },
+      {
+        "name": "AWASHA PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "1212 N HOWARD ST, SPOKANE, WA 99201",
+        "phone": "509-778-6878",
+        "npi": "1295470821"
+      },
+      {
+        "name": "B. P. MENARD LLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "9505 N DIVISION ST STE 210, SPOKANE, WA 99218",
+        "phone": "509-850-0512",
+        "npi": "1487256434"
+      },
+      {
+        "name": "BEYOND MOUNTAINS COUNSELING LLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "400 S JEFFERSON ST STE 318, SPOKANE, WA 99204",
+        "phone": "509-731-4747",
+        "npi": "1689381808"
+      },
+      {
+        "name": "CALDERA PSYCHOTHERAPY PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "522 W RIVERSIDE AVE STE N, SPOKANE, WA 99201",
+        "phone": "360-800-9510",
+        "npi": "1245982453"
+      },
+      {
+        "name": "CALMING THE CHAOS COUNSELING, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "100 N. HOWARD STREET, SPOKANE, WA 99201",
+        "phone": "509-688-7523",
+        "npi": "1881547065"
+      },
+      {
+        "name": "CENTERED COUNSELING, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "522 W RIVERSIDE AVE STE 5060, SPOKANE, WA 99201",
+        "phone": "509-609-8205",
+        "npi": "1295431310"
+      },
+      {
+        "name": "CHANGING TIDES COUNSELING, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "323 E 2ND AVE STE 201, SPOKANE, WA 99202",
+        "phone": "425-346-0241",
+        "npi": "1508672478"
+      },
+      {
+        "name": "CHARMED COUNSELING",
+        "specialty": "Social Worker, Clinical",
+        "address": "400 S JEFFERSON ST STE 200, SPOKANE, WA 99204",
+        "phone": "509-768-6852",
+        "npi": "1972474021"
+      },
+      {
+        "name": "CHRISTINE RUSSO THERAPY PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "202 E SPOKANE FALLS BLVD STE 302, SPOKANE, WA 99202",
+        "phone": "509-855-9373",
+        "npi": "1225704679"
+      },
+      {
+        "name": "CITY CENTER PSYCHOTHERAPY ASSOCIATES LLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "522 W RIVERSIDE AVE STE N, SPOKANE, WA 99201",
+        "phone": "919-428-4538",
+        "npi": "1659247302"
+      },
+      {
+        "name": "LIGHTHOUSE COUNSELING & PSYCHOLOGICAL SERVICES, PLLC",
+        "specialty": "Social Worker, Clinical",
+        "address": "8623-B NORTH DIVISION, SPOKANE, WA 99208",
+        "phone": "509-466-4363",
+        "npi": "1265527360"
+      }
+    ],
+    "individual_count": 150
+  },
+  "psychiatrists": {
+    "organizations": [
+      {
+        "name": "14114 SPOKANE DETOX LLC",
+        "specialty": "Psychiatric Residential Treatment Facility",
+        "address": "14114 E 3RD AVE, SPOKANE VALLEY, WA 99216",
+        "phone": "561-222-1719",
+        "npi": "1013608801"
+      },
+      {
+        "name": "DEPARTMENT OF SOCIAL DEPT OF SHS DIV OF INSTNS",
+        "specialty": "Psychiatric Hospital",
+        "address": "850 MAPLE ST, MEDICAL LAKE, WA 99022",
+        "phone": "509-565-4000",
+        "npi": "1467440602"
+      },
+      {
+        "name": "PROVIDENCE HEALTH & SERVICES - WA",
+        "specialty": "Psychiatric Unit",
+        "address": "101 W 8TH AVE, SPOKANE, WA 99204",
+        "phone": "509-474-3131",
+        "npi": "1639320484"
+      },
+      {
+        "name": "RENA'S PSYCHIATRY PLLC",
+        "specialty": "Psychiatric Residential Treatment Facility",
+        "address": "1633 E KELTON LN, SPOKANE, WA 99208",
+        "phone": "469-693-6744",
+        "npi": "1083489991"
+      },
+      {
+        "name": "SPOKANE BEHAVIORAL HEALTH LLC",
+        "specialty": "Psychiatric Hospital",
+        "address": "104 W 5TH AVE, SPOKANE, WA 99204",
+        "phone": "509-992-1888",
+        "npi": "1932698107"
+      },
+      {
+        "name": "TAMARACK CENTER",
+        "specialty": "Psychiatric Residential Treatment Facility",
+        "address": "2901 W FORT GEORGE WRIGHT DR, SPOKANE, WA 99224",
+        "phone": "509-326-8100",
+        "npi": "1679613905"
+      },
+      {
+        "name": "AMOMA, PLLC",
+        "specialty": "Psychiatry & Neurology, Psychiatry",
+        "address": "1314 S GRAND BLVD STE 2, SPOKANE, WA 99202",
+        "phone": "813-955-2827",
+        "npi": "1215475744"
+      },
+      {
+        "name": "ASCEND NETWORK CORP",
+        "specialty": "Psychiatry & Neurology, Psychiatry",
+        "address": "1312 N MONROE ST STE 271, SPOKANE, WA 99201",
+        "phone": "208-718-2528",
+        "npi": "1912496035"
+      },
+      {
+        "name": "ALPENGLOW MENTAL WELLNESS, LLC",
+        "specialty": "Psychiatry & Neurology, Psychiatry",
+        "address": "2012 S OVERBLUFF CT, SPOKANE, WA 99203",
+        "phone": "509-570-2502",
+        "npi": "1669184008"
+      }
+    ],
+    "individual_count": 10
+  },
+  "addiction_services": {
+    "organizations": [
+      {
+        "name": "DAYBREAK YOUTH SERVICES",
+        "specialty": "Substance Abuse Rehabilitation Facility, Substance Abuse Treatment, Children",
+        "address": "628 S COWLEY ST, SPOKANE, WA 99202",
+        "phone": "509-624-3227",
+        "npi": "1073534228"
+      },
+      {
+        "name": "ADEPT ASSESSMENT CENTER INC",
+        "specialty": "Counselor, Addiction (Substance Use Disorder)",
+        "address": "1321 N ASH ST, SPOKANE, WA 99201",
+        "phone": "509-327-3120",
+        "npi": "1467922955"
+      },
+      {
+        "name": "AMERICAN INDIAN COMMUNITY CENTER",
+        "specialty": "Counselor, Addiction (Substance Use Disorder)",
+        "address": "1025 W INDIANA AVE, SPOKANE, WA 99205",
+        "phone": "509-534-0886",
+        "npi": "1053839332"
+      },
+      {
+        "name": "ABHS SPECIALITY SERVICES 1 LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "44 E COZZA DR, SPOKANE, WA 99208",
+        "phone": "509-232-5766",
+        "npi": "1215286851"
+      },
+      {
+        "name": "ABHS SPOKANE OUTPATIENT PROGRAM",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "910 N WASHINGTON ST STE 102, SPOKANE, WA 99201",
+        "phone": "360-507-8028",
+        "npi": "1265395354"
+      },
+      {
+        "name": "AMERICAN BEHAVIORAL HEALTH SYSTEMS, INC.",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "44 E COZZA DR STE B, SPOKANE, WA 99208",
+        "phone": "509-232-5766",
+        "npi": "1356831911"
+      },
+      {
+        "name": "AMERICAN BEHAVIORAL HEALTH SYSTEMS, INC.",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "44 E COZZA DR, SPOKANE, WA 99208",
+        "phone": "509-232-5766",
+        "npi": "1073648374"
+      },
+      {
+        "name": "AMERICAN BEHAVIORAL HEALTH SYSTEMS, INC.",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "12715 E MISSION AVE, SPOKANE VALLEY, WA 99216",
+        "phone": "509-232-5766",
+        "npi": "1962991661"
+      },
+      {
+        "name": "COURAGE TO CHANGE INC.",
+        "specialty": "Clinic/Center, Rehabilitation, Substance Use Disorder",
+        "address": "13015 W 14TH AVE, AIRWAY HEIGHTS, WA 99001",
+        "phone": "509-863-4233",
+        "npi": "1609305820"
+      },
+      {
+        "name": "MADDIE'S PLACE",
+        "specialty": "Substance Abuse Rehabilitation Facility, Substance Abuse Treatment, Children",
+        "address": "1004 E 8TH AVE, SPOKANE, WA 99202",
+        "phone": "509-315-5146",
+        "npi": "1679167944"
+      },
+      {
+        "name": "NEW DEVELOPED NATIONS, LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility, Substance Abuse Treatment, Children",
+        "address": "631 S RICHARD ALLEN CT, SPOKANE, WA 99202",
+        "phone": "509-362-4439",
+        "npi": "1194118539"
+      },
+      {
+        "name": "NEW HORIZON CARE CENTER, INC.",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "2317 W 3RD AVE, SPOKANE, WA 99204",
+        "phone": "509-624-1244",
+        "npi": "1538388665"
+      },
+      {
+        "name": "PIONEER HUMAN SERVICES",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "3400 W GARLAND AVE, SPOKANE, WA 99205",
+        "phone": "509-325-2355",
+        "npi": "1063709756"
+      },
+      {
+        "name": "REBUILT TREATMENT AND RECOVERY LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "1220 N HOWARD ST, SPOKANE, WA 99201",
+        "phone": "509-505-4415",
+        "npi": "1659122844"
+      },
+      {
+        "name": "ROYAL LIFE CENTERS, LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "524 E FRANCIS AVE, SPOKANE, WA 99208",
+        "phone": "561-270-3481",
+        "npi": "1902251267"
+      },
+      {
+        "name": "ROYAL WA SPOKANE LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "524 E FRANCIS AVE, SPOKANE, WA 99208",
+        "phone": "888-468-3389",
+        "npi": "1013668235"
+      },
+      {
+        "name": "SEQUOIA DETOX CENTERS LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "10305 E MONTGOMERY DR, SPOKANE VALLEY, WA 99206",
+        "phone": "206-605-2209",
+        "npi": "1487289567"
+      },
+      {
+        "name": "SPOKANE ADDICTION RECOVERY CENTERS",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "812 S WALNUT ST, SPOKANE, WA 99204",
+        "phone": "509-624-3251",
+        "npi": "1013030147"
+      },
+      {
+        "name": "SPOKANE DETOX CENTER LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "524 E FRANCIS AVE, SPOKANE, WA 99208",
+        "phone": "928-442-6666",
+        "npi": "1831597319"
+      },
+      {
+        "name": "SUMMIT BHC SEATTLE LLC",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "102 W RHOADES AVE, SPOKANE, WA 99208",
+        "phone": "425-537-4700",
+        "npi": "1548059454"
+      },
+      {
+        "name": "THE HEALING LODGE OF THE SEVEN NATIONS",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "5600 E 8TH AVE, SPOKANE VALLEY, WA 99212",
+        "phone": "509-533-6910",
+        "npi": "1437204369"
+      },
+      {
+        "name": "THE HEALING LODGE OF THE SEVEN NATIONS",
+        "specialty": "Substance Abuse Rehabilitation Facility, Substance Abuse Treatment, Children",
+        "address": "5600 E 8TH AVE, SPOKANE VALLEY, WA 99212",
+        "phone": "509-533-6910",
+        "npi": "1184158750"
+      },
+      {
+        "name": "THE HEALING LODGE OF THE SEVEN NATIONS",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "5600 E 8TH AVE, SPOKANE VALLEY, WA 99212",
+        "phone": "509-533-6910",
+        "npi": "1649580713"
+      },
+      {
+        "name": "THE HEALING LODGE OF THE SEVEN NATIONS",
+        "specialty": "Substance Abuse Rehabilitation Facility",
+        "address": "5600 E 8TH AVE, SPOKANE VALLEY, WA 99212",
+        "phone": "509-533-6910",
+        "npi": "1194035261"
+      },
+      {
+        "name": "CPF BREAKTHROUGH, LLC",
+        "specialty": "Clinic/Center, Rehabilitation, Substance Use Disorder",
+        "address": "11711 E SPRAGUE AVE STE D4, SPOKANE VALLEY, WA 99206",
+        "phone": "509-927-6838",
+        "npi": "1144821539"
+      },
+      {
+        "name": "DAYBREAK YOUTH SERVICES",
+        "specialty": "Counselor, Addiction (Substance Use Disorder)",
+        "address": "200 N MULLAN RD, SPOKANE VALLEY, WA 99206",
+        "phone": "509-927-1688",
+        "npi": "1518973445"
+      },
+      {
+        "name": "AT PARR OUTPATIENT SERVICES, LLC",
+        "specialty": "Counselor, Addiction (Substance Use Disorder)",
+        "address": "1717 W NORTHWEST BLVD, SPOKANE, WA 99205",
+        "phone": "509-325-0777",
+        "npi": "1942503644"
+      }
+    ],
+    "individual_count": 35
+  },
+  "marriage_family": {
+    "organizations": [
+      {
+        "name": "AMETHYST RELATIONAL THERAPY PLLC",
+        "specialty": "Marriage & Family Therapist",
+        "address": "522 W RIVERSIDE AVE STE N, SPOKANE, WA 99201",
+        "phone": "206-880-1220",
+        "npi": "1679422521"
+      },
+      {
+        "name": "ASHLEY ENGLAND",
+        "specialty": "Marriage & Family Therapist",
+        "address": "511 N ARGONNE RD, SPOKANE VALLEY, WA 99212",
+        "phone": "208-352-0907",
+        "npi": "1588307169"
+      },
+      {
+        "name": "LWD COUNSELING PLLC",
+        "specialty": "Marriage & Family Therapist",
+        "address": "100 N HOWARD ST STE W, SPOKANE, WA 99201",
+        "phone": "909-507-1276",
+        "npi": "1497438790"
+      }
+    ],
+    "individual_count": 19
+  },
+  "rehabilitation": {
+    "organizations": [
+      {
+        "name": "APPLAUSE HAND THERAPY LLC",
+        "specialty": "Occupational Therapist, Hand",
+        "address": "2607 S SOUTHEAST BLVD, SPOKANE, WA 99223",
+        "phone": "509-532-8114",
+        "npi": "1205971256"
+      },
+      {
+        "name": "AVPR PLLC",
+        "specialty": "Occupational Therapist",
+        "address": "104 S FREYA ST, SPOKANE, WA 99202",
+        "phone": "509-554-5565",
+        "npi": "1770038895"
+      },
+      {
+        "name": "ASCEND PHYSICAL THERAPY, LLC",
+        "specialty": "Clinic/Center, Physical Therapy",
+        "address": "7512 N DIVISION ST, SPOKANE, WA 99208",
+        "phone": "509-903-9358",
+        "npi": "1407636574"
+      },
+      {
+        "name": "NORTHWEST MEDICAL SPECIALTY EVALUATIONS PLLC",
+        "specialty": "Physical Medicine & Rehabilitation, Pain Medicine",
+        "address": "421 W RIVERSIDE AVE, SPOKANE, WA 99201",
+        "phone": "509-588-7340",
+        "npi": "1811266745"
+      }
+    ],
+    "individual_count": 39
+  },
+  "speech_language": {
+    "organizations": [],
+    "individual_count": 15
+  },
+  "community_health": {
+    "organizations": [
+      {
+        "name": "A BRIGHTER WAY COUNSELING PLLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "4808 N CANNON ST, SPOKANE, WA 99205",
+        "phone": "509-617-7665",
+        "npi": "1457228363"
+      },
+      {
+        "name": "A PLACE TO START",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "316 W BOONE AVE STE 656, SPOKANE, WA 99201",
+        "phone": "509-599-7544",
+        "npi": "1063125011"
+      },
+      {
+        "name": "A2DM INTEGRATED CARE",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "9960 N NEWPORT HWY STE 1004, SPOKANE, WA 99218",
+        "phone": "704-751-2806",
+        "npi": "1447109806"
+      },
+      {
+        "name": "ADVANCE HEALTH AND REHABILITATION",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "731 S GARFIELD ST APT 9, SPOKANE, WA 99202",
+        "phone": "509-535-4525",
+        "npi": "1427837749"
+      },
+      {
+        "name": "ADVANCED BEHAVIORAL HEALTH LLC",
+        "specialty": "Community/Behavioral Health",
+        "address": "9209 E MISSION AVE STE A102, SPOKANE VALLEY, WA 99206",
+        "phone": "509-245-2800",
+        "npi": "1952959819"
+      },
+      {
+        "name": "AFFIRMATIONS MENTAL HEALTH COUNSELING, LLC",
+        "specialty": "Community/Behavioral Health",
+        "address": "4103 N NORMANDIE ST, SPOKANE, WA 99205",
+        "phone": "509-208-3596",
+        "npi": "1316669872"
+      },
+      {
+        "name": "AFIYAH THERAPEUTIC SERVICES, PLLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "100 N HOWARD ST STE R, SPOKANE, WA 99201",
+        "phone": "626-658-8123",
+        "npi": "1508758863"
+      },
+      {
+        "name": "EXCELSIOR INTEGRATED CARE CENTER LLC",
+        "specialty": "Community/Behavioral Health",
+        "address": "3910 W. INDIAN TRAIL RD, SPOKANE, WA 99208",
+        "phone": "509-559-3100",
+        "npi": "1326672692"
+      },
+      {
+        "name": "EXCELSIOR WELLNESS",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "3754 W INDIAN TRAIL RD, SPOKANE, WA 99208",
+        "phone": "509-328-7041",
+        "npi": "1326267055"
+      },
+      {
+        "name": "BATES PHARMACEUTICAL SERVICES",
+        "specialty": "Clinic/Center, Community Health",
+        "address": "3704 N NEVADA ST, SPOKANE, WA 99207",
+        "phone": "509-489-4500",
+        "npi": "1598132474"
+      },
+      {
+        "name": "BEMBENEK TRAVEL HEALTH WASHINGTON, PC",
+        "specialty": "Community Health Worker",
+        "address": "2020 E 29TH AVE, SPOKANE, WA 99203",
+        "phone": "844-358-8648",
+        "npi": "1699537621"
+      },
+      {
+        "name": "4GE",
+        "specialty": "Case Management",
+        "address": "25 W MAIN AVE STE 310, SPOKANE, WA 99201",
+        "phone": "509-818-0104",
+        "npi": "1235944372"
+      },
+      {
+        "name": "A BETTER LIFE COUNSELING PLLC",
+        "specialty": "Case Management",
+        "address": "10814 E BROADWAY AVE, SPOKANE VALLEY, WA 99206",
+        "phone": "509-981-0245",
+        "npi": "1184778722"
+      },
+      {
+        "name": "ABILITY EMPLOYMENT SERVICES",
+        "specialty": "Case Management",
+        "address": "1212 N WASHINGTON ST STE 124, SPOKANE, WA 99201",
+        "phone": "509-443-3148",
+        "npi": "1861969016"
+      },
+      {
+        "name": "ADEPT ASSESSMENT CENTER INC",
+        "specialty": "Case Management",
+        "address": "1321 N ASH ST, SPOKANE, WA 99201",
+        "phone": "509-327-3120",
+        "npi": "1841450921"
+      },
+      {
+        "name": "AGING AND LONG TERM CARE OF EASTERN WASHINGTON",
+        "specialty": "Case Management",
+        "address": "1313 N ATLANTIC ST STE 3000, SPOKANE, WA 99201",
+        "phone": "509-458-2509",
+        "npi": "1902154073"
+      },
+      {
+        "name": "ATWORK",
+        "specialty": "Case Management",
+        "address": "1010 N NORMANDIE ST STE 206, SPOKANE, WA 99201",
+        "phone": "509-939-9767",
+        "npi": "1952868747"
+      },
+      {
+        "name": "BETTER HEALTH TOGETHER",
+        "specialty": "Case Management",
+        "address": "157 S HOWARD ST STE 300, SPOKANE, WA 99201",
+        "phone": "509-321-7500",
+        "npi": "1003297771"
+      },
+      {
+        "name": "BRIGHT HEALTHCARE AGENCY",
+        "specialty": "Case Management",
+        "address": "522 W RIVERSIDE AVE STE N, SPOKANE, WA 99201",
+        "phone": "206-457-3088",
+        "npi": "1063238103"
+      },
+      {
+        "name": "CAREER PATH SERVICES EMPLOYMENT AND TRAINING",
+        "specialty": "Case Management",
+        "address": "130 S ARTHUR ST, SPOKANE, WA 99202",
+        "phone": "509-323-1244",
+        "npi": "1942907704"
+      },
+      {
+        "name": "CATHOLIC FAMILY SERVICE COUNSELING PROGRAM",
+        "specialty": "Case Management",
+        "address": "101 E HARTSON AVE, SPOKANE, WA 99202",
+        "phone": "509-624-9788",
+        "npi": "1669959581"
+      },
+      {
+        "name": "COMMUNITY TRANSITION SERVICES LLC",
+        "specialty": "Case Management",
+        "address": "420 N EVERGREEN RD STE 102, SPOKANE VALLEY, WA 99216",
+        "phone": "509-867-3930",
+        "npi": "1932953650"
+      },
+      {
+        "name": "COMMUNITY TRANSITIONS LLC",
+        "specialty": "Case Management",
+        "address": "12510 E SPRAGUE AVE STE 5, SPOKANE VALLEY, WA 99216",
+        "phone": "509-867-3930",
+        "npi": "1417569716"
+      },
+      {
+        "name": "CONCRETE ROSE LLC",
+        "specialty": "Case Management",
+        "address": "621 S ADAMS ST APT 6, SPOKANE, WA 99204",
+        "phone": "206-866-4213",
+        "npi": "1619650207"
+      },
+      {
+        "name": "CONSISTENT CARE SERVICES SPC, PS",
+        "specialty": "Case Management",
+        "address": "1235 N POST ST STE 201, SPOKANE, WA 99201",
+        "phone": "509-392-6965",
+        "npi": "1912395211"
+      },
+      {
+        "name": "ALYSSA BRUDNICKI LLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "9631 N NEVADA ST STE 209, SPOKANE, WA 99218",
+        "phone": "509-362-1723",
+        "npi": "1366116451"
+      },
+      {
+        "name": "ANCHOR COUNSELING SERVICES, PLLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "404 W 15TH AVE, SPOKANE, WA 99203",
+        "phone": "509-209-9664",
+        "npi": "1669214524"
+      },
+      {
+        "name": "ARC PROFESSIONAL COUNSELING SERVICE",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "6821 N COUNTRY HOMES BLVD STE 201, SPOKANE, WA 99208",
+        "phone": "509-558-7559",
+        "npi": "1003537523"
+      },
+      {
+        "name": "ARCHANGEL CATHOLIC PLLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "1124 W RIVERSIDE AVE STE 305, SPOKANE, WA 99201",
+        "phone": "208-557-1780",
+        "npi": "1487460648"
+      },
+      {
+        "name": "BAINS COUNSELING, LLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "104 S FREYA ST STE 120B, SPOKANE, WA 99202",
+        "phone": "509-906-1279",
+        "npi": "1558091942"
+      },
+      {
+        "name": "BEYOND BEHAVIORAL HEALTH LLC",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "104 S FREYA ST STE GREEN210, SPOKANE, WA 99202",
+        "phone": "509-368-9863",
+        "npi": "1033728415"
+      },
+      {
+        "name": "BRAIN PROS",
+        "specialty": "Clinic/Center, Mental Health (Including Community Mental Health Center)",
+        "address": "100 N HOWARD ST STE 4057, SPOKANE, WA 99201",
+        "phone": "619-857-7594",
+        "npi": "1114505609"
+      },
+      {
+        "name": "FRONTIER BEHAVIORAL HEALTH",
+        "specialty": "Community/Behavioral Health",
+        "address": "107 S DIVISION ST, SPOKANE, WA 99202",
+        "phone": "509-838-4651",
+        "npi": "1861495327"
+      },
+      {
+        "name": "IMAGINE BEHAVIORAL & DEVELOPMENTAL SERVICES",
+        "specialty": "Community/Behavioral Health",
+        "address": "5709 W SUNSET HWY STE 101, SPOKANE, WA 99224",
+        "phone": "509-209-2739",
+        "npi": "1619211042"
+      }
+    ],
+    "individual_count": 8
+  },
+  "other": {
+    "organizations": [
+      {
+        "name": "EASTERN STATE HOSPITAL PHARMACY",
+        "specialty": "Pharmacy, Long Term Care Pharmacy",
+        "address": "800 WEST MAPLE STREET, MEDICAL LAKE, WA 99022",
+        "phone": "509-299-3121",
+        "npi": "1679651970"
+      },
+      {
+        "name": "MINDFUL MEDS DR. KARA SHIRLEY PHARMD LLC",
+        "specialty": "Pharmacist, Pharmacist Clinician (PhC)/ Clinical Pharmacy Specialist",
+        "address": "522 W RIVERSIDE AVE STE 8238, SPOKANE, WA 99201",
+        "phone": "509-593-8728",
+        "npi": "1578252342"
+      },
+      {
+        "name": "PROVIDENCE HEALTH & SERVICES - WA",
+        "specialty": "General Acute Care Hospital",
+        "address": "101 W 8TH AVE, SPOKANE, WA 99204",
+        "phone": "509-474-3131",
+        "npi": "1144471715"
+      },
+      {
+        "name": "ACCESS MOBILE MEDICINE, PLLC",
+        "specialty": "Clinic/Center, Multi-Specialty",
+        "address": "1616 W WELLESLEY AVE STE C, SPOKANE, WA 99205",
+        "phone": "509-957-0097",
+        "npi": "1629852637"
+      },
+      {
+        "name": "AAGING BETTER IN-HOME CARE, LLC",
+        "specialty": "Home Health",
+        "address": "1014 N PINES RD STE 110, SPOKANE VALLEY, WA 99206",
+        "phone": "509-464-2344",
+        "npi": "1437218245"
+      },
+      {
+        "name": "COMMUNITY HEALTH ASSOCIATION OF SPOKANE",
+        "specialty": "Clinic/Center, Federally Qualified Health Center (FQHC)",
+        "address": "5901 N LIDGERWOOD ST STE 223, SPOKANE, WA 99208",
+        "phone": "509-444-8888",
+        "npi": "1598976409"
+      },
+      {
+        "name": "CONSISTENT CARE SUPPORT SERVICES LLC",
+        "specialty": "Clinic/Center, Multi-Specialty",
+        "address": "1235 N POST ST STE 200, SPOKANE, WA 99201",
+        "phone": "509-392-6965",
+        "npi": "1568102077"
+      },
+      {
+        "name": "AVID MENTAL HEALTH, LLC",
+        "specialty": "Nurse Practitioner, Psych/Mental Health",
+        "address": "100 N HOWARD ST STE R, SPOKANE, WA 99201",
+        "phone": "623-298-5044",
+        "npi": "1174387088"
+      },
+      {
+        "name": "CANCER CARE NORTHWEST CENTERS P S",
+        "specialty": "Internal Medicine, Hematology & Oncology",
+        "address": "1204 N VERCLER RD, SPOKANE VALLEY, WA 99216",
+        "phone": "509-228-1000",
+        "npi": "1922072081"
+      },
+      {
+        "name": "CENTENNIAL PEDIATRICS OF SPOKANE, PLLC",
+        "specialty": "Pediatrics",
+        "address": "3010 S SOUTHEAST BLVD STE A, SPOKANE, WA 99223",
+        "phone": "509-352-3777",
+        "npi": "1346964806"
+      },
+      {
+        "name": "CORNERSTONE PSYCHOLOGIST, PS",
+        "specialty": "Nurse Practitioner, Psych/Mental Health",
+        "address": "1525 W 8TH AVE, SPOKANE, WA 99204",
+        "phone": "509-455-8886",
+        "npi": "1295947687"
+      },
+      {
+        "name": "RIVER CITY TMS, PLLC",
+        "specialty": "Clinic/Center, Adult Mental Health",
+        "address": "400 S JEFFERSON ST STE 118, SPOKANE, WA 99204",
+        "phone": "509-270-1838",
+        "npi": "1972103026"
+      }
+    ],
+    "individual_count": 17
+  }
+}
