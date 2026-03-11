@@ -9,267 +9,119 @@
 html, body { height: 100%; overflow: hidden; }
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #0a0a0f;
-  color: #d4d4d8;
+  background: #0d0d14;
+  color: #c8c8d8;
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
-
-/* ── Header ── */
 .topbar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.6rem 1.2rem;
-  background: #111118;
-  border-bottom: 1px solid #1e1e2e;
-  flex-shrink: 0;
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.7rem 1.4rem;
+  background: #10101a; border-bottom: 1px solid #1c1c2e; flex-shrink: 0;
 }
-.topbar-wordmark { color: #e05c2a; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; }
-.topbar-title { color: #f0f0f0; font-size: 1.1rem; font-weight: 600; }
-.topbar-sub { color: #555; font-size: 0.8rem; margin-left: auto; }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #2ecc71; display: inline-block; margin-right: 0.3rem; }
-
-/* ── Layout ── */
-.workspace {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* ── Left panel: filters ── */
+.topbar-wordmark { color: #7eccc8; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.topbar-title { color: #e8e8f4; font-size: 1.05rem; font-weight: 500; }
+.topbar-sub { color: #484860; font-size: 0.78rem; margin-left: auto; display: flex; align-items: center; gap: 0.4rem; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #5ec87e; display: inline-block; }
+.workspace { display: flex; flex: 1; overflow: hidden; }
 .panel-left {
-  width: 220px;
-  flex-shrink: 0;
-  background: #0f0f16;
-  border-right: 1px solid #1e1e2e;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+  width: 210px; flex-shrink: 0; background: #0f0f18;
+  border-right: 1px solid #1c1c2e; display: flex; flex-direction: column; overflow-y: auto;
 }
-.panel-section {
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid #1a1a28;
-}
-.panel-label {
-  font-size: 0.7rem;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.5rem;
-}
+</style>
+<style>
+.panel-section { padding: 1rem 1.1rem; border-bottom: 1px solid #181826; }
+.panel-label { font-size: 0.68rem; color: #484860; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
 .search-input {
-  width: 100%;
-  background: #1a1a28;
-  border: 1px solid #2a2a3e;
-  border-radius: 6px;
-  padding: 0.5rem 0.7rem;
-  color: #d4d4d8;
-  font-size: 0.85rem;
-  outline: none;
+  width: 100%; background: #181826; border: 1px solid #242438; border-radius: 8px;
+  padding: 0.55rem 0.8rem; color: #c8c8d8; font-size: 0.84rem; outline: none; transition: border-color 0.15s;
 }
-.search-input:focus { border-color: #e05c2a; }
-.search-input::placeholder { color: #444; }
-
+.search-input:focus { border-color: #7eccc8; }
+.search-input::placeholder { color: #383850; }
 .filter-btn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 0.35rem 0.5rem;
-  color: #888;
-  font-size: 0.82rem;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.15s;
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  padding: 0.38rem 0.5rem; color: #6868a0; font-size: 0.82rem; cursor: pointer; border-radius: 5px; transition: all 0.15s;
 }
-.filter-btn:hover { background: #1a1a28; color: #d4d4d8; }
-.filter-btn.active { background: #e05c2a22; color: #e05c2a; }
-.filter-count {
-  float: right;
-  font-size: 0.7rem;
-  color: #444;
-}
-
-.stat-row { display: flex; justify-content: space-between; padding: 0.2rem 0; }
-.stat-val { color: #e05c2a; font-weight: 700; font-size: 0.9rem; }
-.stat-lbl { color: #555; font-size: 0.75rem; }
-
-/* ── Center panel: results ── */
-.panel-center {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
-}
+.filter-btn:hover { background: #181826; color: #c8c8d8; }
+.filter-btn.active { background: #1a2a2a; color: #7eccc8; }
+.filter-count { float: right; font-size: 0.7rem; color: #383850; }
+.filter-btn.active .filter-count { color: #4a8a88; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; }
+.stat-val { color: #7eccc8; font-weight: 600; font-size: 0.88rem; }
+.stat-lbl { color: #484860; font-size: 0.74rem; }
+.stat-plain { color: #484860; font-size: 0.74rem; }
+.panel-center { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 .results-header {
-  padding: 0.6rem 1rem;
-  background: #0f0f16;
-  border-bottom: 1px solid #1e1e2e;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  flex-shrink: 0;
+  padding: 0.65rem 1.1rem; background: #0f0f18; border-bottom: 1px solid #1c1c2e;
+  display: flex; align-items: center; flex-shrink: 0;
 }
-.results-count { font-size: 0.8rem; color: #666; }
-.results-count span { color: #e05c2a; font-weight: 600; }
-.results-scroll { flex: 1; overflow-y: auto; padding: 0.8rem; }
-
+.results-count { font-size: 0.78rem; color: #484860; }
+.results-count span { color: #7eccc8; font-weight: 600; }
+.results-scroll { flex: 1; overflow-y: auto; padding: 1rem; }
+</style>
+<style>
 .program-card {
-  background: #13131c;
-  border: 1px solid #1e1e2e;
-  border-radius: 8px;
-  padding: 0.9rem 1rem;
-  margin-bottom: 0.6rem;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  background: #121220; border: 1px solid #1c1c2e; border-radius: 10px;
+  padding: 1rem 1.1rem; margin-bottom: 0.7rem; cursor: pointer; transition: border-color 0.15s, background 0.15s;
 }
-.program-card:hover { border-color: #e05c2a55; background: #16161f; }
-.program-card.selected { border-color: #e05c2a; background: #16161f; }
-
-.card-header { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
-.card-title { font-size: 0.88rem; font-weight: 600; color: #e8e8f0; line-height: 1.3; flex: 1; }
+.program-card:hover { border-color: #2a3a3a; background: #14141f; }
+.program-card.selected { border-color: #7eccc8; background: #132020; }
+.card-header { display: flex; align-items: flex-start; gap: 0.7rem; margin-bottom: 0.35rem; }
+.card-title { font-size: 0.87rem; font-weight: 600; color: #dcdcec; line-height: 1.35; flex: 1; }
 .card-badge {
-  font-size: 0.65rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 10px;
-  background: #1e1e2e;
-  color: #888;
-  flex-shrink: 0;
-  white-space: nowrap;
-  align-self: flex-start;
-  margin-top: 0.1rem;
+  font-size: 0.63rem; padding: 0.15rem 0.55rem; border-radius: 10px; background: #1c1c2e;
+  color: #6868a0; flex-shrink: 0; white-space: nowrap; align-self: flex-start; margin-top: 0.15rem; text-transform: capitalize;
 }
-.card-badge.grants { background: #1a2e1a; color: #7ec87e; }
-.card-badge.loans { background: #1a1a2e; color: #7e9ec8; }
-.card-badge.direct_payments { background: #2e1a2e; color: #c87ec8; }
-.card-badge.services { background: #2e2a1a; color: #c8b87e; }
-.card-badge.training { background: #1a2a2e; color: #7ec8c8; }
-
-.card-agency { font-size: 0.72rem; color: #555; margin-bottom: 0.4rem; }
-.card-objectives { font-size: 0.78rem; color: #888; line-height: 1.4; }
-.card-footer { margin-top: 0.5rem; display: flex; gap: 0.6rem; align-items: center; }
-.card-link { font-size: 0.72rem; color: #e05c2a; text-decoration: none; }
-.card-link:hover { text-decoration: underline; }
-
-.loading { text-align: center; padding: 3rem; color: #444; font-size: 0.85rem; }
-.empty { text-align: center; padding: 3rem; color: #444; font-size: 0.85rem; }
-
-/* ── Right panel: chat ── */
+.card-badge.grants { background: #182818; color: #6ec87e; }
+.card-badge.loans { background: #181828; color: #6e9ec8; }
+.card-badge.direct_payments { background: #28182a; color: #c87ec8; }
+.card-badge.services { background: #28261a; color: #c8b86e; }
+.card-badge.training { background: #18282a; color: #6ec8c8; }
+.card-agency { font-size: 0.71rem; color: #484860; margin-bottom: 0.4rem; }
+.card-objectives { font-size: 0.79rem; color: #7878a0; line-height: 1.5; }
+.card-footer { margin-top: 0.55rem; display: flex; gap: 0.7rem; align-items: center; }
+.card-link { font-size: 0.71rem; color: #7eccc8; text-decoration: none; opacity: 0.8; }
+.card-link:hover { opacity: 1; text-decoration: underline; }
+.card-eligibility { font-size: 0.69rem; color: #383850; cursor: help; }
+.loading { text-align: center; padding: 3rem; color: #383850; font-size: 0.84rem; }
+.empty { text-align: center; padding: 3rem; color: #383850; font-size: 0.84rem; line-height: 1.7; }
+</style>
+<style>
 .panel-right {
-  width: 320px;
-  flex-shrink: 0;
-  background: #0f0f16;
-  border-left: 1px solid #1e1e2e;
-  display: flex;
-  flex-direction: column;
+  width: 300px; flex-shrink: 0; background: #0f0f18;
+  border-left: 1px solid #1c1c2e; display: flex; flex-direction: column;
 }
-.chat-header {
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid #1e1e2e;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-.chat-title { font-size: 0.85rem; font-weight: 600; color: #f0f0f0; }
-.chat-sub { font-size: 0.72rem; color: #555; }
-.gemini-badge {
-  margin-left: auto;
-  font-size: 0.65rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 10px;
-  background: #1a2a1a;
-  color: #7ec87e;
-}
-
+.chat-header { padding: 0.8rem 1.1rem; border-bottom: 1px solid #1c1c2e; flex-shrink: 0; }
+.chat-title { font-size: 0.84rem; font-weight: 600; color: #e8e8f4; margin-bottom: 0.1rem; }
+.chat-sub { font-size: 0.71rem; color: #484860; }
 .chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  flex: 1; overflow-y: auto; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.65rem;
 }
-.msg {
-  max-width: 90%;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
-.msg-user {
-  background: #e05c2a22;
-  border: 1px solid #e05c2a44;
-  color: #e8c8b8;
-  align-self: flex-end;
-}
-.msg-assistant {
-  background: #1a1a28;
-  border: 1px solid #2a2a3e;
-  color: #c8c8d8;
-  align-self: flex-start;
-}
-.msg-assistant a { color: #e05c2a; }
-.msg-thinking {
-  background: #1a1a28;
-  border: 1px solid #2a2a3e;
-  color: #555;
-  align-self: flex-start;
-  font-style: italic;
-}
-.chat-welcome {
-  color: #444;
-  font-size: 0.8rem;
-  text-align: center;
-  padding: 1rem;
-  line-height: 1.6;
-}
-
-.chat-input-area {
-  padding: 0.7rem;
-  border-top: 1px solid #1e1e2e;
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
+.msg { max-width: 92%; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; line-height: 1.55; }
+.msg-user { background: #1a2a2a; border: 1px solid #243838; color: #a8d8d4; align-self: flex-end; }
+.msg-assistant { background: #181826; border: 1px solid #222234; color: #b8b8d0; align-self: flex-start; }
+.msg-assistant a { color: #7eccc8; }
+.msg-thinking { background: #181826; border: 1px solid #222234; color: #484860; align-self: flex-start; font-style: italic; font-size: 0.78rem; }
+.chat-welcome { color: #484860; font-size: 0.8rem; text-align: center; padding: 1.2rem 0.5rem; line-height: 1.8; }
+.chat-welcome strong { color: #6868a0; font-weight: 500; }
+.chat-input-area { padding: 0.8rem; border-top: 1px solid #1c1c2e; display: flex; gap: 0.5rem; flex-shrink: 0; }
 .chat-input {
-  flex: 1;
-  background: #1a1a28;
-  border: 1px solid #2a2a3e;
-  border-radius: 6px;
-  padding: 0.5rem 0.7rem;
-  color: #d4d4d8;
-  font-size: 0.82rem;
-  outline: none;
-  resize: none;
-  font-family: inherit;
-  height: 60px;
+  flex: 1; background: #181826; border: 1px solid #242438; border-radius: 8px;
+  padding: 0.55rem 0.75rem; color: #c8c8d8; font-size: 0.82rem; outline: none;
+  resize: none; font-family: inherit; height: 60px; transition: border-color 0.15s;
 }
-.chat-input:focus { border-color: #e05c2a; }
-.chat-input::placeholder { color: #444; }
+.chat-input:focus { border-color: #7eccc8; }
+.chat-input::placeholder { color: #383850; }
 .chat-send {
-  background: #e05c2a;
-  border: none;
-  border-radius: 6px;
-  width: 36px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.15s;
-  align-self: flex-end;
-  height: 36px;
+  background: #1a3030; border: 1px solid #2a4a48; border-radius: 8px;
+  width: 36px; color: #7eccc8; cursor: pointer; font-size: 1rem; transition: all 0.15s; align-self: flex-end; height: 36px;
 }
-.chat-send:hover { background: #c04a1e; }
-.chat-send:disabled { background: #333; cursor: not-allowed; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
+.chat-send:hover { background: #243c3c; }
+.chat-send:disabled { background: #181826; color: #383850; border-color: #222234; cursor: not-allowed; }
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #242438; border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -284,144 +136,81 @@ body {
 </div>
 
 <div class="workspace">
-
-  <!-- Left: Filters -->
   <div class="panel-left">
     <div class="panel-section">
       <div class="panel-label">Search</div>
-      <input
-        class="search-input"
-        id="search-input"
-        type="text"
-        placeholder="disability, housing, veterans..."
-        autocomplete="off"
-      >
+      <input class="search-input" id="search-input" type="text" placeholder="disability, housing, veterans..." autocomplete="off">
     </div>
-
     <div class="panel-section">
       <div class="panel-label">Category</div>
-      <button class="filter-btn active" data-category="all" onclick="setCategory(this)">
-        All <span class="filter-count" id="count-all"></span>
-      </button>
-      <button class="filter-btn" data-category="grants" onclick="setCategory(this)">
-        Grants <span class="filter-count" id="count-grants"></span>
-      </button>
-      <button class="filter-btn" data-category="direct_payments" onclick="setCategory(this)">
-        Direct Payments <span class="filter-count" id="count-direct_payments"></span>
-      </button>
-      <button class="filter-btn" data-category="loans" onclick="setCategory(this)">
-        Loans <span class="filter-count" id="count-loans"></span>
-      </button>
-      <button class="filter-btn" data-category="services" onclick="setCategory(this)">
-        Services <span class="filter-count" id="count-services"></span>
-      </button>
-      <button class="filter-btn" data-category="training" onclick="setCategory(this)">
-        Training <span class="filter-count" id="count-training"></span>
-      </button>
-      <button class="filter-btn" data-category="advisory" onclick="setCategory(this)">
-        Advisory <span class="filter-count" id="count-advisory"></span>
-      </button>
+      <button class="filter-btn active" data-category="all" onclick="setCategory(this)">All <span class="filter-count" id="count-all"></span></button>
+      <button class="filter-btn" data-category="grants" onclick="setCategory(this)">Grants <span class="filter-count" id="count-grants"></span></button>
+      <button class="filter-btn" data-category="direct_payments" onclick="setCategory(this)">Direct Payments <span class="filter-count" id="count-direct_payments"></span></button>
+      <button class="filter-btn" data-category="loans" onclick="setCategory(this)">Loans <span class="filter-count" id="count-loans"></span></button>
+      <button class="filter-btn" data-category="services" onclick="setCategory(this)">Services <span class="filter-count" id="count-services"></span></button>
+      <button class="filter-btn" data-category="training" onclick="setCategory(this)">Training <span class="filter-count" id="count-training"></span></button>
+      <button class="filter-btn" data-category="advisory" onclick="setCategory(this)">Advisory <span class="filter-count" id="count-advisory"></span></button>
     </div>
-
     <div class="panel-section">
       <div class="panel-label">Database</div>
-      <div class="stat-row">
-        <span class="stat-lbl">Programs</span>
-        <span class="stat-val" id="stat-total">—</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-lbl">Source</span>
-        <span class="stat-val" style="font-size:0.7rem;color:#555">SAM.gov</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-lbl">Updated</span>
-        <span class="stat-val" style="font-size:0.7rem;color:#555">Feb 2026</span>
-      </div>
+      <div class="stat-row"><span class="stat-lbl">Programs</span><span class="stat-val" id="stat-total">—</span></div>
+      <div class="stat-row"><span class="stat-lbl">Source</span><span class="stat-plain">SAM.gov</span></div>
+      <div class="stat-row"><span class="stat-lbl">Updated</span><span class="stat-plain">Feb 2026</span></div>
     </div>
   </div>
 
-  <!-- Center: Results -->
   <div class="panel-center">
     <div class="results-header">
       <span class="results-count">Showing <span id="results-showing">...</span> of <span id="results-total">...</span> programs</span>
     </div>
     <div class="results-scroll" id="results-container">
-      <div class="loading">Loading programs...</div>
+      <div class="loading">Loading programs…</div>
     </div>
   </div>
 
-  <!-- Right: Chat -->
   <div class="panel-right">
     <div class="chat-header">
-      <div>
-        <div class="chat-title">Ask Navigator</div>
-        <div class="chat-sub">Describe your situation</div>
-      </div>
-      <span class="gemini-badge">Gemini</span>
+      <div class="chat-title">Ask Navigator</div>
+      <div class="chat-sub">Describe your situation</div>
     </div>
     <div class="chat-messages" id="chat-messages">
       <div class="chat-welcome">
         Tell me what kind of help you're looking for.<br><br>
-        You don't have to know the right words.<br>
+        <strong>You don't need the right words.</strong><br>
         Just say what's going on.
       </div>
     </div>
     <div class="chat-input-area">
-      <textarea
-        class="chat-input"
-        id="chat-input"
-        placeholder="I have a disability and need help with rent..."
-      ></textarea>
+      <textarea class="chat-input" id="chat-input" placeholder="I have a disability and need help with rent…"></textarea>
       <button class="chat-send" id="chat-send" onclick="sendMessage()">↑</button>
     </div>
   </div>
-
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────────
-let currentCategory = 'all';
-let currentQuery = '';
-let searchTimer = null;
-let chatHistory = [];
-let isThinking = false;
+let currentCategory = 'all', currentQuery = '', searchTimer = null, chatHistory = [], isThinking = false;
 
-// ── Init ───────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadCategories();
   loadPrograms();
-
-  const input = document.getElementById('search-input');
-  input.addEventListener('input', () => {
+  document.getElementById('search-input').addEventListener('input', e => {
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => {
-      currentQuery = input.value.trim();
-      loadPrograms();
-    }, 350);
+    searchTimer = setTimeout(() => { currentQuery = e.target.value.trim(); loadPrograms(); }, 350);
   });
-
-  document.getElementById('chat-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  document.getElementById('chat-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
 });
 
-// ── Categories ─────────────────────────────────────────────────────────────────
 async function loadCategories() {
   try {
-    const res = await fetch('/api/categories');
-    const cats = await res.json();
+    const cats = await (await fetch('/api/categories')).json();
     const total = cats.reduce((s, c) => s + c.count, 0);
     document.getElementById('stat-total').textContent = total.toLocaleString();
     document.getElementById('program-count').textContent = total.toLocaleString();
-    const countAll = document.getElementById('count-all');
-    if (countAll) countAll.textContent = total.toLocaleString();
-    cats.forEach(cat => {
-      const el = document.getElementById('count-' + cat.id);
-      if (el) el.textContent = cat.count.toLocaleString();
-    });
+    const el = document.getElementById('count-all');
+    if (el) el.textContent = total.toLocaleString();
+    cats.forEach(c => { const e = document.getElementById('count-' + c.id); if (e) e.textContent = c.count.toLocaleString(); });
   } catch(e) { console.error(e); }
 }
 
@@ -431,38 +220,24 @@ function setCategory(btn) {
   currentCategory = btn.dataset.category;
   loadPrograms();
 }
+</script>
 
-// ── Programs ───────────────────────────────────────────────────────────────────
+<script>
 async function loadPrograms() {
   const container = document.getElementById('results-container');
-  container.innerHTML = '<div class="loading">Searching...</div>';
-
-  const params = new URLSearchParams({
-    q: currentQuery,
-    category: currentCategory === 'all' ? '' : currentCategory,
-    limit: 60,
-    offset: 0,
-  });
-
+  container.innerHTML = '<div class="loading">Searching…</div>';
+  const params = new URLSearchParams({ q: currentQuery, category: currentCategory === 'all' ? '' : currentCategory, limit: 60, offset: 0 });
   try {
-    const res = await fetch('/api/programs?' + params);
-    const data = await res.json();
+    const data = await (await fetch('/api/programs?' + params)).json();
     renderPrograms(data);
-  } catch(e) {
-    container.innerHTML = '<div class="empty">Error loading programs.</div>';
-  }
+  } catch(e) { container.innerHTML = '<div class="empty">Error loading programs.</div>'; }
 }
 
 function renderPrograms(data) {
   const container = document.getElementById('results-container');
   document.getElementById('results-showing').textContent = data.results.length.toLocaleString();
   document.getElementById('results-total').textContent = data.total.toLocaleString();
-
-  if (!data.results.length) {
-    container.innerHTML = '<div class="empty">No programs found.<br>Try different search terms.</div>';
-    return;
-  }
-
+  if (!data.results.length) { container.innerHTML = '<div class="empty">No programs found.<br>Try different search terms.</div>'; return; }
   container.innerHTML = data.results.map(p => `
     <div class="program-card" onclick="selectProgram(this, '${escHtml(p.title)}')">
       <div class="card-header">
@@ -473,64 +248,43 @@ function renderPrograms(data) {
       <div class="card-objectives">${escHtml(p.objectives.substring(0,180))}${p.objectives.length > 180 ? '…' : ''}</div>
       <div class="card-footer">
         ${p.url ? `<a class="card-link" href="${p.url}" target="_blank" rel="noopener">View on SAM.gov →</a>` : ''}
-        ${p.eligibility ? `<span style="font-size:0.7rem;color:#444" title="${escHtml(p.eligibility)}">Eligibility info ⓘ</span>` : ''}
+        ${p.eligibility ? `<span class="card-eligibility" title="${escHtml(p.eligibility)}">Eligibility info ⓘ</span>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function escHtml(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function selectProgram(card, title) {
   document.querySelectorAll('.program-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  // Pre-fill chat with the program title
-  const chatInput = document.getElementById('chat-input');
-  if (!chatInput.value.trim()) {
-    chatInput.value = `Tell me more about "${title}" — do I qualify?`;
-    chatInput.focus();
-  }
+  const ci = document.getElementById('chat-input');
+  if (!ci.value.trim()) { ci.value = `Tell me more about "${title}" — do I qualify?`; ci.focus(); }
 }
+</script>
 
-// ── Chat ───────────────────────────────────────────────────────────────────────
+<script>
 async function sendMessage() {
   if (isThinking) return;
   const input = document.getElementById('chat-input');
   const message = input.value.trim();
   if (!message) return;
-
   input.value = '';
   appendMessage('user', message);
   chatHistory.push({ role: 'user', text: message });
-
   isThinking = true;
   document.getElementById('chat-send').disabled = true;
-  const thinkingEl = appendMessage('thinking', 'Navigator is looking through programs…');
-
+  const thinking = appendMessage('thinking', 'Looking through programs…');
   try {
     const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, history: chatHistory.slice(-6) }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, history: chatHistory.slice(-6) })
     });
     const data = await res.json();
-    thinkingEl.remove();
-
-    if (data.error) {
-      appendMessage('assistant', `Sorry, I ran into an issue: ${data.error}`);
-    } else {
-      appendMessage('assistant', data.reply);
-      chatHistory.push({ role: 'model', text: data.reply });
-    }
-  } catch(e) {
-    thinkingEl.remove();
-    appendMessage('assistant', 'Something went wrong. Please try again.');
-  }
-
+    thinking.remove();
+    appendMessage('assistant', data.error ? `Sorry, I ran into an issue: ${data.error}` : data.reply);
+    if (!data.error) chatHistory.push({ role: 'model', text: data.reply });
+  } catch(e) { thinking.remove(); appendMessage('assistant', 'Something went wrong. Please try again.'); }
   isThinking = false;
   document.getElementById('chat-send').disabled = false;
 }
@@ -539,7 +293,6 @@ function appendMessage(role, text) {
   const container = document.getElementById('chat-messages');
   const welcome = container.querySelector('.chat-welcome');
   if (welcome) welcome.remove();
-
   const el = document.createElement('div');
   el.className = `msg msg-${role}`;
   el.textContent = text;
