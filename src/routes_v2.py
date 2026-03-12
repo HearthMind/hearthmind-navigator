@@ -1,11 +1,13 @@
 """
 Navigator Routes v2
 ===================
-Mission Control style — single page, live search, Gemini chat.
+Mission Control style — single page, live search, Azure OpenAI (GPT-4o) chat.
 """
 
 import os
 import json
+import urllib.request
+import urllib.error
 from flask import Blueprint, render_template, request, jsonify
 
 bp = Blueprint('main', __name__)
@@ -33,16 +35,19 @@ def api_categories():
 
 @bp.route('/api/chat', methods=['POST'])
 def api_chat():
-    data = request.get_json(force=True)
-    message = data.get('message', '').strip()
-    history = data.get('history', [])
+    data       = request.get_json(force=True)
+    message    = data.get('message', '').strip()
+    history    = data.get('history', [])
 
     if not message:
         return jsonify({'error': 'No message provided'}), 400
 
-    api_key = os.environ.get('GEMINI_API_KEY', '')
-    if not api_key:
-        return jsonify({'error': 'Chat not configured — API key missing'}), 503
+    api_key    = os.environ.get('AZURE_OPENAI_KEY', '')
+    endpoint   = os.environ.get('AZURE_OPENAI_ENDPOINT', '').rstrip('/')
+    deployment = os.environ.get('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
+
+    if not api_key or not endpoint:
+        return jsonify({'error': 'Chat not configured — Azure credentials missing'}), 503
 
     try:
         from data_loader import get_context_for_chat
@@ -66,9 +71,14 @@ Always mention the URL when referencing a specific program.
 If you don't know something, say so honestly.
 Keep responses concise — 2-4 short paragraphs max."""
 
-        contents = []
+        # Build message history for Azure OpenAI format
+        messages = [{"role": "system", "content": system_prompt}]
         for turn in history[-6:]:
-            contents.append({"role": turn["role"], "parts": [{"text": turn["text"]}]})
+            role = turn.get("role", "user")
+            # Azure uses "assistant" not "model"
+            if role == "model":
+                role = "assistant"
+            messages.append({"role": role, "content": turn.get("text", "")})
 
         user_text = f"""User message: {message}
 
@@ -77,31 +87,37 @@ Relevant federal programs from our database:
 
 Please help this person based on what they've shared."""
 
-        contents.append({"role": "user", "parts": [{"text": user_text}]})
-
-        import urllib.request
-        import urllib.error
+        messages.append({"role": "user", "content": user_text})
 
         payload = json.dumps({
-            "system_instruction": {"parts": [{"text": system_prompt}]},
-            "contents": contents,
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 600,
-            }
+            "messages":   messages,
+            "max_tokens": 600,
+            "temperature": 0.7,
         }).encode()
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-        req = urllib.request.Request(url, data=payload,
-                                     headers={"Content-Type": "application/json"})
+        # Azure OpenAI Chat Completions endpoint
+        url = (
+            f"{endpoint}/openai/deployments/{deployment}"
+            f"/chat/completions?api-version=2024-08-01-preview"
+        )
+
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "Content-Type":  "application/json",
+                "api-key":       api_key,
+            }
+        )
+
         with urllib.request.urlopen(req, timeout=30) as resp:
             result = json.loads(resp.read())
 
-        reply = result["candidates"][0]["content"]["parts"][0]["text"]
+        reply = result["choices"][0]["message"]["content"]
         return jsonify({"reply": reply, "programs": programs[:3]})
 
     except urllib.error.HTTPError as e:
         body = e.read().decode()
-        return jsonify({'error': f'Gemini error {e.code}', 'detail': body}), 502
+        return jsonify({'error': f'Azure OpenAI error {e.code}', 'detail': body}), 502
     except Exception as e:
         return jsonify({'error': str(e)}), 500
