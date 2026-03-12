@@ -6,22 +6,17 @@ Mission Control style — single page, live search, Gemini chat.
 
 import os
 import json
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify
 
 bp = Blueprint('main', __name__)
-
-# ── Pages ─────────────────────────────────────────────────────────────────────
 
 @bp.route('/')
 def index():
     return render_template('navigator_v2.html')
 
-
-# ── API: Programs ──────────────────────────────────────────────────────────────
-
 @bp.route('/api/programs')
 def api_programs():
-    from data_loader import search_programs, get_categories
+    from data_loader import search_programs
     query    = request.args.get('q', '')
     category = request.args.get('category', '')
     agency   = request.args.get('agency', '')
@@ -31,14 +26,10 @@ def api_programs():
                                agency=agency, limit=limit, offset=offset)
     return jsonify(result)
 
-
 @bp.route('/api/categories')
 def api_categories():
     from data_loader import get_categories
     return jsonify(get_categories())
-
-
-# ── API: Gemini Chat ───────────────────────────────────────────────────────────
 
 @bp.route('/api/chat', methods=['POST'])
 def api_chat():
@@ -49,8 +40,11 @@ def api_chat():
     if not message:
         return jsonify({'error': 'No message provided'}), 400
 
+    api_key = os.environ.get('GEMINI_API_KEY', '')
+    if not api_key:
+        return jsonify({'error': 'Chat not configured — API key missing'}), 503
+
     try:
-        import boto3
         from data_loader import get_context_for_chat
         programs = get_context_for_chat(message, limit=6)
 
@@ -72,10 +66,9 @@ Always mention the URL when referencing a specific program.
 If you don't know something, say so honestly.
 Keep responses concise — 2-4 short paragraphs max."""
 
-        messages = []
+        contents = []
         for turn in history[-6:]:
-            role = "user" if turn.get("role") == "user" else "assistant"
-            messages.append({"role": role, "content": turn.get("text", "")})
+            contents.append({"role": turn["role"], "parts": [{"text": turn["text"]}]})
 
         user_text = f"""User message: {message}
 
@@ -84,25 +77,31 @@ Relevant federal programs from our database:
 
 Please help this person based on what they've shared."""
 
-        messages.append({"role": "user", "content": user_text})
+        contents.append({"role": "user", "parts": [{"text": user_text}]})
 
-        client = boto3.client('bedrock-runtime', region_name='us-east-1')
-        response = client.invoke_model(
-            modelId='us.anthropic.claude-3-haiku-20240307-v1:0',
-            body=json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 600,
-                "system": system_prompt,
-                "messages": messages,
-            })
-        )
-        result = json.loads(response['body'].read())
-        reply = result['content'][0]['text']
+        import urllib.request
+        import urllib.error
 
-        return jsonify({
-            "reply": reply,
-            "programs": programs[:3],
-        })
+        payload = json.dumps({
+            "system_instruction": {"parts": [{"text": system_prompt}]},
+            "contents": contents,
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 600,
+            }
+        }).encode()
 
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+        req = urllib.request.Request(url, data=payload,
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read())
+
+        reply = result["candidates"][0]["content"]["parts"][0]["text"]
+        return jsonify({"reply": reply, "programs": programs[:3]})
+
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        return jsonify({'error': f'Gemini error {e.code}', 'detail': body}), 502
     except Exception as e:
         return jsonify({'error': str(e)}), 500
