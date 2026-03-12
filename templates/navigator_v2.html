@@ -359,13 +359,26 @@ async function sendMessage() {
   document.getElementById('chat-send').disabled = false;
 }
 
+function mdToHtml(text) {
+  let s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:underline;">$1</a>');
+  s = s.replace(/(^|[\s])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:underline;">$2</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\n/g, '<br>');
+  return s;
+}
+
 function appendMessage(role, text) {
   const container = document.getElementById('chat-messages');
   const welcome = container.querySelector('.chat-welcome');
   if (welcome) welcome.remove();
   const el = document.createElement('div');
   el.className = `msg msg-${role}`;
-  el.textContent = text;
+  if (role === 'assistant') {
+    el.innerHTML = mdToHtml(text);
+  } else {
+    el.textContent = text;
+  }
   container.appendChild(el);
   container.scrollTop = container.scrollHeight;
   return el;
