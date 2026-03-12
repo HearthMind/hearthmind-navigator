@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 from typing import List, Dict, Optional
 
-CSV_PATH = Path("/home/hyperion/hearthmind/data/raw/sam_assistance_listings_20260207.csv")
+CSV_PATH = Path(__file__).parent.parent / "data" / "raw" / "sam_assistance_listings_20260207.csv"
 
 ASSISTANCE_TYPE_MAP = {
     "PROJECT GRANTS": "grants",
