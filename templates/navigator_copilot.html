@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigator Copilot — HearthMind</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0d1b2a;--navy-mid:#1a2e42;--navy-light:#243b55;
+  --amber:#EF9F27;--amber-light:#FAC775;
+  --text-light:#e8edf2;--text-muted:#8fa3b8;
+  --border:rgba(255,255,255,0.08);
+  --green:#4caf50;--green-dim:rgba(76,175,80,0.15);
+  --blue:#85b7eb;--blue-dim:rgba(55,138,221,0.1);
+  --red-dim:rgba(229,57,53,0.12);--red:#e55353;
+}
+body{background:var(--navy);color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{font-size:16px;font-weight:500;color:var(--amber);}
+.logo span{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.id-chip{display:flex;align-items:center;gap:6px;background:var(--navy-light);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;cursor:pointer;}
+.id-label{font-size:10px;color:var(--text-muted);}
+.id-val{font-size:12px;color:var(--amber);font-weight:500;}
+.copy-icon{width:20px;height:20px;border-radius:50%;background:rgba(239,159,39,0.15);border:1px solid rgba(239,159,39,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--amber);}
+.sw-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);}
+.sw-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+</style>
+<style>
+/* SPLIT LAYOUT */
+.workspace{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px);}
+.left-panel{width:380px;flex-shrink:0;background:var(--navy-mid);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--navy);}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;}
+.panel-scroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.panel-scroll::-webkit-scrollbar{width:4px;}
+.panel-scroll::-webkit-scrollbar-thumb{background:var(--navy-light);border-radius:2px;}
+
+/* LEFT — Navigator agent */
+.search-row{display:flex;gap:6px;}
+.search-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-light);font-size:13px;}
+.search-input::placeholder{color:var(--text-muted);}
+.search-btn{background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;}
+.section-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;}
+.result-mini{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;cursor:pointer;}
+.result-mini:hover{border-color:rgba(239,159,39,0.3);}
+.result-mini.active{border-color:var(--amber);background:rgba(239,159,39,0.05);}
+.result-mini-title{font-size:12px;font-weight:500;}
+.result-mini-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:1px 6px;border-radius:6px;background:var(--navy-mid);color:var(--text-muted);}
+.tag.match{background:var(--green-dim);color:var(--green);}
+.elig-mini{display:flex;align-items:center;gap:6px;}
+.elig-track{flex:1;height:3px;background:var(--navy-mid);border-radius:2px;overflow:hidden;}
+.elig-fill{height:100%;border-radius:2px;}
+.elig-pct{font-size:10px;color:var(--text-muted);min-width:24px;text-align:right;}
+.mini-actions{display:flex;gap:6px;}
+.btn-mini{font-size:10px;padding:4px 8px;border-radius:5px;cursor:pointer;border:1px solid;}
+.btn-load{background:var(--blue-dim);color:var(--blue);border-color:rgba(55,138,221,0.3);}
+.btn-send{background:var(--green-dim);color:var(--green);border-color:rgba(76,175,80,0.3);}
+.btn-send.sent{background:var(--green);color:#fff;border-color:var(--green);}
+</style>
+<style>
+/* RIGHT — document/form viewer */
+.doc-toolbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--navy-mid);flex-shrink:0;}
+.doc-url-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text-light);font-size:12px;}
+.doc-url-input::placeholder{color:var(--text-muted);}
+.doc-btn{background:var(--navy-light);color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:11px;cursor:pointer;}
+.doc-btn.primary{background:var(--amber);color:var(--navy);border-color:var(--amber);font-weight:500;}
+.doc-frame{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.doc-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text-muted);padding:40px;}
+.doc-placeholder-icon{font-size:48px;opacity:0.3;}
+.doc-placeholder-title{font-size:15px;color:var(--text-light);}
+.doc-placeholder-sub{font-size:12px;line-height:1.6;text-align:center;max-width:340px;}
+.doc-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:24px 32px;text-align:center;cursor:pointer;transition:border-color 0.2s;}
+.doc-drop-zone:hover{border-color:rgba(239,159,39,0.4);}
+.doc-drop-zone-label{font-size:13px;color:var(--text-muted);margin-top:8px;}
+
+/* COPILOT HINT PANEL */
+.hint-panel{background:var(--navy-mid);border-top:1px solid var(--border);padding:12px 16px;flex-shrink:0;}
+.hint-title{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
+.hint-card{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;}
+.hint-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.hint-text{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.hint-text strong{color:var(--text-light);}
+.hint-action{font-size:11px;color:var(--amber);cursor:pointer;margin-top:3px;}
+
+/* UPLOAD QUEUE */
+.upload-queue{display:flex;flex-direction:column;gap:6px;}
+.upload-item{background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
+.upload-icon{font-size:14px;}
+.upload-name{font-size:12px;flex:1;}
+.upload-status{font-size:10px;}
+.upload-status.ready{color:var(--amber);}
+.upload-status.sent{color:var(--green);}
+.upload-btn{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3);cursor:pointer;}
+.divider{height:1px;background:var(--border);margin:6px 0;}
+</style>
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">Navigator <span>copilot — desktop</span></div>
+  <div class="topbar-right">
+    <div class="sw-link"><div class="sw-dot"></div>Sarah W. linked · Case 2026-WA-04412</div>
+    <div class="id-chip" onclick="copyId()">
+      <div><div class="id-label">Your ID</div><div class="id-val">NV-7742</div></div>
+      <div class="copy-icon" id="copy-icon">⧉</div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- LEFT PANEL — Navigator Agent -->
+  <div class="left-panel">
+    <div class="panel-header">
+      <span class="panel-title">Navigator</span>
+      <span style="font-size:11px;color:var(--text-muted);">Spokane, WA</span>
+    </div>
+    <div class="panel-scroll">
+      <div class="search-row">
+        <input class="search-input" placeholder="What do you need help with?" value="emergency rental assistance" />
+        <button class="search-btn">Find</button>
+      </div>
+      <div class="section-label">Top matches</div>
+      <div class="result-mini active" onclick="loadDoc('erap')">
+        <div class="result-mini-title">WA Emergency Rental Assistance (ERAP)</div>
+        <div class="result-mini-tags"><span class="tag match">88% match</span><span class="tag">State</span><span class="tag">Housing</span></div>
+        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:88%;background:var(--green);"></div></div><span class="elig-pct">88%</span></div>
+        <div class="mini-actions">
+          <button class="btn-mini btn-load" onclick="loadDoc('erap');event.stopPropagation();">Load form →</button>
+          <button class="btn-mini btn-send sent">Sent to Sarah</button>
+        </div>
+      </div>
+      <div class="result-mini" onclick="loadDoc('snap')">
+        <div class="result-mini-title">SNAP Emergency Eviction Prevention</div>
+        <div class="result-mini-tags"><span class="tag match">82% match</span><span class="tag">Local</span></div>
+        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:82%;background:var(--green);"></div></div><span class="elig-pct">82%</span></div>
+        <div class="mini-actions">
+          <button class="btn-mini btn-load" onclick="loadDoc('snap');event.stopPropagation();">Load form →</button>
+          <button class="btn-mini btn-send">Send to Sarah</button>
+        </div>
+      </div>
+      <div class="result-mini" onclick="loadDoc('hud')">
+        <div class="result-mini-title">HUD Transitional Housing — CoC</div>
+        <div class="result-mini-tags"><span class="tag">61% match</span><span class="tag">Federal</span></div>
+        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:61%;background:var(--amber);"></div></div><span class="elig-pct">61%</span></div>
+        <div class="mini-actions">
+          <button class="btn-mini btn-load" onclick="loadDoc('hud');event.stopPropagation();">Load form →</button>
+          <button class="btn-mini btn-send">Send to Sarah</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">Upload documents to Sarah</div>
+      <div class="upload-queue">
+        <div class="upload-item"><span class="upload-icon">📄</span><span class="upload-name">Eviction_Notice_March2026.pdf</span><span class="upload-status sent">Sent ✓</span></div>
+        <div class="upload-item"><span class="upload-icon">📄</span><span class="upload-name">SSI_application_confirmation.pdf</span><span class="upload-status ready">Ready</span><button class="upload-btn">Send</button></div>
+        <div class="upload-item"><span class="upload-icon">🖼</span><span class="upload-name">lease_agreement_photo.jpg</span><span class="upload-status ready">Ready</span><button class="upload-btn">Send</button></div>
+        <div class="upload-item" style="border-style:dashed;cursor:pointer;justify-content:center;color:var(--text-muted);font-size:12px;">+ Add document</div>
+      </div>
+    </div>
+  </div>
+  <!-- RIGHT PANEL — Document / Form Viewer -->
+  <div class="right-panel">
+    <div class="doc-toolbar">
+      <input class="doc-url-input" id="doc-url" placeholder="Paste a form URL, or load a program from the left panel..." />
+      <button class="doc-btn" onclick="loadUrl()">Load</button>
+      <button class="doc-btn primary" onclick="showUpload()">Upload PDF</button>
+    </div>
+    <div class="doc-frame" id="doc-frame">
+      <div class="doc-placeholder" id="doc-placeholder">
+        <div class="doc-placeholder-icon">📋</div>
+        <div class="doc-placeholder-title">Your form goes here</div>
+        <div class="doc-placeholder-sub">Click "Load form →" on any resource to open the agency's application here. Or paste a URL above. Navigator will guide you through it.</div>
+        <div class="doc-drop-zone" onclick="showUpload()">
+          <div style="font-size:28px;opacity:0.4;">📎</div>
+          <div class="doc-drop-zone-label">Drop documents here or click to upload</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">PDF, JPG, PNG — sent directly to Sarah W.</div>
+        </div>
+      </div>
+      <div id="doc-loaded" style="display:none;flex:1;flex-direction:column;">
+        <div style="background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:13px;font-weight:500;" id="doc-title">WA Emergency Rental Assistance — Application</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="doc-source">commerce.wa.gov · Opens in secure viewer</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="doc-btn" onclick="closeDoc()">✕ Close</button>
+            <button class="doc-btn primary">Open in browser ↗</button>
+          </div>
+        </div>
+        <div style="flex:1;background:#1e2d3d;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--text-muted);">
+          <div style="font-size:32px;opacity:0.3;">📄</div>
+          <div style="font-size:13px;">Agency form loads here in live deployment</div>
+          <div style="font-size:11px;opacity:0.6;">iframe / PDF viewer · secure sandbox</div>
+        </div>
+      </div>
+    </div>
+    <div class="hint-panel">
+      <div class="hint-title">Copilot hints</div>
+      <div id="hint-default">
+        <div class="hint-card">
+          <span class="hint-icon">💡</span>
+          <div>
+            <div class="hint-text"><strong>Load a form on the right</strong> — Navigator will highlight which fields match your saved information.</div>
+          </div>
+        </div>
+        <div class="hint-card">
+          <span class="hint-icon">📎</span>
+          <div>
+            <div class="hint-text"><strong>Bulk upload ready</strong> — 3 documents queued. Send them all to Sarah W. at once or one at a time.</div>
+            <div class="hint-action" onclick="sendAll()">Send all to Sarah W. →</div>
+          </div>
+        </div>
+      </div>
+      <div id="hint-erap" style="display:none;">
+        <div class="hint-card">
+          <span class="hint-icon">✓</span>
+          <div><div class="hint-text"><strong>You likely qualify.</strong> ERAP requires income ≤80% AMI + eviction notice. You have the notice — it's already in your upload queue.</div></div>
+        </div>
+        <div class="hint-card">
+          <span class="hint-icon">📋</span>
+          <div><div class="hint-text"><strong>You'll need:</strong> Photo ID, proof of income (last 2 pay stubs or benefit letter), eviction notice, lease agreement.</div></div>
+        </div>
+        <div class="hint-card">
+          <span class="hint-icon">💬</span>
+          <div>
+            <div class="hint-text"><strong>Tell Sarah you're applying</strong> — she can add a supporting note to your case.</div>
+            <div class="hint-action">Send update to Sarah W. →</div>
+          </div>
+        </div>
+      </div>
+      <div id="hint-snap" style="display:none;">
+        <div class="hint-card">
+          <span class="hint-icon">🚶</span>
+          <div><div class="hint-text"><strong>Walk-in intake</strong> Mon–Thu 8am–4pm at 3102 W. Fort George Wright Dr. No appointment needed. Bring ID and eviction notice.</div></div>
+        </div>
+        <div class="hint-card">
+          <span class="hint-icon">✓</span>
+          <div><div class="hint-text"><strong>SSI pending is fine</strong> — SNAP emergency fund does not require active benefits. Your application won't be rejected for this.</div></div>
+        </div>
+      </div>
+      <div id="hint-hud" style="display:none;">
+        <div class="hint-card">
+          <span class="hint-icon">⏳</span>
+          <div><div class="hint-text"><strong>Waitlist is 3–6 weeks.</strong> Apply now even if you have short-term help lined up. A case manager referral speeds things up — ask Sarah.</div></div>
+        </div>
+        <div class="hint-card">
+          <span class="hint-icon">📞</span>
+          <div><div class="hint-text"><strong>Apply via 211</strong> — call or text 211, tell them you need CoC transitional housing in Spokane.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var activeDoc = null;
+var docs = {
+  erap: { title:'WA Emergency Rental Assistance — Application', source:'commerce.wa.gov · Opens in secure viewer' },
+  snap: { title:'SNAP Emergency Eviction Prevention — Intake Form', source:'spokanesnap.org · Opens in secure viewer' },
+  hud:  { title:'HUD CoC Transitional Housing — Referral Form', source:'hud.gov · Opens in secure viewer' }
+};
+
+function loadDoc(key) {
+  document.querySelectorAll('.result-mini').forEach(el=>el.classList.remove('active'));
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+  var d = docs[key];
+  document.getElementById('doc-title').textContent = d.title;
+  document.getElementById('doc-source').textContent = d.source;
+  document.getElementById('doc-placeholder').style.display='none';
+  document.getElementById('doc-loaded').style.display='flex';
+  document.getElementById('hint-default').style.display='none';
+  document.getElementById('hint-erap').style.display='none';
+  document.getElementById('hint-snap').style.display='none';
+  document.getElementById('hint-hud').style.display='none';
+  document.getElementById('hint-'+key).style.display='block';
+  activeDoc = key;
+}
+
+function closeDoc() {
+  document.getElementById('doc-placeholder').style.display='flex';
+  document.getElementById('doc-loaded').style.display='none';
+  document.getElementById('hint-default').style.display='block';
+  document.getElementById('hint-erap').style.display='none';
+  document.getElementById('hint-snap').style.display='none';
+  document.getElementById('hint-hud').style.display='none';
+  document.querySelectorAll('.result-mini').forEach(el=>el.classList.remove('active'));
+  activeDoc = null;
+}
+
+function loadUrl() {
+  var url = document.getElementById('doc-url').value.trim();
+  if(!url) return;
+  document.getElementById('doc-title').textContent = 'External form';
+  document.getElementById('doc-source').textContent = url;
+  document.getElementById('doc-placeholder').style.display='none';
+  document.getElementById('doc-loaded').style.display='flex';
+  document.getElementById('hint-default').style.display='block';
+}
+
+function showUpload() { alert('File picker — live in deployed version'); }
+function sendAll() { alert('Sending all queued documents to Sarah W. — live in deployed version'); }
+
+function copyId() {
+  var icon=document.getElementById('copy-icon');
+  icon.textContent='✓';
+  icon.style.background='var(--green-dim)';
+  icon.style.color='var(--green)';
+  setTimeout(()=>{ icon.textContent='⧉'; icon.style.background=''; icon.style.color=''; },2000);
+}
+
+// Auto-load ERAP on page load to demo the copilot state
+window.onload = function() {
+  setTimeout(()=>{
+    document.querySelectorAll('.result-mini')[0].classList.add('active');
+    loadDoc('erap');
+  }, 400);
+};
+</script>
+</body>
+</html>

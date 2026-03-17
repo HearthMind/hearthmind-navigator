@@ -130,3 +130,7 @@ def professional():
 @bp.route('/app')
 def client_app():
     return render_template('navigator_client.html')
+
+@bp.route('/copilot')
+def copilot():
+    return render_template('navigator_copilot.html')
