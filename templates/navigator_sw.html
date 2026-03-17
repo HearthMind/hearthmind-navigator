@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigator Professional — HearthMind</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0d1b2a;--navy-mid:#1a2e42;--navy-light:#243b55;
+  --amber:#EF9F27;--amber-light:#FAC775;
+  --text-light:#e8edf2;--text-muted:#8fa3b8;
+  --border:rgba(255,255,255,0.08);
+  --green:#4caf50;--green-dim:rgba(76,175,80,0.15);
+  --red-dim:rgba(229,57,53,0.12);--red:#e55353;
+}
+body{background:var(--navy);color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:13px;min-height:100vh;}
+.topbar{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:15px;font-weight:500;color:var(--amber);}
+.logo span{color:var(--text-muted);font-weight:400;font-size:12px;margin-left:8px;}
+.user-badge{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--amber);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--navy-mid);padding:0 20px;}
+.tab{padding:10px 16px;font-size:12px;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.notif-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-left:5px;vertical-align:middle;}
+</style>
+<style>
+.main{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 90px);}
+.sidebar{background:var(--navy-mid);border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:14px;}
+.sidebar-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;}
+.context-card{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:11px;display:flex;flex-direction:column;gap:7px;}
+.context-row{display:flex;justify-content:space-between;align-items:center;}
+.context-key{font-size:11px;color:var(--text-muted);}
+.context-val{font-size:12px;color:var(--text-light);font-weight:500;}
+.context-val.amber{color:var(--amber);}
+.client-name{font-size:14px;font-weight:500;}
+.divider{height:1px;background:var(--border);}
+.status-pill{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(239,159,39,0.15);color:var(--amber);border:1px solid rgba(239,159,39,0.3);}
+.linked-pill{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3);}
+.notes-area{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--text-muted);line-height:1.5;}
+.saved-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);}
+.saved-badge{background:var(--amber);color:var(--navy);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:500;}
+.inbox-badge{background:var(--green);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:500;}
+.content{padding:16px 20px;display:flex;flex-direction:column;gap:14px;}
+.search-bar{display:flex;gap:8px;}
+.search-input{flex:1;background:var(--navy-mid);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-light);font-size:13px;}
+.search-input::placeholder{color:var(--text-muted);}
+.search-btn{background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;}
+.filters{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-chip{font-size:11px;padding:4px 10px;border-radius:12px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;}
+.filter-chip.active{border-color:var(--amber);color:var(--amber);background:rgba(239,159,39,0.08);}
+.results-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-muted);}
+.results-header strong{color:var(--text-light);font-size:13px;}
+</style>
+<style>
+.result-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;flex-direction:column;gap:7px;}
+.result-card:hover{border-color:rgba(239,159,39,0.2);}
+.result-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.result-title{font-size:13px;font-weight:500;color:var(--text-light);}
+.result-tags{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0;}
+.tag{font-size:10px;padding:2px 7px;border-radius:8px;background:var(--navy-light);color:var(--text-muted);}
+.tag.match-high{background:var(--green-dim);color:var(--green);}
+.tag.match-med{background:rgba(239,159,39,0.1);color:var(--amber-light);}
+.result-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.result-meta{font-size:11px;color:var(--text-muted);}
+.elig-bar{display:flex;align-items:center;gap:8px;font-size:11px;}
+.elig-label{color:var(--text-muted);min-width:76px;}
+.elig-track{flex:1;height:4px;background:var(--navy-light);border-radius:2px;overflow:hidden;}
+.elig-fill{height:100%;border-radius:2px;}
+.elig-pct{color:var(--text-muted);min-width:28px;text-align:right;}
+.result-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+.btn{font-size:11px;padding:5px 11px;border-radius:6px;cursor:pointer;}
+.btn-save{background:rgba(239,159,39,0.12);color:var(--amber);border:1px solid rgba(239,159,39,0.3);}
+.btn-save.saved{background:var(--amber);color:var(--navy);border-color:var(--amber);}
+.btn-send{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3);}
+.btn-send.sent{background:var(--green);color:#fff;border-color:var(--green);}
+.btn-detail{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.transparency-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:6px;}
+.trans-badge{background:rgba(55,138,221,0.1);color:#85b7eb;border:1px solid rgba(55,138,221,0.2);border-radius:4px;padding:1px 6px;cursor:pointer;}
+.trans-detail{display:none;font-size:10px;color:var(--text-muted);background:var(--navy-light);border-radius:6px;padding:8px;line-height:1.5;}
+.inbox-item{background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
+.inbox-item.unread{border-left:3px solid var(--amber);}
+.inbox-header{display:flex;justify-content:space-between;align-items:center;}
+.inbox-from{font-size:12px;font-weight:500;color:var(--text-light);}
+.inbox-time{font-size:11px;color:var(--text-muted);}
+.inbox-type{font-size:10px;padding:2px 7px;border-radius:8px;background:var(--green-dim);color:var(--green);}
+.inbox-body{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.inbox-actions{display:flex;gap:6px;}
+</style>
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">HearthMind Navigator <span>professional</span></div>
+  <div class="user-badge">
+    <div class="avatar">SW</div>
+    <span>Sarah W. &nbsp;·&nbsp; Spokane DSHS</span>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('search',this)">Resource Search</div>
+  <div class="tab" onclick="showTab('inbox',this)">Client Inbox <span class="notif-dot"></span></div>
+  <div class="tab" onclick="showTab('saved',this)">Saved to Case</div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-label">active case</div>
+      <div class="context-card">
+        <div class="client-name">Marcus T.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="status-pill">Active</span>
+          <span class="linked-pill">App linked</span>
+        </div>
+        <div class="divider"></div>
+        <div class="context-row"><span class="context-key">Client ID</span><span class="context-val amber">CLT-8841</span></div>
+        <div class="context-row"><span class="context-key">Case #</span><span class="context-val">2026-WA-04412</span></div>
+        <div class="context-row"><span class="context-key">County</span><span class="context-val">Spokane</span></div>
+        <div class="context-row"><span class="context-key">Navigator ID</span><span class="context-val amber">NV-7742</span></div>
+        <div class="context-row"><span class="context-key">Linked</span><span class="context-val">Mar 14, 2026</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sidebar-label">case notes</div>
+      <div class="notes-area">Eviction notice 3/10. Seeking emergency rental + transitional housing. SSI pending. Linked Navigator app Mar 14.</div>
+    </div>
+    <div>
+      <div class="sidebar-label">case activity</div>
+      <div class="saved-row"><span class="saved-badge">3</span><span>resources saved</span></div>
+      <div style="height:6px;"></div>
+      <div class="saved-row"><span class="inbox-badge">2</span><span>client messages</span></div>
+    </div>
+    <div style="margin-top:auto;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:12px;">
+      <div style="margin-bottom:4px;">Powered by HearthMind Navigator</div>
+      <div style="font-size:10px;opacity:0.6;">Zero data custody · SDOH discovery layer</div>
+    </div>
+  </div>
+  <div class="content">
+    <!-- SEARCH TAB -->
+    <div id="tab-search">
+      <div class="search-bar">
+        <input class="search-input" value="emergency rental assistance Spokane" />
+        <button class="search-btn">Search</button>
+      </div>
+      <div class="filters">
+        <span class="filter-chip active">All</span>
+        <span class="filter-chip active">Housing</span>
+        <span class="filter-chip">Benefits</span>
+        <span class="filter-chip active">Eligibility match</span>
+        <span class="filter-chip">Federal only</span>
+        <span class="filter-chip">Local services</span>
+      </div>
+      <div class="results-header">
+        <strong>14 results</strong>
+        <span>sorted by eligibility match &nbsp;·&nbsp; Spokane County</span>
+      </div>
+      <div class="result-card">
+        <div class="result-top">
+          <div class="result-title">WA Emergency Rental Assistance Program (ERAP)</div>
+          <div class="result-tags"><span class="tag match-high">Strong match</span><span class="tag">State</span><span class="tag">Housing</span></div>
+        </div>
+        <div class="elig-bar">
+          <span class="elig-label">Eligibility</span>
+          <div class="elig-track"><div class="elig-fill" style="width:88%;background:var(--green);"></div></div>
+          <span class="elig-pct">88%</span>
+        </div>
+        <div class="result-desc">Up to 12 months past-due rent + 3 months forward. Income ≤80% AMI. Eviction notice qualifies. SSI pending does not disqualify.</div>
+        <div class="result-meta">Spokane SNAP office &nbsp;·&nbsp; (509) 458-2800 &nbsp;·&nbsp; Updated Feb 2026</div>
+        <div class="transparency-row">
+          <span class="trans-badge" onclick="toggleTrans(this)">Source & confidence</span>
+          <div class="trans-detail">Source: SAM.gov Federal Programs Database &nbsp;·&nbsp; Confidence: 92% &nbsp;·&nbsp; No PII retained</div>
+        </div>
+        <div class="result-actions">
+          <button class="btn btn-detail">Details</button>
+          <button class="btn btn-save saved">Saved</button>
+          <button class="btn btn-send sent">Sent to client</button>
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="result-top">
+          <div class="result-title">SNAP Emergency Eviction Prevention — Spokane</div>
+          <div class="result-tags"><span class="tag match-high">Strong match</span><span class="tag">Local</span><span class="tag">Housing</span></div>
+        </div>
+        <div class="elig-bar">
+          <span class="elig-label">Eligibility</span>
+          <div class="elig-track"><div class="elig-fill" style="width:82%;background:var(--green);"></div></div>
+          <span class="elig-pct">82%</span>
+        </div>
+        <div class="result-desc">One-time emergency rental assistance up to $1,500. Walk-in intake Mon–Thu 8am–4pm. SSI pending does not disqualify.</div>
+        <div class="result-meta">3102 W. Fort George Wright Dr &nbsp;·&nbsp; (509) 456-7106 &nbsp;·&nbsp; Updated Mar 2026</div>
+        <div class="transparency-row">
+          <span class="trans-badge" onclick="toggleTrans(this)">Source & confidence</span>
+          <div class="trans-detail">Source: 211 NDP Local Services Database &nbsp;·&nbsp; Confidence: 88% &nbsp;·&nbsp; No PII retained</div>
+        </div>
+        <div class="result-actions">
+          <button class="btn btn-detail">Details</button>
+          <button class="btn btn-save">Save to case</button>
+          <button class="btn btn-send">Send to client</button>
+        </div>
+      </div>
+    </div>
+    <!-- INBOX TAB -->
+    <div id="tab-inbox" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="results-header"><strong>Client messages</strong><span>Marcus T. &nbsp;·&nbsp; NV-7742 &nbsp;·&nbsp; pull only</span></div>
+        <div class="inbox-item unread">
+          <div class="inbox-header"><span class="inbox-from">Marcus T. sent a document</span><span class="inbox-time">Today, 10:14am</span></div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="inbox-type">Document</span>
+            <span style="font-size:11px;color:var(--text-muted);">Eviction_Notice_March2026.pdf</span>
+          </div>
+          <div class="inbox-body">Client attached eviction notice via Navigator app. Signal received — HearthMind does not retain this file.</div>
+          <div class="inbox-actions">
+            <button class="btn btn-detail">View in Casebook</button>
+            <button class="btn btn-save">Acknowledge</button>
+          </div>
+        </div>
+        <div class="inbox-item unread">
+          <div class="inbox-header"><span class="inbox-from">Marcus T. sent an update</span><span class="inbox-time">Yesterday, 3:42pm</span></div>
+          <div style="display:flex;gap:6px;"><span class="inbox-type">Message</span></div>
+          <div class="inbox-body">"Applied for ERAP at the SNAP office. They said to expect a call in 3–5 days. Still need help with the transitional housing form."</div>
+          <div class="inbox-actions">
+            <button class="btn btn-detail">Log to case</button>
+            <button class="btn btn-send">Send resource</button>
+          </div>
+        </div>
+        <div class="inbox-item">
+          <div class="inbox-header"><span class="inbox-from">Marcus T. sent a request</span><span class="inbox-time">Mar 14, 9:08am</span></div>
+          <div style="display:flex;gap:6px;"><span class="inbox-type" style="background:rgba(239,159,39,0.1);color:var(--amber);">Request</span></div>
+          <div class="inbox-body">"Can you help me find something for food assistance? I have two kids."</div>
+          <div class="inbox-actions">
+            <button class="btn btn-detail">Search food assistance</button>
+            <button class="btn btn-send">Send resource</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SAVED TAB -->
+    <div id="tab-saved" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="results-header"><strong>Saved to case 2026-WA-04412</strong><span>3 resources</span></div>
+        <div class="inbox-item">
+          <div class="inbox-header"><span class="inbox-from">WA Emergency Rental Assistance (ERAP)</span><span class="inbox-time">Saved today</span></div>
+          <div style="display:flex;gap:6px;"><span class="tag match-high">88% match</span><span class="tag">Sent to client</span></div>
+          <div class="inbox-actions" style="margin-top:4px;">
+            <button class="btn btn-detail">View</button>
+            <button class="btn btn-send sent">Sent to client</button>
+          </div>
+        </div>
+        <div class="inbox-item">
+          <div class="inbox-header"><span class="inbox-from">HUD Continuum of Care — Transitional Housing</span><span class="inbox-time">Saved today</span></div>
+          <div style="display:flex;gap:6px;"><span class="tag match-med">61% match</span><span class="tag">Not yet sent</span></div>
+          <div class="inbox-actions" style="margin-top:4px;">
+            <button class="btn btn-detail">View</button>
+            <button class="btn btn-send">Send to client</button>
+          </div>
+        </div>
+        <div class="inbox-item">
+          <div class="inbox-header"><span class="inbox-from">Spokane Food Bank — Family Services</span><span class="inbox-time">Saved Mar 15</span></div>
+          <div style="display:flex;gap:6px;"><span class="tag match-high">94% match</span><span class="tag">Sent to client</span></div>
+          <div class="inbox-actions" style="margin-top:4px;">
+            <button class="btn btn-detail">View</button>
+            <button class="btn btn-send sent">Sent to client</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showTab(name,el){
+  ['search','inbox','saved'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===name?'flex':'none';
+    if(t===name)document.getElementById('tab-'+t).style.flexDirection='column';
+  });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+function toggleTrans(el){
+  var d=el.nextElementSibling;
+  d.style.display=d.style.display==='block'?'none':'block';
+}
+document.getElementById('tab-search').style.display='flex';
+document.getElementById('tab-search').style.flexDirection='column';
+</script>
+</body>
+</html>

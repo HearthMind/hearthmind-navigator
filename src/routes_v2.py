@@ -121,3 +121,12 @@ Please help this person based on what they've shared."""
         return jsonify({'error': f'Azure OpenAI error {e.code}', 'detail': body}), 502
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@bp.route('/pro')
+def professional():
+    return render_template('navigator_sw.html')
+
+@bp.route('/app')
+def client_app():
+    return render_template('navigator_client.html')
