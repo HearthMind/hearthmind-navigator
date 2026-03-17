@@ -456,3 +456,19 @@ async function clientSendChat(){
   if(inp) inp.focus();
 }
 </script>
+
+<!-- AI DISCLAIMER for client app chat -->
+<style>
+.ai-disclaimer{font-size:10px;color:var(--text-muted);text-align:center;padding:6px 12px;border-top:1px solid var(--border);background:var(--navy-mid);line-height:1.5;flex-shrink:0;}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var tabAsk = document.getElementById('tab-ask');
+  if(tabAsk && !tabAsk.querySelector('.ai-disclaimer')) {
+    var d = document.createElement('div');
+    d.className = 'ai-disclaimer';
+    d.textContent = 'Navigator can make mistakes. Always verify important information with your caseworker or the agency directly.';
+    tabAsk.appendChild(d);
+  }
+});
+</script>

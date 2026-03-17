@@ -496,3 +496,30 @@ async function sendChat() {
 // Init on load
 document.addEventListener('DOMContentLoaded', function(){ buildAskPanel(); });
 </script>
+
+<!-- AI DISCLAIMER — appended to both chat panels -->
+<style>
+.ai-disclaimer{font-size:10px;color:var(--text-muted);text-align:center;padding:6px 12px;border-top:1px solid var(--border);background:var(--navy-mid);line-height:1.5;flex-shrink:0;}
+.ai-disclaimer a{color:var(--amber);text-decoration:none;}
+</style>
+<script>
+// Inject disclaimer into copilot Ask panel and client chat
+document.addEventListener('DOMContentLoaded', function(){
+  // Copilot — inject after chat input row in lp-ask
+  var lpAsk = document.getElementById('lp-ask');
+  if(lpAsk) {
+    var d = document.createElement('div');
+    d.className = 'ai-disclaimer';
+    d.textContent = 'Navigator can make mistakes. Always verify with your caseworker or the agency directly.';
+    lpAsk.appendChild(d);
+  }
+  // Client app — inject after client chat input row
+  var tabAsk = document.getElementById('tab-ask');
+  if(tabAsk) {
+    var d2 = document.createElement('div');
+    d2.className = 'ai-disclaimer';
+    d2.textContent = 'Navigator can make mistakes. Always verify important information with your caseworker or the agency directly.';
+    tabAsk.appendChild(d2);
+  }
+});
+</script>
