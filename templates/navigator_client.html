@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Navigator — HearthMind</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -15,224 +15,280 @@
   --red-dim:rgba(229,57,53,0.12);--red:#e55353;
   --blue-dim:rgba(55,138,221,0.1);--blue:#85b7eb;
 }
-body{background:var(--navy);color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:14px;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
-.phone{width:100%;max-width:390px;min-height:100vh;display:flex;flex-direction:column;background:var(--navy);}
-.statusbar{background:var(--navy-mid);padding:8px 16px 6px;display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);}
-.topbar{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-size:16px;font-weight:500;color:var(--amber);}
+body{background:var(--navy);color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:14px;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:500;color:var(--amber);}
+.logo span{font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px;}
 .id-chip{display:flex;align-items:center;gap:6px;background:var(--navy-light);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;cursor:pointer;}
 .id-label{font-size:10px;color:var(--text-muted);}
 .id-val{font-size:12px;color:var(--amber);font-weight:500;}
 .copy-icon{width:22px;height:22px;border-radius:50%;background:rgba(239,159,39,0.15);border:1px solid rgba(239,159,39,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--amber);}
-.tabs{display:flex;background:var(--navy-mid);border-bottom:1px solid var(--border);}
-.tab{flex:1;padding:10px 4px;font-size:11px;color:var(--text-muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;}
-.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
-.notif{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-left:3px;vertical-align:middle;}
-.content{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;}
-.search-input{width:100%;background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-light);font-size:14px;}
-.search-input::placeholder{color:var(--text-muted);}
-.search-btn{width:100%;background:var(--amber);color:var(--navy);border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;}
+.copied-toast{background:var(--green-dim);border:1px solid rgba(76,175,80,0.3);border-radius:8px;padding:8px 20px;font-size:12px;color:var(--green);display:none;text-align:center;margin:0 20px 0;}
 </style>
 <style>
+/* TABS — mobile default */
+.tabs{display:flex;background:var(--navy-mid);border-bottom:1px solid var(--border);padding:0 20px;}
+.tab{flex:1;padding:10px 4px;font-size:12px;color:var(--text-muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;max-width:160px;}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.notif{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-left:3px;vertical-align:middle;}
+
+/* SHARED COMPONENTS */
+.section-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
+.search-input{width:100%;background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-light);font-size:14px;}
+.search-input::placeholder{color:var(--text-muted);}
+.search-btn{width:100%;background:var(--amber);color:var(--navy);border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;}
+.filters{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-chip{font-size:11px;padding:4px 10px;border-radius:12px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;}
+.filter-chip.active{border-color:var(--amber);color:var(--amber);background:rgba(239,159,39,0.08);}
 .result-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;}
 .result-title{font-size:14px;font-weight:500;}
-.result-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.result-desc{font-size:13px;color:var(--text-muted);line-height:1.5;}
+.result-meta{font-size:11px;color:var(--text-muted);}
 .tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--navy-light);color:var(--text-muted);}
 .tag.match{background:var(--green-dim);color:var(--green);}
 .elig-row{display:flex;align-items:center;gap:8px;}
 .elig-track{flex:1;height:4px;background:var(--navy-light);border-radius:2px;overflow:hidden;}
 .elig-fill{height:100%;border-radius:2px;}
-.elig-pct{font-size:11px;color:var(--text-muted);min-width:28px;text-align:right;}
+.elig-pct{font-size:11px;color:var(--text-muted);min-width:32px;text-align:right;}
 .card-actions{display:flex;gap:8px;}
 .btn{font-size:12px;padding:7px 12px;border-radius:8px;cursor:pointer;flex:1;text-align:center;border:1px solid;}
 .btn-save{background:rgba(239,159,39,0.12);color:var(--amber);border-color:rgba(239,159,39,0.3);}
 .btn-send{background:var(--green-dim);color:var(--green);border-color:rgba(76,175,80,0.3);}
 .btn-send.sent{background:var(--green);color:#fff;border-color:var(--green);}
-.section-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;}
+</style>
+<style>
+/* CONNECTIONS */
 .connection-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
 .connection-header{display:flex;align-items:center;gap:10px;}
-.sw-avatar{width:40px;height:40px;border-radius:50%;background:var(--amber);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;}
-.sw-name{font-size:14px;font-weight:500;}
-.sw-org{font-size:11px;color:var(--text-muted);}
+.sw-avatar{width:44px;height:44px;border-radius:50%;background:var(--amber);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;}
+.sw-name{font-size:15px;font-weight:500;}
+.sw-org{font-size:12px;color:var(--text-muted);}
 .linked-pill{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3);margin-left:auto;}
 .divider{height:1px;background:var(--border);}
 .meta-row{display:flex;justify-content:space-between;}
-.meta-key{font-size:11px;color:var(--text-muted);}
-.meta-val{font-size:11px;color:var(--text-light);font-weight:500;}
+.meta-key{font-size:12px;color:var(--text-muted);}
+.meta-val{font-size:12px;color:var(--text-light);font-weight:500;}
 .meta-val.amber{color:var(--amber);}
-.vouch-row{background:var(--green-dim);border:1px solid rgba(76,175,80,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green);line-height:1.5;}
-.action-row{display:flex;gap:10px;}
-.action-btn{flex:1;border-radius:10px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:1px solid;}
+.vouch-row{background:var(--green-dim);border:1px solid rgba(76,175,80,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);line-height:1.5;}
+.action-row{display:flex;gap:12px;}
+.action-btn{flex:1;border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;border:1px solid;}
 .action-btn.message{background:rgba(239,159,39,0.1);border-color:rgba(239,159,39,0.3);}
 .action-btn.document{background:var(--blue-dim);border-color:rgba(55,138,221,0.3);}
-.action-icon{font-size:22px;}
-.action-label{font-size:12px;font-weight:500;}
+.action-icon{font-size:24px;}
+.action-label{font-size:13px;font-weight:500;}
 .action-label.amber{color:var(--amber);}
 .action-label.blue{color:var(--blue);}
-.action-sub{font-size:10px;color:var(--text-muted);text-align:center;line-height:1.4;}
-</style>
-<style>
-.composer textarea{width:100%;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text-light);font-size:13px;resize:none;line-height:1.5;min-height:80px;font-family:inherit;}
+.action-sub{font-size:11px;color:var(--text-muted);text-align:center;}
+.composer textarea{width:100%;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text-light);font-size:13px;resize:none;line-height:1.5;min-height:100px;font-family:inherit;}
 .composer textarea::placeholder{color:var(--text-muted);}
-.composer-actions{display:flex;gap:8px;margin-top:8px;}
+.composer-actions{display:flex;gap:8px;margin-top:10px;}
 .btn-cancel{flex:1;background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;}
 .btn-send-msg{flex:2;background:var(--amber);color:var(--navy);border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;}
-.doc-option{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px;}
-.doc-icon{font-size:18px;}
+.doc-option{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;}
+.doc-option:hover{border-color:rgba(55,138,221,0.4);}
 .doc-name{font-size:13px;}
 .doc-size{font-size:11px;color:var(--text-muted);}
-.doc-cancel{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;width:100%;}
-.sent-item{background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
-.sent-name{font-size:12px;}
-.sent-time{font-size:10px;color:var(--text-muted);margin-top:2px;}
-.sent-status{font-size:10px;color:var(--green);flex-shrink:0;}
-.unlink-btn{background:var(--red-dim);color:var(--red);border:1px solid rgba(229,57,53,0.2);border-radius:8px;padding:10px;font-size:12px;text-align:center;cursor:pointer;}
-.confirm-btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;width:100%;}
-.success-circle{width:60px;height:60px;border-radius:50%;background:var(--green-dim);border:1px solid rgba(76,175,80,0.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto;}
+.sent-item{background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.sent-name{font-size:13px;}
+.sent-time{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.sent-status{font-size:11px;color:var(--green);flex-shrink:0;}
+.unlink-btn{background:var(--red-dim);color:var(--red);border:1px solid rgba(229,57,53,0.2);border-radius:8px;padding:10px;font-size:13px;text-align:center;cursor:pointer;margin-top:4px;}
+.success-circle{width:64px;height:64px;border-radius:50%;background:var(--green-dim);border:1px solid rgba(76,175,80,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto;}
 .hidden{display:none!important;}
-.copied-toast{background:var(--green-dim);border:1px solid rgba(76,175,80,0.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--green);display:none;text-align:center;margin:0 16px;}
+</style>
+<style>
+/* MOBILE LAYOUT — single column, full width */
+.mobile-wrap{display:flex;flex-direction:column;min-height:100vh;}
+.tab-content{padding:16px;display:flex;flex-direction:column;gap:12px;}
+
+/* DESKTOP LAYOUT — triggered at 768px+ */
+@media(min-width:768px){
+  .tabs{padding:0 32px;}
+  .tab{font-size:13px;padding:12px 20px;max-width:200px;}
+  .topbar{padding:12px 32px;}
+  .logo{font-size:20px;}
+  .copied-toast{margin:0 32px;}
+
+  /* Desktop discover — two column */
+  #tab-discover.tab-content{
+    flex-direction:row;align-items:flex-start;gap:24px;padding:24px 32px;
+  }
+  .discover-left{width:340px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+  .discover-right{flex:1;display:flex;flex-direction:column;gap:12px;}
+  .search-btn{margin-top:0;}
+
+  /* Desktop connections — two column */
+  #tab-connections.tab-content{
+    flex-direction:row;align-items:flex-start;gap:24px;padding:24px 32px;
+  }
+  .connections-left{width:340px;flex-shrink:0;}
+  .connections-right{flex:1;}
+
+  /* Desktop saved — wider cards */
+  #tab-saved.tab-content{padding:24px 32px;}
+
+  .result-card{padding:16px 18px;}
+  .result-title{font-size:15px;}
+  .result-desc{font-size:13px;}
+  .action-btn{padding:18px 14px;}
+}
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="statusbar"><span>9:41</span><span>Navigator</span><span>●●●</span></div>
+<div class="mobile-wrap">
   <div class="topbar">
-    <div class="logo">Navigator</div>
+    <div>
+      <div class="logo">Navigator <span>by HearthMind</span></div>
+    </div>
     <div class="id-chip" onclick="copyId()">
       <div><div class="id-label">Your ID</div><div class="id-val">NV-7742</div></div>
       <div class="copy-icon" id="copy-icon">⧉</div>
     </div>
   </div>
-  <div class="copied-toast" id="toast">Copied! Share NV-7742 with any caseworker to link them.</div>
+  <div class="copied-toast" id="toast" style="padding-top:8px;padding-bottom:8px;">Copied! Share NV-7742 with any caseworker to link them.</div>
   <div class="tabs">
     <div class="tab active" onclick="showTab('discover',this)">Discover</div>
     <div class="tab" onclick="showTab('connections',this)">Connections <span class="notif"></span></div>
     <div class="tab" onclick="showTab('saved',this)">Saved</div>
   </div>
   <!-- DISCOVER TAB -->
-  <div id="tab-discover" class="content">
-    <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">What do you need help with today?</div>
-    <input class="search-input" placeholder="e.g. help with rent, food, energy bills..." value="help with rent I got an eviction notice" />
-    <button class="search-btn">Find resources</button>
-    <div style="font-size:11px;color:var(--text-muted);">Showing results near Spokane, WA</div>
-    <div class="result-card">
-      <div class="result-title">WA Emergency Rental Assistance</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Housing</span><span class="tag">State</span></div>
-      <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:88%;background:var(--green);"></div></div><span class="elig-pct">88%</span></div>
-      <div class="result-desc">Up to 12 months past-due rent. Eviction notice qualifies. Apply at Spokane SNAP office.</div>
-      <div class="card-actions">
-        <button class="btn btn-save">Save</button>
-        <button class="btn btn-send sent">Sent to Sarah W.</button>
+  <div id="tab-discover" class="tab-content">
+    <div class="discover-left">
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.5;">What do you need help with today?</div>
+      <input class="search-input" placeholder="e.g. help with rent, food, energy bills..." value="help with rent I got an eviction notice" />
+      <button class="search-btn">Find resources</button>
+      <div class="filters">
+        <span class="filter-chip active">All</span>
+        <span class="filter-chip active">Housing</span>
+        <span class="filter-chip">Food</span>
+        <span class="filter-chip">Benefits</span>
+        <span class="filter-chip">Energy</span>
+        <span class="filter-chip">Healthcare</span>
       </div>
+      <div style="font-size:11px;color:var(--text-muted);">Showing results near Spokane, WA</div>
     </div>
-    <div class="result-card">
-      <div class="result-title">SNAP Emergency Eviction Prevention</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Local</span></div>
-      <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:82%;background:var(--green);"></div></div><span class="elig-pct">82%</span></div>
-      <div class="result-desc">One-time help up to $1,500. Walk in Mon–Thu. You don't need SSI to apply.</div>
-      <div class="card-actions">
-        <button class="btn btn-save">Save</button>
-        <button class="btn btn-send">Send to Sarah W.</button>
+    <div class="discover-right">
+      <div class="result-card">
+        <div class="result-title">WA Emergency Rental Assistance</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Housing</span><span class="tag">State</span></div>
+        <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:88%;background:var(--green);"></div></div><span class="elig-pct">88%</span></div>
+        <div class="result-desc">Up to 12 months past-due rent + 3 months forward. Eviction notice qualifies. SSI pending does not disqualify.</div>
+        <div class="result-meta">Spokane SNAP office · (509) 458-2800 · Updated Feb 2026</div>
+        <div class="card-actions"><button class="btn btn-save">Save</button><button class="btn btn-send sent">Sent to Sarah W.</button></div>
       </div>
-    </div>
-    <div class="result-card">
-      <div class="result-title">Spokane Food Bank — Family Services</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Food</span><span class="tag">Local</span></div>
-      <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:94%;background:var(--green);"></div></div><span class="elig-pct">94%</span></div>
-      <div class="result-desc">Free groceries for families. No income verification required. Multiple Spokane locations.</div>
-      <div class="card-actions">
-        <button class="btn btn-save">Save</button>
-        <button class="btn btn-send sent">Sent to Sarah W.</button>
+      <div class="result-card">
+        <div class="result-title">SNAP Emergency Eviction Prevention</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Local</span></div>
+        <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:82%;background:var(--green);"></div></div><span class="elig-pct">82%</span></div>
+        <div class="result-desc">One-time help up to $1,500. Walk in Mon–Thu. You don't need SSI to apply.</div>
+        <div class="result-meta">3102 W. Fort George Wright Dr · (509) 456-7106 · Updated Mar 2026</div>
+        <div class="card-actions"><button class="btn btn-save">Save</button><button class="btn btn-send">Send to Sarah W.</button></div>
+      </div>
+      <div class="result-card">
+        <div class="result-title">Spokane Food Bank — Family Services</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">Strong match</span><span class="tag">Food</span><span class="tag">Local</span></div>
+        <div class="elig-row"><div class="elig-track"><div class="elig-fill" style="width:94%;background:var(--green);"></div></div><span class="elig-pct">94%</span></div>
+        <div class="result-desc">Free groceries for families. No income verification required. Multiple Spokane locations.</div>
+        <div class="result-meta">Multiple locations · Open daily</div>
+        <div class="card-actions"><button class="btn btn-save">Save</button><button class="btn btn-send sent">Sent to Sarah W.</button></div>
       </div>
     </div>
   </div>
   <!-- CONNECTIONS TAB -->
-  <div id="tab-connections" class="content hidden">
-    <div id="state-default">
-      <div class="section-label" style="margin-bottom:8px;">Your caseworker</div>
-      <div class="connection-card">
-        <div class="connection-header">
-          <div class="sw-avatar">SW</div>
-          <div><div class="sw-name">Sarah W.</div><div class="sw-org">Spokane DSHS</div></div>
-          <span class="linked-pill">Active</span>
+  <div id="tab-connections" class="tab-content hidden">
+    <div class="connections-left">
+      <div id="state-default">
+        <div class="section-label">Your caseworker</div>
+        <div class="connection-card">
+          <div class="connection-header">
+            <div class="sw-avatar">SW</div>
+            <div><div class="sw-name">Sarah W.</div><div class="sw-org">Spokane DSHS</div></div>
+            <span class="linked-pill">Active</span>
+          </div>
+          <div class="divider"></div>
+          <div class="meta-row"><span class="meta-key">Case #</span><span class="meta-val">2026-WA-04412</span></div>
+          <div class="meta-row"><span class="meta-key">Navigator ID</span><span class="meta-val amber">NV-7742</span></div>
+          <div class="meta-row"><span class="meta-key">Linked since</span><span class="meta-val">Mar 14, 2026</span></div>
+          <div class="vouch-row">Sarah W. received your last message on Mar 16. She can only see what you choose to send.</div>
         </div>
-        <div class="divider"></div>
-        <div class="meta-row"><span class="meta-key">Case #</span><span class="meta-val">2026-WA-04412</span></div>
-        <div class="meta-row"><span class="meta-key">Navigator ID</span><span class="meta-val amber">NV-7742</span></div>
-        <div class="meta-row"><span class="meta-key">Linked since</span><span class="meta-val">Mar 14, 2026</span></div>
-        <div class="vouch-row">Sarah W. received your last message on Mar 16. She can only see what you choose to send.</div>
+        <div class="action-row" style="margin-top:14px;">
+          <div class="action-btn message" onclick="showState('message')">
+            <span class="action-icon">💬</span>
+            <span class="action-label amber">Send a message</span>
+            <span class="action-sub">to Sarah W.</span>
+          </div>
+          <div class="action-btn document" onclick="showState('document')">
+            <span class="action-icon">📎</span>
+            <span class="action-label blue">Send a document</span>
+            <span class="action-sub">to Sarah W.</span>
+          </div>
+        </div>
+        <div class="unlink-btn" onclick="showState('unlink')" style="margin-top:14px;">Unlink this caseworker</div>
       </div>
-      <div class="action-row" style="margin-top:12px;">
-        <div class="action-btn message" onclick="showState('message')">
-          <span class="action-icon">💬</span>
-          <span class="action-label amber">Send a message</span>
-          <span class="action-sub">to Sarah W.</span>
-        </div>
-        <div class="action-btn document" onclick="showState('document')">
-          <span class="action-icon">📎</span>
-          <span class="action-label blue">Send a document</span>
-          <span class="action-sub">to Sarah W.</span>
-        </div>
-      </div>
-      <div class="section-label" style="margin-top:16px;margin-bottom:8px;">Recently sent</div>
-      <div class="sent-item" style="margin-bottom:8px;"><div><div class="sent-name">Eviction_Notice_March2026.pdf</div><div class="sent-time">Today, 10:12am</div></div><span class="sent-status">Received ✓</span></div>
-      <div class="sent-item" style="margin-bottom:8px;"><div><div class="sent-name">"Applied for ERAP at SNAP office..."</div><div class="sent-time">Yesterday, 3:40pm</div></div><span class="sent-status">Received ✓</span></div>
-      <div class="sent-item" style="margin-bottom:12px;"><div><div class="sent-name">"Can you help me find food assistance?"</div><div class="sent-time">Mar 14, 9:06am</div></div><span class="sent-status">Received ✓</span></div>
-      <div class="unlink-btn" onclick="showState('unlink')">Unlink this caseworker</div>
-    </div>
-    <div id="state-message" class="hidden">
-      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">Send a message to Sarah W.</div>
-      <div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;">Your message goes directly to Sarah. She's the only one who can see it.</div>
-      <div class="composer">
-        <textarea placeholder="What would you like Sarah to know?"></textarea>
-        <div class="composer-actions">
-          <button class="btn-cancel" onclick="showState('default')">Cancel</button>
-          <button class="btn-send-msg" onclick="showState('sent')">Send to Sarah</button>
+      <div id="state-message" class="hidden">
+        <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Send a message to Sarah W.</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;">Your message goes directly to Sarah. She's the only one who can see it.</div>
+        <div class="composer">
+          <textarea placeholder="What would you like Sarah to know?"></textarea>
+          <div class="composer-actions">
+            <button class="btn-cancel" onclick="showState('default')">Cancel</button>
+            <button class="btn-send-msg" onclick="showState('sent')">Send to Sarah</button>
+          </div>
         </div>
       </div>
+      <div id="state-document" class="hidden">
+        <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Send a document to Sarah W.</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;">Choose a file. Navigator doesn't keep a copy.</div>
+        <div class="doc-option"><span style="font-size:20px;">📄</span><div><div class="doc-name">Eviction_Notice_March2026.pdf</div><div class="doc-size">142 KB · PDF</div></div></div>
+        <div class="doc-option"><span style="font-size:20px;">🖼</span><div><div class="doc-name">lease_agreement_photo.jpg</div><div class="doc-size">2.1 MB · Image</div></div></div>
+        <div class="doc-option"><span style="font-size:20px;">📄</span><div><div class="doc-name">SSI_application_confirmation.pdf</div><div class="doc-size">88 KB · PDF</div></div></div>
+        <div class="doc-option" style="border-style:dashed;"><span style="font-size:20px;">➕</span><div><div class="doc-name" style="color:var(--text-muted);">Choose another file...</div></div></div>
+        <button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="showState('default')">Cancel</button>
+      </div>
+      <div id="state-sent" class="hidden" style="text-align:center;padding-top:40px;">
+        <div class="success-circle">✓</div>
+        <div style="font-size:16px;font-weight:500;margin-top:16px;">Sent to Sarah W.</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin:10px 0 24px;">Navigator doesn't keep a copy — it's between you and Sarah.</div>
+        <button class="btn-send-msg" style="width:100%;" onclick="showState('default')">Done</button>
+      </div>
+      <div id="state-unlink" class="hidden">
+        <div style="font-size:15px;font-weight:500;margin-bottom:10px;">Unlink Sarah W.?</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Your DSHS case is not affected — this only removes the Navigator connection.</div>
+        <button style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:12px;width:100%;font-size:14px;cursor:pointer;" onclick="showState('default')">Yes, unlink</button>
+        <button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="showState('default')">Keep connection</button>
+      </div>
     </div>
-    <div id="state-document" class="hidden">
-      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">Send a document to Sarah W.</div>
-      <div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;">Choose a file. It goes directly to Sarah — Navigator doesn't keep a copy.</div>
-      <div class="doc-option"><span class="doc-icon">📄</span><div><div class="doc-name">Eviction_Notice_March2026.pdf</div><div class="doc-size">142 KB · PDF</div></div></div>
-      <div class="doc-option"><span class="doc-icon">🖼</span><div><div class="doc-name">lease_agreement_photo.jpg</div><div class="doc-size">2.1 MB · Image</div></div></div>
-      <div class="doc-option"><span class="doc-icon">📄</span><div><div class="doc-name">SSI_application_confirmation.pdf</div><div class="doc-size">88 KB · PDF</div></div></div>
-      <div class="doc-option" style="border-style:dashed;"><span class="doc-icon">➕</span><div><div class="doc-name" style="color:var(--text-muted);">Choose another file...</div></div></div>
-      <button class="doc-cancel" onclick="showState('default')">Cancel</button>
-    </div>
-    <div id="state-sent" class="hidden" style="text-align:center;padding-top:40px;">
-      <div class="success-circle">✓</div>
-      <div style="font-size:16px;font-weight:500;margin-top:16px;">Sent to Sarah W.</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-top:8px;margin-bottom:24px;">Sarah will see this in her Navigator inbox. Navigator doesn't keep a copy.</div>
-      <button class="btn-send-msg" style="width:100%;" onclick="showState('default')">Done</button>
-    </div>
-    <div id="state-unlink" class="hidden">
-      <div style="font-size:15px;font-weight:500;margin-bottom:12px;">Unlink Sarah W.?</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Sarah will no longer receive messages from you through Navigator. Your case with Spokane DSHS is not affected.</div>
-      <button class="confirm-btn" onclick="showState('default')">Yes, unlink</button>
-      <button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="showState('default')">Keep connection</button>
+    <div class="connections-right">
+      <div class="section-label">Recently sent</div>
+      <div class="sent-item"><div><div class="sent-name">Eviction_Notice_March2026.pdf</div><div class="sent-time">Today, 10:12am</div></div><span class="sent-status">Received ✓</span></div>
+      <div class="sent-item"><div><div class="sent-name">"Applied for ERAP at SNAP office..."</div><div class="sent-time">Yesterday, 3:40pm</div></div><span class="sent-status">Received ✓</span></div>
+      <div class="sent-item"><div><div class="sent-name">"Can you help me find food assistance?"</div><div class="sent-time">Mar 14, 9:06am</div></div><span class="sent-status">Received ✓</span></div>
     </div>
   </div>
   <!-- SAVED TAB -->
-  <div id="tab-saved" class="content hidden">
-    <div class="section-label" style="margin-bottom:8px;">Saved resources</div>
+  <div id="tab-saved" class="tab-content hidden">
+    <div class="section-label">Saved resources</div>
     <div class="result-card">
       <div class="result-title">WA Emergency Rental Assistance</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">88% match</span><span class="tag">Sent to Sarah W.</span></div>
-      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">(509) 458-2800 · Spokane SNAP office</div>
+      <div class="result-meta">(509) 458-2800 · Spokane SNAP office</div>
     </div>
     <div class="result-card">
       <div class="result-title">Spokane Food Bank — Family Services</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag match">94% match</span><span class="tag">Sent to Sarah W.</span></div>
-      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Multiple locations · Open daily</div>
+      <div class="result-meta">Multiple locations · Open daily</div>
     </div>
     <div class="result-card">
       <div class="result-title">HUD Transitional Housing</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="tag">61% match</span><span class="tag">Not yet sent</span></div>
-      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Via 211 referral · Multiple locations</div>
+      <div class="result-meta">Via 211 referral · Multiple locations</div>
+      <div class="card-actions"><button class="btn btn-send" style="max-width:200px;">Send to Sarah W.</button></div>
     </div>
   </div>
 </div>
+
 <script>
 function showTab(name,el){
   ['discover','connections','saved'].forEach(t=>{
