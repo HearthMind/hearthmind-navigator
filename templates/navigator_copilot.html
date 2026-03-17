@@ -320,3 +320,179 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
+<!-- CHAT PANEL INJECTION — appended -->
+<style>
+.lp-ask{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--navy-light);border-radius:2px;}
+.chat-msg{display:flex;flex-direction:column;gap:3px;max-width:92%;}
+.chat-msg.user{align-self:flex-end;}
+.chat-msg.assistant{align-self:flex-start;}
+.chat-bubble{padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;}
+.chat-msg.user .chat-bubble{background:var(--amber);color:var(--navy);border-radius:10px 10px 2px 10px;}
+.chat-msg.assistant .chat-bubble{background:var(--navy-light);color:var(--text-light);border-radius:10px 10px 10px 2px;}
+.chat-time{font-size:10px;color:var(--text-muted);padding:0 4px;}
+.chat-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--border);background:var(--navy-mid);flex-shrink:0;}
+.chat-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-light);font-size:12px;font-family:inherit;resize:none;}
+.chat-input::placeholder{color:var(--text-muted);}
+.chat-send{background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:500;cursor:pointer;flex-shrink:0;}
+.chat-send:disabled{opacity:0.5;cursor:not-allowed;}
+.chat-typing{display:flex;gap:4px;align-items:center;padding:9px 12px;background:var(--navy-light);border-radius:10px;width:fit-content;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--text-muted);animation:bounce 1.2s infinite;}
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-4px);}}
+.chat-suggestion{font-size:11px;padding:5px 10px;border-radius:16px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;background:var(--navy-light);}
+.chat-suggestion:hover{border-color:rgba(239,159,39,0.4);color:var(--amber-light);}
+</style>
+
+<script>
+// Left panel tab switcher
+function switchLeftPanel(panel) {
+  var findEl = document.getElementById('lp-find');
+  var askEl = document.getElementById('lp-ask');
+  var tabFind = document.getElementById('lp-tab-find');
+  var tabAsk = document.getElementById('lp-tab-ask');
+  if(!findEl || !askEl) return;
+  if(panel==='find') {
+    findEl.style.display='flex'; findEl.style.flexDirection='column';
+    askEl.style.display='none';
+    tabFind.style.color='var(--amber)'; tabFind.style.borderBottom='2px solid var(--amber)';
+    tabAsk.style.color='var(--text-muted)'; tabAsk.style.borderBottom='2px solid transparent';
+  } else {
+    findEl.style.display='none';
+    askEl.style.display='flex';
+    tabAsk.style.color='var(--amber)'; tabAsk.style.borderBottom='2px solid var(--amber)';
+    tabFind.style.color='var(--text-muted)'; tabFind.style.borderBottom='2px solid transparent';
+  }
+}
+
+// Chat state
+var chatHistory = [];
+var chatTyping = false;
+
+function buildAskPanel() {
+  var leftPanel = document.querySelector('.left-panel');
+  if(!leftPanel || document.getElementById('lp-ask')) return;
+
+  // Add id to existing panel-scroll so we can toggle it
+  var scroll = leftPanel.querySelector('.panel-scroll');
+  if(scroll && !scroll.id) scroll.id = 'lp-find';
+
+  // Add tab bar to panel-header
+  var header = leftPanel.querySelector('.panel-header');
+  if(header && !document.getElementById('lp-tab-find')) {
+    header.style.cssText += 'padding:0;flex-direction:column;align-items:stretch;gap:0;';
+    var inner = document.createElement('div');
+    inner.style.cssText = 'display:flex;padding:8px 16px 0;justify-content:space-between;align-items:center;';
+    inner.innerHTML = '<span class="panel-title">Navigator</span><span style="font-size:11px;color:var(--text-muted);">Spokane, WA</span>';
+    var tabs = document.createElement('div');
+    tabs.style.cssText = 'display:flex;border-bottom:1px solid var(--border);';
+    tabs.innerHTML = '<div id="lp-tab-find" onclick="switchLeftPanel(\'find\')" style="flex:1;padding:8px 12px;font-size:11px;color:var(--amber);text-align:center;cursor:pointer;border-bottom:2px solid var(--amber);">Find resources</div><div id="lp-tab-ask" onclick="switchLeftPanel(\'ask\')" style="flex:1;padding:8px 12px;font-size:11px;color:var(--text-muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;">Ask Navigator</div>';
+    header.innerHTML = '';
+    header.appendChild(inner);
+    header.appendChild(tabs);
+  }
+
+  // Build ask panel
+  var askEl = document.createElement('div');
+  askEl.id = 'lp-ask';
+  askEl.className = 'lp-ask';
+  askEl.innerHTML = `
+    <div class="chat-messages" id="chat-messages">
+      <div style="text-align:center;padding:16px 8px;">
+        <div style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Ask Navigator anything</div>
+        <div style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;">Not sure what a form is asking for? Confused about a letter from your caseworker? Ask in plain language.</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div class="chat-suggestion" onclick="sendSuggestion('What is a W-2 and where do I get one?')">What is a W-2 and where do I get one?</div>
+          <div class="chat-suggestion" onclick="sendSuggestion('My caseworker asked for proof of income. What counts?')">My caseworker asked for proof of income — what counts?</div>
+          <div class="chat-suggestion" onclick="sendSuggestion('What does 80% AMI mean?')">What does 80% AMI mean?</div>
+          <div class="chat-suggestion" onclick="sendSuggestion('I got a denial letter. What do I do?')">I got a denial letter. What do I do?</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" rows="2" placeholder="Ask anything — no question is too basic..."></textarea>
+      <button class="chat-send" id="chat-send" onclick="sendChat()">Send</button>
+    </div>
+  `;
+  leftPanel.appendChild(askEl);
+
+  // Enter key sends
+  setTimeout(()=>{
+    var inp = document.getElementById('chat-input');
+    if(inp) inp.addEventListener('keydown', function(e){
+      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+    });
+  }, 100);
+}
+
+function sendSuggestion(text) {
+  var inp = document.getElementById('chat-input');
+  if(inp) inp.value = text;
+  sendChat();
+}
+
+function addMessage(role, text) {
+  var msgs = document.getElementById('chat-messages');
+  if(!msgs) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'chat-msg ' + role;
+  var now = new Date();
+  var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  wrap.innerHTML = '<div class="chat-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="chat-time">'+time+'</div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  return wrap;
+}
+
+function showTyping() {
+  var msgs = document.getElementById('chat-messages');
+  if(!msgs) return null;
+  var wrap = document.createElement('div');
+  wrap.className = 'chat-msg assistant';
+  wrap.id = 'typing-indicator';
+  wrap.innerHTML = '<div class="chat-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  return wrap;
+}
+
+async function sendChat() {
+  if(chatTyping) return;
+  var inp = document.getElementById('chat-input');
+  var btn = document.getElementById('chat-send');
+  if(!inp) return;
+  var msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  chatTyping = true;
+  if(btn) btn.disabled = true;
+  addMessage('user', msg);
+  chatHistory.push({role:'user', text:msg});
+  var typingEl = showTyping();
+  try {
+    var resp = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({message: msg, history: chatHistory.slice(-8)})
+    });
+    var data = await resp.json();
+    if(typingEl) typingEl.remove();
+    var reply = data.reply || data.error || 'Something went wrong — please try again.';
+    addMessage('assistant', reply);
+    chatHistory.push({role:'assistant', text:reply});
+  } catch(e) {
+    if(typingEl) typingEl.remove();
+    addMessage('assistant', 'Sorry, I couldn\'t reach Navigator right now. Try again in a moment.');
+  }
+  chatTyping = false;
+  if(btn) btn.disabled = false;
+  if(inp) inp.focus();
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function(){ buildAskPanel(); });
+</script>
