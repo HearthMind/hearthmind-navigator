@@ -79,6 +79,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .search-go{background:#378add;color:#042c53;border:none;border-radius:8px;padding:9px 16px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600}
 .search-warn{background:rgba(186,117,23,0.06);border:0.5px solid rgba(186,117,23,0.2);border-radius:8px;padding:12px 14px;font-size:11px;color:#ba7517;line-height:1.7}
 .search-warn strong{font-weight:600;display:block;margin-bottom:3px}
+
+/* Ask Navigator toggle in topbar */
+.ask-btn{background:rgba(55,138,221,0.08);border:0.5px solid rgba(55,138,221,0.3);color:#378add;font-size:11px;padding:5px 12px;border-radius:14px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:background 0.15s}
+.ask-btn:hover{background:rgba(55,138,221,0.16)}
+.ask-btn.active{background:rgba(55,138,221,0.18);border-color:rgba(55,138,221,0.5)}
+.ask-btn .ask-dot{width:5px;height:5px;border-radius:50%;background:#378add}
+
+/* Collapsible right panel — persistent rail */
+.ai-panel{width:360px;flex-shrink:0;border-left:1px solid rgba(55,138,221,0.12);background:#060d14;display:flex;flex-direction:column;transition:width 0.2s ease,min-width 0.2s ease;overflow:hidden}
+.ai-panel.collapsed{width:0;min-width:0;border-left:none}
+.ai-panel .ai-inner{width:360px;display:flex;flex-direction:column;flex:1;min-height:0}
+.ai-head{padding:12px 16px;border-bottom:0.5px solid rgba(55,138,221,0.12);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-head-title{font-size:11px;color:#378add;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+.ai-head-close{background:none;border:none;color:#4a7a90;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:4px;font-family:inherit;line-height:1}
+.ai-head-close:hover{color:#c8d8e4;background:rgba(55,138,221,0.08)}
+.ai-ctx{padding:10px 16px;border-bottom:0.5px solid rgba(55,138,221,0.08);font-size:10px;color:#4a7a90;background:rgba(55,138,221,0.03);flex-shrink:0}
+.ai-ctx strong{color:#5a9abc;font-weight:500}
+.ai-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.ai-msg{font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;max-width:92%;word-wrap:break-word}
+.ai-msg.user{background:rgba(55,138,221,0.12);color:#c8d8e4;align-self:flex-end;border:0.5px solid rgba(55,138,221,0.2)}
+.ai-msg.assistant{background:#0d1a24;color:#c8d8e4;align-self:flex-start;border:0.5px solid rgba(55,138,221,0.15)}
+.ai-msg.sys{font-size:10px;color:#4a7a90;font-style:italic;text-align:center;padding:4px 8px;background:none;border:none;align-self:center}
+.ai-typing{display:flex;gap:4px;padding:9px 12px;background:#0d1a24;border:0.5px solid rgba(55,138,221,0.15);border-radius:10px;align-self:flex-start;max-width:60px}
+.ai-typing .tdot{width:6px;height:6px;border-radius:50%;background:#378add;opacity:0.4;animation:tdot 1.2s infinite}
+.ai-typing .tdot:nth-child(2){animation-delay:0.15s}
+.ai-typing .tdot:nth-child(3){animation-delay:0.3s}
+@keyframes tdot{0%,60%,100%{opacity:0.3}30%{opacity:1}}
+.ai-input-wrap{padding:10px 14px;border-top:0.5px solid rgba(55,138,221,0.12);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.ai-input-row{display:flex;gap:8px;align-items:flex-end}
+.ai-input{flex:1;background:#0a1018;border:0.5px solid rgba(55,138,221,0.22);border-radius:8px;padding:8px 10px;font-size:12px;color:#c8d8e4;font-family:inherit;resize:none;line-height:1.5;max-height:120px;min-height:34px}
+.ai-input:focus{outline:none;border-color:rgba(55,138,221,0.45)}
+.ai-send{background:#378add;color:#042c53;border:none;border-radius:8px;padding:0 14px;height:34px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;flex-shrink:0}
+.ai-send:disabled{opacity:0.4;cursor:not-allowed}
+.ai-disclaimer{font-size:9.5px;color:#2a5a70;text-align:center;line-height:1.4;padding:0 4px}
+.ai-empty{font-size:11px;color:#4a7a90;line-height:1.6;text-align:center;padding:24px 20px}
+.ai-empty-title{color:#5a9abc;font-size:12px;margin-bottom:8px;font-weight:500}
+.ai-empty ul{text-align:left;margin-top:14px;padding-left:18px;font-size:10.5px;color:#3a6a80}
+.ai-empty li{margin-bottom:4px}
+
 </style>
 </head>
 <body>
@@ -90,6 +129,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="field-pill">FIELD</span>
   </div>
   <div class="tr">
+    <button class="ask-btn" id="ai-toggle" onclick="aiToggle()" aria-label="Open Navigator AI assistant">
+      <span class="ask-dot"></span>Ask Navigator
+    </button>
     <div class="worker-chip">Caseworker ID <span>CW-2291</span></div>
     <div class="worker-chip">Sarah W. · Spokane DSHS</div>
   </div>
@@ -165,6 +207,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="search-warn"><strong>Switching clients ends your current session view.</strong>Complete any open notes for NV-7742 before switching. All changes are logged by caseworker ID and cannot be undone.</div>
   </div>
+  <aside class="ai-panel collapsed" id="ai-panel" aria-hidden="true">
+    <div class="ai-inner">
+      <div class="ai-head">
+        <span class="ai-head-title">Ask Navigator</span>
+        <button class="ai-head-close" onclick="aiToggle()" aria-label="Close AI panel">&times;</button>
+      </div>
+      <div class="ai-ctx" id="ai-ctx">
+        Assisting with <strong>Marcus R.</strong> · NV-7742 · Spokane, WA
+      </div>
+      <div class="ai-msgs" id="ai-msgs">
+        <div class="ai-empty" id="ai-empty">
+          <div class="ai-empty-title">Caseworker AI assist</div>
+          Ask anything about benefits programs, eligibility, next steps, or Marcus's current case.
+          <ul>
+            <li>"What WA programs should I check for eviction prevention?"</li>
+            <li>"Is Marcus likely eligible for ERAP given his SSI status?"</li>
+            <li>"Draft a phone script for the SSA appeal call."</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ai-input-wrap">
+        <div class="ai-input-row">
+          <textarea class="ai-input" id="ai-input" rows="1" placeholder="Ask about programs, eligibility, next steps…" onkeydown="aiKey(event)"></textarea>
+          <button class="ai-send" id="ai-send" onclick="aiSend()">Send</button>
+        </div>
+        <div class="ai-disclaimer">Navigator can make mistakes. Verify important details directly with agencies.</div>
+      </div>
+    </div>
+  </aside>
 </div>
 <script>
 function showTab(name){
@@ -176,6 +247,113 @@ function showTab(name){
   const idx={client:0,docs:1,log:2,search:3};
   document.querySelectorAll('.tab')[idx[name]].classList.add('active');
 }
+
+// ===== AI Panel =====
+const AI_HISTORY = [];  // in-memory, persists across tab switches, dies on reload
+let AI_TYPING = false;
+
+const CASEWORKER_CTX = {
+  caseworker_id: "CW-2291",
+  caseworker_name: "Sarah W.",
+  agency: "Spokane DSHS",
+  client_name: "Marcus R.",
+  client_id: "NV-7742",
+  case_number: "2026-WA-04412",
+  state: "WA",
+  client_status: "Eviction notice filed March 2026. Applied for ERAP at SNAP office. SSI award letter from 2024 flagged for review. Psych medical records and legal correspondence shared (protected).",
+};
+
+function aiToggle(){
+  const panel = document.getElementById('ai-panel');
+  const btn   = document.getElementById('ai-toggle');
+  const open  = panel.classList.toggle('collapsed') === false;
+  panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+  btn.classList.toggle('active', open);
+  if(open){
+    setTimeout(()=>{ const i = document.getElementById('ai-input'); if(i) i.focus(); }, 220);
+  }
+}
+
+function aiKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    aiSend();
+  }
+}
+
+function aiAddMsg(role, text){
+  const msgs  = document.getElementById('ai-msgs');
+  const empty = document.getElementById('ai-empty');
+  if(empty) empty.remove();
+  const el = document.createElement('div');
+  el.className = 'ai-msg ' + role;
+  el.textContent = text;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function aiShowTyping(){
+  const msgs = document.getElementById('ai-msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'ai-typing';
+  wrap.id = 'ai-typing-el';
+  wrap.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function aiHideTyping(){
+  const t = document.getElementById('ai-typing-el');
+  if(t) t.remove();
+}
+
+async function aiSend(){
+  if(AI_TYPING) return;
+  const inp  = document.getElementById('ai-input');
+  const btn  = document.getElementById('ai-send');
+  const msg  = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  AI_TYPING = true;
+  btn.disabled = true;
+  aiAddMsg('user', msg);
+  AI_HISTORY.push({role:'user', text:msg});
+  aiShowTyping();
+
+  // Prepend caseworker context to user message (Phase 1: frontend-only context injection)
+  const ctx = CASEWORKER_CTX;
+  const contextualized =
+    `[Caseworker context — you are assisting ${ctx.caseworker_name} (${ctx.caseworker_id}) at ${ctx.agency}. `
+    + `They are working with client ${ctx.client_name} (${ctx.client_id}, case ${ctx.case_number}) in ${ctx.state}. `
+    + `Client status: ${ctx.client_status} `
+    + `Respond as if advising a professional caseworker — use benefits vocabulary freely, cite specific program names and URLs where possible, be concise.]
+
+`
+    + msg;
+
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message: contextualized,
+        history: AI_HISTORY.slice(-8).map(h => ({role: h.role, text: h.text})),
+      }),
+    });
+    const data = await resp.json();
+    aiHideTyping();
+    const reply = data.reply || data.error || 'Something went wrong — please try again.';
+    aiAddMsg('assistant', reply);
+    AI_HISTORY.push({role:'assistant', text:reply});
+  } catch(e){
+    aiHideTyping();
+    aiAddMsg('assistant', 'Could not reach Navigator. Check the connection and try again.');
+  }
+  AI_TYPING = false;
+  btn.disabled = false;
+  inp.focus();
+}
+
 </script>
 </body>
 </html>
