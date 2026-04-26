@@ -33,11 +33,85 @@ def api_categories():
     from data_loader import get_categories
     return jsonify(get_categories())
 
+_BASE_SYSTEM_PROMPT = """You are Navigator, a warm and clear benefits guide built by HearthMind.
+You help neurodivergent people, trauma survivors, and anyone who feels overwhelmed find federal assistance programs.
+
+Your tone: calm, direct, never condescending. No jargon without explanation.
+You say "I found some programs that might help" not "Based on your query parameters..."
+Always mention the URL when referencing a specific program.
+If you don't know something, say so honestly.
+Keep responses concise — 2-4 short paragraphs max."""
+
+
+_STYLE_GUIDANCE = {
+    'direct':  "The user wants direct, step-by-step guidance. Skip preamble. Number steps when possible.",
+    'gentle':  "The user wants gentle, supportive language. Acknowledge effort. Avoid pressure or urgency words.",
+    'fast':    "The user wants fast summaries. Lead with the answer in one sentence, then optional detail.",
+    'minimal': "The user prefers minimal chat. Point them to resources rather than long explanations.",
+}
+
+_GOAL_FRAMING = {
+    'benefits':  "They are trying to find benefits or assistance.",
+    'paperwork': "They are dealing with a notice or paperwork and need help interpreting it.",
+    'nextsteps': "They are trying to figure out what to do next and need help orienting.",
+    'overwhelm': "They feel overwhelmed and need help breaking things down.",
+    'exploring': "They are exploring and don't know yet what they need.",
+}
+
+_BARRIER_NOTES = {
+    'focus':           "brain fog / focus is a barrier — keep responses short and concrete",
+    'overwhelm':       "they feel overwhelmed — one thing at a time, no long lists",
+    'losing_benefits': "they're afraid of losing existing benefits — be cautious before suggesting changes",
+    'paperwork':       "paperwork is hard for them — explain forms in plain language",
+    'phone':           "phone calls are a barrier — suggest scripts or written alternatives when possible",
+    'deadlines':       "they worry about missing deadlines — surface dates and timing clearly",
+}
+
+
+def _build_system_prompt(session: dict) -> str:
+    if not session:
+        return _BASE_SYSTEM_PROMPT
+
+    parts = [_BASE_SYSTEM_PROMPT, "", "--- Session context ---"]
+    name = (session.get('name') or '').strip()
+    if name:
+        parts.append(f"The user goes by: {name}. Use their name occasionally, naturally — not every message.")
+
+    goal = session.get('goal')
+    if goal and goal in _GOAL_FRAMING:
+        parts.append(_GOAL_FRAMING[goal])
+
+    barriers = session.get('barriers') or []
+    if isinstance(barriers, list) and barriers:
+        notes = [_BARRIER_NOTES[b] for b in barriers if b in _BARRIER_NOTES]
+        if notes:
+            parts.append("Known barriers: " + "; ".join(notes) + ".")
+
+    urgency = session.get('urgency')
+    if urgency == 'today':
+        parts.append("They need to act today. Lead with the single most useful next step.")
+    elif urgency == 'week':
+        parts.append("They have about a week. You can suggest a small sequence.")
+    elif urgency == 'planning':
+        parts.append("No hard deadline — they're planning ahead. Background and tradeoffs are welcome.")
+
+    style = session.get('style')
+    if style and style in _STYLE_GUIDANCE:
+        parts.append(_STYLE_GUIDANCE[style])
+
+    state = (session.get('state') or '').strip()
+    if state and state not in ('Other', 'Prefer not to say'):
+        parts.append(f"They are in {state}. Prefer state-specific resources where you know them.")
+
+    return "\n".join(parts)
+
+
 @bp.route('/api/chat', methods=['POST'])
 def api_chat():
     data       = request.get_json(force=True)
     message    = data.get('message', '').strip()
     history    = data.get('history', [])
+    session    = data.get('session') or {}
 
     if not message:
         return jsonify({'error': 'No message provided'}), 400
@@ -62,14 +136,7 @@ def api_chat():
             )
         context_block = "\n".join(context_lines) if context_lines else "No specific programs found."
 
-        system_prompt = """You are Navigator, a warm and clear benefits guide built by HearthMind.
-You help neurodivergent people, trauma survivors, and anyone who feels overwhelmed find federal assistance programs.
-
-Your tone: calm, direct, never condescending. No jargon without explanation.
-You say "I found some programs that might help" not "Based on your query parameters..."
-Always mention the URL when referencing a specific program.
-If you don't know something, say so honestly.
-Keep responses concise — 2-4 short paragraphs max."""
+        system_prompt = _build_system_prompt(session)
 
         # Build message history for Azure OpenAI format
         messages = [{"role": "system", "content": system_prompt}]
@@ -129,7 +196,7 @@ def professional():
 
 @bp.route('/app')
 def client_app():
-    return render_template('navigator_client.html')
+    return render_template('navigator_web.html')
 
 @bp.route('/copilot')
 def copilot():
