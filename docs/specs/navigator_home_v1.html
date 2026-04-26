@@ -1,0 +1,557 @@
+
+<style>
+:root {
+  --bg: #0f1a14; --surface: #162010; --card: #1c2a18;
+  --border: rgba(120,180,90,0.15); --accent: #7eb85a;
+  --accent-dim: #4a7a30; --warm: #d4803a; --warm-dim: rgba(212,128,58,0.6);
+  --text: #dde8d0; --muted: #7a9070; --hint: #4a6040;
+  --blue: #5a9fd4; --blue-dim: rgba(90,159,212,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.shell { font-family: Georgia, serif; background: var(--bg); color: var(--text); min-height: 620px; border-radius: var(--border-radius-lg); overflow: hidden; display: flex; flex-direction: column; border: 0.5px solid var(--border); }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 11px 20px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo { color: var(--accent); font-size: 12px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; }
+.slash { color: var(--hint); font-size: 12px; }
+.appname { color: var(--muted); font-size: 12px; }
+.topbadge { margin-left: auto; font-size: 10px; color: var(--muted); background: rgba(120,180,90,0.08); border: 0.5px solid var(--border); border-radius: 20px; padding: 3px 10px; }
+
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
+.center-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
+.inner { width: 100%; max-width: 460px; }
+
+.pbar-track { height: 2px; background: var(--hint); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
+.pbar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+.eyebrow { font-size: 11px; color: var(--hint); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.big-q { font-size: 22px; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+.sub-q { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+.minute-note { font-size: 11px; color: var(--hint); margin-bottom: 20px; }
+
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; cursor: pointer; color: var(--text); font-family: Georgia, serif; font-size: 14px; text-align: left; transition: all 0.12s; line-height: 1.4; width: 100%; }
+.opt:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.06); }
+.opt.sel { border-color: var(--accent); background: rgba(120,180,90,0.12); color: #b8e09a; }
+.opt.multi { border-color: var(--accent-dim); background: rgba(120,180,90,0.08); color: #a0d080; }
+
+.name-input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--text); font-family: Georgia, serif; font-size: 16px; outline: none; transition: border-color 0.2s; margin-bottom: 8px; }
+.name-input:focus { border-color: var(--accent); }
+.name-input::placeholder { color: var(--hint); }
+.other-field { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: Georgia, serif; font-size: 13px; outline: none; resize: none; height: 58px; margin-top: 6px; transition: border-color 0.2s; }
+.other-field:focus { border-color: var(--accent-dim); }
+.other-field::placeholder { color: var(--hint); }
+
+.btn-row { margin-top: 18px; display: flex; align-items: center; gap: 10px; }
+.btn-primary { background: var(--accent); color: #0a1208; border: none; border-radius: 8px; padding: 10px 22px; font-family: Georgia, serif; font-size: 13px; cursor: pointer; font-weight: bold; transition: all 0.15s; }
+.btn-primary:hover { background: #9ad070; }
+.btn-ghost { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 10px 18px; font-family: Georgia, serif; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--accent-dim); color: var(--text); }
+.hint-note { font-size: 11px; color: var(--hint); margin-top: 12px; line-height: 1.6; }
+
+.landing-card { background: rgba(120,180,90,0.06); border: 1px solid rgba(120,180,90,0.2); border-radius: 14px; padding: 28px 24px; text-align: center; }
+.landing-title { font-size: 28px; color: var(--text); margin-bottom: 8px; }
+.landing-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+.landing-divider { height: 1px; background: var(--border); margin: 20px 0; }
+.landing-note { font-size: 12px; color: var(--hint); line-height: 1.6; }
+
+.yours-card { background: rgba(120,180,90,0.08); border: 1px solid rgba(120,180,90,0.25); border-radius: 12px; padding: 22px 20px; margin-bottom: 20px; }
+.yours-title { font-size: 20px; color: var(--accent); margin-bottom: 6px; }
+.yours-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.id-chip { display: inline-flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; }
+.id-label { font-size: 10px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; }
+.id-val { font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 0.05em; }
+.privacy-note { font-size: 11px; color: var(--hint); margin-top: 14px; line-height: 1.6; }
+.privacy-note em { color: var(--muted); font-style: normal; }
+
+.dashboard-wrap { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.welcome-bar { background: rgba(120,180,90,0.06); border: 1px solid rgba(120,180,90,0.15); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+.welcome-text { font-size: 15px; color: var(--text); }
+.welcome-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.last-session { font-size: 11px; color: var(--hint); margin-top: 3px; }
+.id-mini { font-size: 10px; color: var(--hint); background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px 10px; white-space: nowrap; }
+
+.sec-label { font-size: 10px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+
+.entry-points { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.entry-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.12s; }
+.entry-card:hover { border-color: var(--accent-dim); }
+.entry-card.doc-entry { border-color: rgba(212,128,58,0.25); background: rgba(212,128,58,0.06); }
+.entry-card.doc-entry:hover { border-color: rgba(212,128,58,0.45); }
+.entry-icon { font-size: 18px; margin-bottom: 6px; }
+.entry-title { font-size: 13px; color: var(--text); margin-bottom: 2px; line-height: 1.4; }
+.entry-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.entry-card.doc-entry .entry-title { color: #e8c090; }
+
+.checklist-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.progress-track { flex: 1; height: 4px; background: var(--hint); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+.progress-label { font-size: 11px; color: var(--accent); white-space: nowrap; }
+.check-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(120,180,90,0.08); cursor: pointer; }
+.check-item:last-child { border-bottom: none; }
+.check-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--accent-dim); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: none; transition: all 0.12s; }
+.check-box.checked { background: var(--accent); border-color: var(--accent); }
+.check-tick { font-size: 10px; color: #0a1208; display: none; }
+.check-box.checked .check-tick { display: block; }
+.check-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+.check-text.done { color: var(--muted); text-decoration: line-through; }
+
+.deadline-card { background: rgba(212,128,58,0.07); border: 1px solid rgba(212,128,58,0.2); border-radius: 10px; padding: 12px 16px; }
+.deadline-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(212,128,58,0.1); }
+.deadline-row:last-child { border-bottom: none; }
+.deadline-name { font-size: 13px; color: var(--text); }
+.deadline-date { font-size: 11px; color: var(--warm); }
+.deadline-urgent { font-size: 10px; color: #e85d3a; background: rgba(232,93,58,0.1); border-radius: 8px; padding: 2px 8px; }
+
+.doc-intake-wrap { flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 16px; overflow-y: auto; }
+.doc-path-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.doc-path-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.12s; text-align: left; }
+.doc-path-card:hover { border-color: var(--accent-dim); }
+.doc-path-card.active { border-color: var(--accent); background: rgba(120,180,90,0.06); }
+.doc-path-title { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.doc-path-sub { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.doc-note { font-size: 11px; color: var(--hint); background: rgba(0,0,0,0.15); border-radius: 8px; padding: 10px 12px; line-height: 1.6; border: 1px solid var(--border); }
+.doc-note em { color: var(--muted); font-style: normal; }
+.doc-dropdown { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: Georgia, serif; font-size: 13px; outline: none; cursor: pointer; }
+.doc-dropdown:focus { border-color: var(--accent-dim); }
+.drop-area { border: 2px dashed var(--border); border-radius: 10px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.15s; }
+.drop-area:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.04); }
+.drop-label { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+.drop-sub { font-size: 11px; color: var(--hint); }
+.describe-field { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: Georgia, serif; font-size: 13px; outline: none; resize: none; height: 100px; transition: border-color 0.2s; }
+.describe-field:focus { border-color: var(--accent-dim); }
+.describe-field::placeholder { color: var(--hint); }
+
+.tabbar { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.tabbtn { flex: 1; padding: 10px 4px; font-size: 12px; color: var(--muted); text-align: center; cursor: pointer; border-bottom: 2px solid transparent; font-family: Georgia, serif; transition: all 0.12s; background: none; border-top: none; border-left: none; border-right: none; }
+.tabbtn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tabbtn:hover { color: var(--text); }
+</style>
+
+<div class="shell">
+  <div class="topbar">
+    <span class="logo">HearthMind</span>
+    <span class="slash">/</span>
+    <span class="appname">Navigator: Home</span>
+    <span class="topbadge">Your device · Your data</span>
+  </div>
+
+  <!-- FIRST TIME LANDING -->
+  <div class="screen active" id="s-land">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="landing-card">
+          <div class="landing-title">Navigator: Home</div>
+          <div class="landing-sub">Your personal benefits companion.<br>Everything stays on your computer.</div>
+          <button class="btn-primary" style="width:100%; padding:13px;" onclick="goTo('s-name')">Get started</button>
+          <div class="landing-divider"></div>
+          <div class="landing-note">No account. No server. No sharing.<br>Your information never leaves this device.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q0: Name -->
+  <div class="screen" id="s-name">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="big-q" style="font-size:26px; margin-bottom:10px;">Hi. I'm Navigator.</div>
+        <div class="big-q" style="font-size:20px; color:var(--muted); margin-bottom:28px;">What should I call you?</div>
+        <input class="name-input" id="name-input" type="text" placeholder="Your name…" autocomplete="off" />
+        <div class="hint-note">Stored on your computer only. Navigator won't share this.</div>
+        <div class="btn-row" style="margin-top:20px;">
+          <button class="btn-primary" onclick="submitName()">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1: Goal -->
+  <div class="screen" id="s1">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:16%"></div></div>
+        <div class="eyebrow">Step 1 of 6</div>
+        <div class="big-q" id="q1-heading">What would help most right now?</div>
+        <div class="minute-note">This takes about a minute. We only do this once.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s1','s2')">Find benefits or assistance</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Handle a notice or paperwork</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Figure out my next steps</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Reduce overwhelm and get organized</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">I don't know yet — just exploring</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2: Tracking (Home-specific) -->
+  <div class="screen" id="s2">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:32%"></div></div>
+        <div class="eyebrow">Step 2 of 6</div>
+        <div class="big-q">What are you mainly tracking?</div>
+        <div class="sub-q">This sets up your checklist and program matching. You can add more later.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s2','s3')">SSDI — disability benefits through Social Security</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">SSI — income support through Social Security</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">SNAP / food assistance</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">Housing or rental assistance</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">Medicaid / Apple Health</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">Multiple programs at once</button>
+          <button class="opt" onclick="pick(this,'s2','s3')">Something else</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s1')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3: Barriers -->
+  <div class="screen" id="s3">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:50%"></div></div>
+        <div class="eyebrow">Step 3 of 6</div>
+        <div class="big-q">What's making this hardest right now?</div>
+        <div class="sub-q">Select all that apply. No wrong answers.</div>
+        <div class="opts">
+          <button class="opt" onclick="toggle(this)">I can't focus / brain fog</button>
+          <button class="opt" onclick="toggle(this)">I'm overwhelmed and don't know where to start</button>
+          <button class="opt" onclick="toggle(this)">I'm afraid I'll lose benefits I already have</button>
+          <button class="opt" onclick="toggle(this)">Paperwork and forms</button>
+          <button class="opt" onclick="toggle(this)">Phone calls</button>
+          <button class="opt" onclick="toggle(this)">Deadlines I might miss</button>
+        </div>
+        <textarea class="other-field" placeholder="Something else? Describe it here — or leave blank…"></textarea>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="goTo('s4')">Continue</button>
+          <button class="btn-ghost" onclick="goTo('s2')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4: Urgency -->
+  <div class="screen" id="s4">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:66%"></div></div>
+        <div class="eyebrow">Step 4 of 6</div>
+        <div class="big-q">How urgent is this?</div>
+        <div class="sub-q">Helps Navigator prioritize what to show you first.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s4','s5')">I need to act today</button>
+          <button class="opt" onclick="pick(this,'s4','s5')">This week</button>
+          <button class="opt" onclick="pick(this,'s4','s5')">No hard deadline — I'm planning ahead</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s3')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5: Style -->
+  <div class="screen" id="s5">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:84%"></div></div>
+        <div class="eyebrow">Step 5 of 6</div>
+        <div class="big-q">How do you want Navigator to talk with you?</div>
+        <div class="sub-q">You can change this anytime in settings.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s5','s6')">Direct and step-by-step</button>
+          <button class="opt" onclick="pick(this,'s5','s6')">Gentle and supportive</button>
+          <button class="opt" onclick="pick(this,'s5','s6')">Fast — just give me the summary</button>
+          <button class="opt" onclick="pick(this,'s5','s6')">Just show me resources, minimal chat</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s4')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6: State -->
+  <div class="screen" id="s6">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:100%"></div></div>
+        <div class="eyebrow">Step 6 of 6</div>
+        <div class="big-q">What state are you in?</div>
+        <div class="sub-q">Used to find local programs and resources.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s6','s-yours')">Washington</button>
+          <button class="opt" onclick="pick(this,'s6','s-yours')">Oregon</button>
+          <button class="opt" onclick="pick(this,'s6','s-yours')">Idaho</button>
+          <button class="opt" onclick="pick(this,'s6','s-yours')">Other state</button>
+          <button class="opt" onclick="pick(this,'s6','s-yours')">Prefer not to say</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s5')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THIS IS YOURS NOW -->
+  <div class="screen" id="s-yours">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="yours-card">
+          <div class="yours-title">This is yours now.</div>
+          <div class="yours-sub">Everything is stored on your computer. Navigator doesn't retain or share your information.</div>
+          <div class="id-chip">
+            <div>
+              <div class="id-label">Your Navigator ID</div>
+              <div class="id-val" id="nav-id">NV-4831</div>
+            </div>
+          </div>
+          <div class="privacy-note">This ID is yours to keep. If you ever work with a caseworker through <em>Navigator: Field</em>, you can share it to connect — but only when you choose to.</div>
+        </div>
+        <button class="btn-primary" style="width:100%; padding:13px;" onclick="goTo('s-dash')">Go to my dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETURNING DASHBOARD -->
+  <div class="screen" id="s-dash" style="overflow:hidden; flex-direction:column;">
+    <div class="tabbar">
+      <button class="tabbtn active" onclick="showTab('dash',this)">Home</button>
+      <button class="tabbtn" onclick="showTab('doc',this)">Documents</button>
+      <button class="tabbtn" onclick="showTab('programs',this)">Programs</button>
+      <button class="tabbtn" onclick="showTab('ask',this)">Ask</button>
+    </div>
+
+    <div id="tab-dash" class="dashboard-wrap">
+      <div class="welcome-bar">
+        <div>
+          <div class="welcome-text" id="welcome-name">Welcome back.</div>
+          <div class="welcome-sub">SSDI application in progress</div>
+          <div class="last-session">Last session: yesterday — working on work history documentation</div>
+        </div>
+        <div class="id-mini" id="dash-id">NV-4831</div>
+      </div>
+
+      <div>
+        <div class="sec-label">Quick actions</div>
+        <div class="entry-points">
+          <div class="entry-card doc-entry" onclick="showTab('doc', document.querySelector('.tabbtn:nth-child(2)'))">
+            <div class="entry-icon" style="font-size:18px; color:var(--warm);">&#9993;</div>
+            <div class="entry-title">I need help understanding a document</div>
+            <div class="entry-sub">Upload a PDF or describe what you see</div>
+          </div>
+          <div class="entry-card" onclick="showTab('ask', document.querySelector('.tabbtn:nth-child(4)'))">
+            <div class="entry-icon" style="font-size:18px; color:var(--accent);">&#9679;</div>
+            <div class="entry-title">Ask Navigator</div>
+            <div class="entry-sub">Continue where you left off</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-label">Your checklist — SSDI application</div>
+        <div class="checklist-card">
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" style="width:43%"></div></div>
+            <div class="progress-label">3 of 7 done</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box checked"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text done">Gather ID and Social Security card</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box checked"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text done">List all doctors and treatment facilities</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box checked"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text done">Request medical records (last 12 months)</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text">Document work history — last 15 years</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text">Gather current medications list</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text">Set up direct deposit account info</div>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-tick">&#10003;</span></div>
+            <div class="check-text">Submit initial application</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-label">Upcoming deadlines</div>
+        <div class="deadline-card">
+          <div class="deadline-row">
+            <div class="deadline-name">DSHS Apple Health renewal</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="deadline-urgent">9 days</span>
+              <span class="deadline-date">Apr 10</span>
+            </div>
+          </div>
+          <div class="deadline-row">
+            <div class="deadline-name">SSA work history form due</div>
+            <div><span class="deadline-date">Apr 22</span></div>
+          </div>
+          <div class="deadline-row">
+            <div class="deadline-name">HEN program referral follow-up</div>
+            <div><span class="deadline-date">May 1</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-doc" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+      <div class="doc-intake-wrap">
+        <div class="sec-label">Understand a document</div>
+        <div class="doc-path-row">
+          <button class="doc-path-card active" id="path-a-btn" onclick="selectPath('a')">
+            <div class="doc-path-title">I have a PDF</div>
+            <div class="doc-path-sub">Upload a digital copy — Navigator will read it</div>
+          </button>
+          <button class="doc-path-card" id="path-b-btn" onclick="selectPath('b')">
+            <div class="doc-path-title">I don't have a file</div>
+            <div class="doc-path-sub">Describe what you see — Navigator will help</div>
+          </button>
+        </div>
+
+        <div id="path-a">
+          <div class="doc-note" style="margin-bottom:10px;">Have a document? Upload a PDF. <em>Photos don't work yet — we'll add that soon.</em> Scanned PDFs may not read correctly.</div>
+          <select class="doc-dropdown" style="margin-bottom:10px;">
+            <option value="" disabled selected>What kind of document is this?</option>
+            <option>Appeal / Denial letter</option>
+            <option>Eviction notice</option>
+            <option>SSDI / Social Security</option>
+            <option>DSHS / State benefits</option>
+            <option>HEN Program</option>
+            <option>Lease agreement</option>
+            <option>Medical records</option>
+            <option>Income / Employment</option>
+            <option>Identity documents</option>
+            <option>Legal correspondence</option>
+            <option>Housing</option>
+            <option>Other — I'll describe it</option>
+          </select>
+          <div class="drop-area">
+            <div class="drop-label">Drop your PDF here</div>
+            <div class="drop-sub">or click to browse</div>
+          </div>
+        </div>
+
+        <div id="path-b" style="display:none;">
+          <div class="doc-note" style="margin-bottom:10px;">No file? That's okay. <em>Describe what you see and Navigator will help you figure out what it means.</em></div>
+          <select class="doc-dropdown" style="margin-bottom:10px;">
+            <option value="" disabled selected>What kind of document is this?</option>
+            <option>Appeal / Denial letter</option>
+            <option>Eviction notice</option>
+            <option>SSDI / Social Security</option>
+            <option>DSHS / State benefits</option>
+            <option>HEN Program</option>
+            <option>Lease agreement</option>
+            <option>Medical records</option>
+            <option>Income / Employment</option>
+            <option>Identity documents</option>
+            <option>Legal correspondence</option>
+            <option>Housing</option>
+            <option>Other</option>
+          </select>
+          <textarea class="describe-field" placeholder="Tell me what you see — who sent it, what it says, any dates or numbers you notice. You don't need to have the right words."></textarea>
+          <div class="btn-row" style="margin-top:8px;">
+            <button class="btn-primary">Help me understand this</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-programs" style="display:none; flex:1; padding:20px;">
+      <div class="sec-label">Your programs</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6;">Program cards with eligibility matching, "how this actually works" notes, and save-to-case will appear here.</div>
+    </div>
+
+    <div id="tab-ask" style="display:none; flex:1; padding:20px;">
+      <div class="sec-label">Ask Navigator</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6;">Chat panel — pre-loaded with your case context, checklist state, and document history.</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+  <button onclick="goTo('s-land')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Landing</button>
+  <button onclick="goTo('s-name')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Name</button>
+  <button onclick="goTo('s1')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q1</button>
+  <button onclick="goTo('s2')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q2 — tracking</button>
+  <button onclick="goTo('s-yours')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">This is yours</button>
+  <button onclick="goTo('s-dash')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Dashboard</button>
+</div>
+
+<script>
+let userName = '';
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display='none'; });
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  el.classList.add('active');
+}
+function submitName() {
+  userName = document.getElementById('name-input').value.trim() || '';
+  if (userName) {
+    const h = document.getElementById('q1-heading');
+    if (h) h.textContent = 'Hi, ' + userName + '. What would help most right now?';
+    const w = document.getElementById('welcome-name');
+    if (w) w.textContent = 'Welcome back, ' + userName + '.';
+  }
+  const id = 'NV-' + Math.floor(1000 + Math.random() * 9000);
+  const el = document.getElementById('nav-id');
+  if (el) el.textContent = id;
+  const di = document.getElementById('dash-id');
+  if (di) di.textContent = id;
+  goTo('s1');
+}
+function pick(btn, cur, next) {
+  document.querySelectorAll('#'+cur+' .opt').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  setTimeout(() => goTo(next), 260);
+}
+function toggle(btn) { btn.classList.toggle('multi'); }
+function toggleCheck(row) {
+  const box = row.querySelector('.check-box');
+  const text = row.querySelector('.check-text');
+  box.classList.toggle('checked');
+  text.classList.toggle('done');
+  const checks = document.querySelectorAll('.check-box.checked').length;
+  const total = document.querySelectorAll('.check-box').length;
+  const fill = document.querySelector('.progress-fill');
+  const label = document.querySelector('.progress-label');
+  if (fill) fill.style.width = Math.round(checks/total*100) + '%';
+  if (label) label.textContent = checks + ' of ' + total + ' done';
+}
+function showTab(name, btn) {
+  ['dash','doc','programs','ask'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (el) el.style.display = 'none';
+  });
+  const active = document.getElementById('tab-'+name);
+  if (active) { active.style.display = 'flex'; active.style.flexDirection = 'column'; }
+  document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function selectPath(path) {
+  document.getElementById('path-a').style.display = path === 'a' ? 'block' : 'none';
+  document.getElementById('path-b').style.display = path === 'b' ? 'block' : 'none';
+  document.getElementById('path-a-btn').classList.toggle('active', path === 'a');
+  document.getElementById('path-b-btn').classList.toggle('active', path === 'b');
+}
+document.getElementById('name-input').addEventListener('keydown', e => { if(e.key==='Enter') submitName(); });
+document.querySelectorAll('.screen').forEach((s,i) => { if(i>0) s.style.display='none'; });
+</script>

@@ -1,0 +1,539 @@
+
+<style>
+:root {
+  --bg: #0f1a14; --surface: #162010; --card: #1c2a18;
+  --border: rgba(120,180,90,0.15); --accent: #7eb85a;
+  --accent-dim: #4a7a30; --warm: #d4803a; --warm-dim: rgba(212,128,58,0.6);
+  --text: #dde8d0; --muted: #7a9070; --hint: #4a6040;
+  --red: #e85d3a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.shell { font-family: Georgia, serif; background: var(--bg); color: var(--text); height: 640px; border-radius: var(--border-radius-lg); overflow: hidden; display: flex; flex-direction: column; border: 0.5px solid var(--border); }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.topbar-left { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.topbar-logo { display: flex; align-items: center; gap: 6px; }
+.logo { color: var(--accent); font-size: 11px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; }
+.slash { color: var(--hint); font-size: 11px; }
+.appname { color: var(--muted); font-size: 11px; }
+.topbar-left-off { font-size: 11px; color: var(--hint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.topbar-left-off em { color: var(--muted); font-style: normal; }
+
+.topbar-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex-shrink: 0; }
+.id-pill { font-size: 10px; color: var(--hint); background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 2px 8px; }
+.deadline-pill { font-size: 11px; color: var(--warm); display: flex; align-items: center; gap: 4px; }
+.deadline-pill.urgent { color: var(--red); }
+.deadline-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--warm); flex-shrink: 0; }
+.deadline-pill.urgent .deadline-dot { background: var(--red); }
+
+.tabbar { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.tabbtn { flex: 1; padding: 9px 4px; font-size: 11px; color: var(--muted); text-align: center; cursor: pointer; border-bottom: 2px solid transparent; font-family: Georgia, serif; transition: all 0.12s; background: none; border-top: none; border-left: none; border-right: none; }
+.tabbtn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tabbtn:hover { color: var(--text); }
+
+.tab-content { flex: 1; overflow-y: auto; padding: 16px 18px; display: none; flex-direction: column; gap: 14px; }
+.tab-content.active { display: flex; }
+
+.sec-label { font-size: 10px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+
+.welcome-bar { background: rgba(120,180,90,0.06); border: 1px solid rgba(120,180,90,0.15); border-radius: 10px; padding: 12px 16px; }
+.welcome-name { font-size: 15px; color: var(--text); margin-bottom: 2px; }
+.welcome-sub { font-size: 12px; color: var(--muted); }
+
+.entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.entry-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.12s; text-align: left; width: 100%; }
+.entry-card:hover { border-color: var(--accent-dim); }
+.entry-card.warm { border-color: rgba(212,128,58,0.25); background: rgba(212,128,58,0.05); }
+.entry-card.warm:hover { border-color: rgba(212,128,58,0.45); }
+.entry-title { font-size: 13px; color: var(--text); margin-bottom: 3px; line-height: 1.4; }
+.entry-card.warm .entry-title { color: #e8c090; }
+.entry-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+.checklist-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.progress-track { flex: 1; height: 4px; background: var(--hint); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+.progress-label { font-size: 11px; color: var(--accent); white-space: nowrap; }
+.check-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(120,180,90,0.08); cursor: pointer; }
+.check-item:last-child { border-bottom: none; }
+.check-box { width: 15px; height: 15px; border-radius: 3px; border: 1px solid var(--accent-dim); flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: none; transition: all 0.12s; margin-top: 1px; }
+.check-box.checked { background: var(--accent); border-color: var(--accent); }
+.check-tick { font-size: 9px; color: #0a1208; display: none; }
+.check-box.checked .check-tick { display: block; }
+.check-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+.check-text.done { color: var(--muted); text-decoration: line-through; }
+
+.deadline-card { background: rgba(212,128,58,0.07); border: 1px solid rgba(212,128,58,0.2); border-radius: 10px; padding: 11px 15px; }
+.deadline-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(212,128,58,0.1); }
+.deadline-row:last-child { border-bottom: none; }
+.deadline-name { font-size: 12px; color: var(--text); }
+.deadline-date { font-size: 11px; color: var(--warm); }
+.deadline-urgent-tag { font-size: 10px; color: var(--red); background: rgba(232,93,58,0.1); border-radius: 8px; padding: 1px 7px; margin-right: 6px; }
+
+.contact-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.contact-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(120,180,90,0.08); }
+.contact-row:last-of-type { border-bottom: none; }
+.contact-avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(120,180,90,0.12); border: 1px solid var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--accent); font-weight: bold; flex-shrink: 0; }
+.contact-avatar.warm { background: rgba(212,128,58,0.12); border-color: rgba(212,128,58,0.3); color: var(--warm); }
+.contact-info { flex: 1; min-width: 0; }
+.contact-name { font-size: 13px; color: var(--text); margin-bottom: 1px; }
+.contact-role { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.contact-phone { font-size: 11px; color: var(--accent); }
+.contact-phone.warm { color: var(--warm); }
+.add-contact { display: flex; align-items: center; gap: 8px; padding: 10px 0 2px; cursor: pointer; color: var(--hint); font-size: 12px; background: none; border: none; font-family: Georgia, serif; width: 100%; }
+.add-contact:hover { color: var(--muted); }
+.add-icon { width: 28px; height: 28px; border-radius: 50%; border: 1px dashed var(--hint); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+
+.doc-path-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.doc-path-btn { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.12s; text-align: left; }
+.doc-path-btn:hover { border-color: var(--accent-dim); }
+.doc-path-btn.active { border-color: var(--accent); background: rgba(120,180,90,0.06); }
+.doc-path-title { font-size: 13px; color: var(--text); margin-bottom: 3px; }
+.doc-path-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.doc-note { font-size: 11px; color: var(--hint); background: rgba(0,0,0,0.15); border-radius: 8px; padding: 9px 12px; line-height: 1.6; border: 1px solid var(--border); margin-bottom: 10px; }
+.doc-note em { color: var(--muted); font-style: normal; }
+.doc-select { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: Georgia, serif; font-size: 13px; outline: none; margin-bottom: 10px; cursor: pointer; }
+.drop-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.15s; }
+.drop-zone:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.03); }
+.drop-label { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+.drop-sub { font-size: 11px; color: var(--hint); }
+.describe-field { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: Georgia, serif; font-size: 13px; outline: none; resize: none; height: 90px; transition: border-color 0.2s; }
+.describe-field:focus { border-color: var(--accent-dim); }
+.describe-field::placeholder { color: var(--hint); }
+.doc-saved-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.doc-name { font-size: 12px; color: var(--text); }
+.doc-tag { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.doc-date { font-size: 10px; color: var(--hint); margin-left: auto; white-space: nowrap; }
+
+.prog-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 7px; cursor: pointer; transition: all 0.12s; }
+.prog-card:hover { border-color: var(--accent-dim); }
+.prog-card.open { border-color: var(--accent-dim); }
+.prog-t { font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.prog-a { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+.prog-row { display: flex; align-items: center; gap: 8px; }
+.prog-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(120,180,90,0.1); color: var(--accent); }
+.prog-match { font-size: 10px; color: var(--muted); margin-left: auto; }
+.prog-body { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.prog-card.open .prog-body { display: block; }
+.prog-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 6px; }
+.prog-works { font-size: 11px; color: var(--hint); background: rgba(0,0,0,0.15); border-radius: 0; padding: 7px 10px; margin-bottom: 8px; line-height: 1.5; border-left: 2px solid var(--accent-dim); }
+.prog-action { font-size: 11px; color: var(--accent); background: rgba(120,180,90,0.08); border: 1px solid rgba(120,180,90,0.2); border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: Georgia, serif; }
+
+.hist-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; cursor: pointer; transition: all 0.12s; margin-bottom: 8px; }
+.hist-item:hover { border-color: var(--accent-dim); }
+.hist-item.open { border-color: var(--accent-dim); }
+.hist-date { font-size: 10px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.hist-summary { font-size: 13px; color: var(--text); line-height: 1.5; margin-bottom: 5px; }
+.hist-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.hist-tag { font-size: 10px; color: var(--muted); background: rgba(120,180,90,0.08); border-radius: 8px; padding: 2px 7px; }
+.hist-body { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.hist-item.open .hist-body { display: block; }
+.hist-q { font-size: 12px; color: #b0d090; margin-bottom: 3px; }
+.hist-a { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 8px; }
+.hist-continue { font-size: 11px; color: var(--accent); background: rgba(120,180,90,0.08); border: 1px solid rgba(120,180,90,0.2); border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: Georgia, serif; }
+
+.chat-bar { border-top: 1px solid var(--border); background: var(--surface); padding: 9px 14px; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+.chat-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: Georgia, serif; font-size: 13px; resize: none; height: 38px; outline: none; line-height: 1.4; }
+.chat-input:focus { border-color: var(--accent-dim); }
+.chat-input::placeholder { color: var(--hint); }
+.chat-send { background: var(--warm); border: none; border-radius: 8px; width: 34px; height: 34px; color: #0a0a0a; font-size: 14px; cursor: pointer; flex-shrink: 0; }
+</style>
+
+<div class="shell">
+
+  <!-- TOPBAR with left-off + deadline -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <span class="logo">HearthMind</span>
+        <span class="slash">/</span>
+        <span class="appname">Navigator: Home</span>
+      </div>
+      <div class="topbar-left-off">Where you left off: <em>work history documentation</em></div>
+    </div>
+    <div class="topbar-right">
+      <div class="id-pill">NV-4831</div>
+      <div class="deadline-pill urgent">
+        <span class="deadline-dot"></span>
+        Apple Health renewal — 9 days
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tabbtn active" onclick="showTab('home',this)">Home</button>
+    <button class="tabbtn" onclick="showTab('docs',this)">Documents</button>
+    <button class="tabbtn" onclick="showTab('programs',this)">Programs</button>
+    <button class="tabbtn" onclick="showTab('contacts',this)">Contacts</button>
+    <button class="tabbtn" onclick="showTab('history',this)">History</button>
+  </div>
+
+  <!-- HOME TAB -->
+  <div id="tab-home" class="tab-content active">
+    <div class="welcome-bar">
+      <div class="welcome-name">Welcome back, Robin.</div>
+      <div class="welcome-sub">SSDI application in progress · Washington</div>
+    </div>
+
+    <div>
+      <div class="sec-label">Quick actions</div>
+      <div class="entry-grid">
+        <button class="entry-card warm" onclick="showTab('docs', document.querySelectorAll('.tabbtn')[1])">
+          <div class="entry-title">I need help understanding a document</div>
+          <div class="entry-sub">Upload a PDF or describe what you see</div>
+        </button>
+        <button class="entry-card" onclick="focusChat()">
+          <div class="entry-title">Continue where you left off</div>
+          <div class="entry-sub">Work history documentation</div>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Your checklist — SSDI application</div>
+      <div class="checklist-card">
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:43%"></div></div>
+          <div class="progress-label" id="prog-label">3 of 7 done</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box checked"><span class="check-tick">✓</span></div>
+          <div class="check-text done">Gather ID and Social Security card</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box checked"><span class="check-tick">✓</span></div>
+          <div class="check-text done">List all doctors and treatment facilities</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box checked"><span class="check-tick">✓</span></div>
+          <div class="check-text done">Request medical records (last 12 months)</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><span class="check-tick">✓</span></div>
+          <div class="check-text">Document work history — last 15 years</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><span class="check-tick">✓</span></div>
+          <div class="check-text">Gather current medications list</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><span class="check-tick">✓</span></div>
+          <div class="check-text">Set up direct deposit account info</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"><span class="check-tick">✓</span></div>
+          <div class="check-text">Submit initial application</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Upcoming deadlines</div>
+      <div class="deadline-card">
+        <div class="deadline-row">
+          <div class="deadline-name">Apple Health renewal</div>
+          <div style="display:flex;align-items:center;">
+            <span class="deadline-urgent-tag">9 days</span>
+            <span class="deadline-date">Apr 10</span>
+          </div>
+        </div>
+        <div class="deadline-row">
+          <div class="deadline-name">SSA work history form</div>
+          <div><span class="deadline-date">Apr 22</span></div>
+        </div>
+        <div class="deadline-row">
+          <div class="deadline-name">HEN program follow-up</div>
+          <div><span class="deadline-date">May 1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS TAB -->
+  <div id="tab-docs" class="tab-content">
+    <div>
+      <div class="sec-label">Understand a document</div>
+      <div class="doc-path-row">
+        <button class="doc-path-btn active" id="path-a-btn" onclick="selectPath('a')">
+          <div class="doc-path-title">I have a PDF</div>
+          <div class="doc-path-sub">Upload a digital copy — Navigator will read it</div>
+        </button>
+        <button class="doc-path-btn" id="path-b-btn" onclick="selectPath('b')">
+          <div class="doc-path-title">I don't have a file</div>
+          <div class="doc-path-sub">Describe what you see — Navigator will help</div>
+        </button>
+      </div>
+      <div id="path-a-content">
+        <div class="doc-note">Have a document? Upload a PDF. <em>Photos don't work yet — we'll add that soon.</em> Scanned PDFs may not read correctly.</div>
+        <select class="doc-select">
+          <option value="" disabled selected>What kind of document is this?</option>
+          <option>Appeal / Denial letter</option>
+          <option>Eviction notice</option>
+          <option>SSDI / Social Security</option>
+          <option>DSHS / State benefits</option>
+          <option>HEN Program</option>
+          <option>Lease agreement</option>
+          <option>Medical records</option>
+          <option>Income / Employment</option>
+          <option>Identity documents</option>
+          <option>Legal correspondence</option>
+          <option>Housing</option>
+          <option>Other — I'll describe it</option>
+        </select>
+        <div class="drop-zone">
+          <div class="drop-label">Drop your PDF here</div>
+          <div class="drop-sub">or click to browse</div>
+        </div>
+      </div>
+      <div id="path-b-content" style="display:none;">
+        <div class="doc-note">No file? That's okay. <em>Describe what you see and Navigator will help you figure out what it means.</em></div>
+        <select class="doc-select">
+          <option value="" disabled selected>What kind of document is this?</option>
+          <option>Appeal / Denial letter</option>
+          <option>Eviction notice</option>
+          <option>SSDI / Social Security</option>
+          <option>DSHS / State benefits</option>
+          <option>HEN Program</option>
+          <option>Lease agreement</option>
+          <option>Medical records</option>
+          <option>Income / Employment</option>
+          <option>Identity documents</option>
+          <option>Legal correspondence</option>
+          <option>Housing</option>
+          <option>Other</option>
+        </select>
+        <textarea class="describe-field" placeholder="Tell me what you see — who sent it, what it says, any dates or numbers you notice. You don't need the right words."></textarea>
+        <div style="margin-top:8px;">
+          <button style="background:var(--accent);color:#0a1208;border:none;border-radius:8px;padding:9px 18px;font-family:Georgia,serif;font-size:13px;font-weight:bold;cursor:pointer;">Help me understand this</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label">Saved documents</div>
+      <div class="doc-saved-item">
+        <div>
+          <div class="doc-name">Denial_Letter_SSA_March2026.pdf</div>
+          <div class="doc-tag">SSDI / Social Security · Appeal / Denial letter</div>
+        </div>
+        <div class="doc-date">Mar 18</div>
+      </div>
+      <div class="doc-saved-item">
+        <div>
+          <div class="doc-name">Eviction_Notice_March2026.pdf</div>
+          <div class="doc-tag">Eviction notice</div>
+        </div>
+        <div class="doc-date">Mar 12</div>
+      </div>
+      <div class="doc-saved-item">
+        <div>
+          <div class="doc-name">Apple_Health_Renewal_Notice.pdf</div>
+          <div class="doc-tag">DSHS / State benefits</div>
+        </div>
+        <div class="doc-date">Mar 5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAMS TAB -->
+  <div id="tab-programs" class="tab-content">
+    <div class="sec-label">Your saved programs</div>
+    <div class="prog-card" onclick="this.classList.toggle('open')">
+      <div class="prog-t">Social Security Disability Insurance (SSDI)</div>
+      <div class="prog-a">Social Security Administration</div>
+      <div class="prog-row">
+        <span class="prog-badge">Direct payments</span>
+        <span class="prog-match">Application in progress</span>
+      </div>
+      <div class="prog-body">
+        <div class="prog-desc">Monthly payments for people with disabilities who have enough work history. Based on your earnings record, not current income.</div>
+        <button class="prog-action">Next step: Submit work history form →</button>
+      </div>
+    </div>
+    <div class="prog-card" onclick="this.classList.toggle('open')">
+      <div class="prog-t">Housing and Essential Needs (HEN)</div>
+      <div class="prog-a">Referred by DSHS · Administered by Goodwill</div>
+      <div class="prog-row">
+        <span class="prog-badge">Services</span>
+        <span class="prog-match">Eligible</span>
+      </div>
+      <div class="prog-body">
+        <div class="prog-desc">Rental assistance and essential needs for people applying for SSDI or SSI in Washington.</div>
+        <div class="prog-works">How this actually works: HEN is referred by DSHS but administered by Goodwill or another community org depending on your county. Apply through DSHS first — they refer you to the right place.</div>
+        <button class="prog-action">Next step: Contact DSHS for HEN referral →</button>
+      </div>
+    </div>
+    <div class="prog-card" onclick="this.classList.toggle('open')">
+      <div class="prog-t">WA Apple Health (Medicaid)</div>
+      <div class="prog-a">Washington State HCA</div>
+      <div class="prog-row">
+        <span class="prog-badge">Services</span>
+        <span class="prog-match" style="color:var(--red);">Renewal due Apr 10</span>
+      </div>
+      <div class="prog-body">
+        <div class="prog-desc">Free or low-cost health coverage including medical, dental, vision, and mental health.</div>
+        <button class="prog-action">Next step: Complete renewal before Apr 10 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACTS TAB -->
+  <div id="tab-contacts" class="tab-content">
+    <div class="sec-label">Your contacts</div>
+    <div class="contact-card">
+      <div class="contact-row">
+        <div class="contact-avatar">SW</div>
+        <div class="contact-info">
+          <div class="contact-name">Sarah W.</div>
+          <div class="contact-role">Caseworker · Spokane DSHS</div>
+          <div class="contact-phone">(509) 458-2800</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-avatar warm">DR</div>
+        <div class="contact-info">
+          <div class="contact-name">Dr. Rivera's Office</div>
+          <div class="contact-role">Primary care · MultiCare Rockwood</div>
+          <div class="contact-phone warm">(509) 838-2531</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-avatar" style="background:rgba(90,159,212,0.12);border-color:rgba(90,159,212,0.3);color:#5a9fd4;">SS</div>
+        <div class="contact-info">
+          <div class="contact-name">Social Security Office</div>
+          <div class="contact-role">SSDI case · Spokane field office</div>
+          <div class="contact-phone" style="color:#5a9fd4;">1-800-772-1213</div>
+        </div>
+      </div>
+      <button class="add-contact">
+        <div class="add-icon">+</div>
+        Add a contact
+      </button>
+    </div>
+
+    <div>
+      <div class="sec-label">Quick reference</div>
+      <div class="contact-card">
+        <div class="contact-row">
+          <div class="contact-info">
+            <div class="contact-role">Navigator ID</div>
+            <div class="contact-name" style="color:var(--accent);letter-spacing:0.05em;">NV-4831</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-info">
+            <div class="contact-role">SSDI case status</div>
+            <div class="contact-name">Initial application — in review</div>
+          </div>
+        </div>
+        <div class="contact-row" style="border-bottom:none;">
+          <div class="contact-info">
+            <div class="contact-role">Apple Health member ID</div>
+            <div class="contact-name">WA-2847-9301</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" class="tab-content">
+    <div class="sec-label">Previous conversations</div>
+    <div class="hist-item" onclick="this.classList.toggle('open')">
+      <div class="hist-date">Yesterday · March 31, 2026</div>
+      <div class="hist-summary">Work history documentation — what counts, 15-year lookback, part-time jobs</div>
+      <div class="hist-tags">
+        <span class="hist-tag">SSDI</span>
+        <span class="hist-tag">Work history</span>
+        <span class="hist-tag">Documentation</span>
+      </div>
+      <div class="hist-body">
+        <div class="hist-q">Do part-time jobs count toward SSDI work history?</div>
+        <div class="hist-a">Yes — SSDI looks at total work credits over your lifetime, not just full-time employment. Even part-time work where Social Security taxes were withheld earns credits.</div>
+        <button class="hist-continue" onclick="focusChat()">Continue this conversation →</button>
+      </div>
+    </div>
+    <div class="hist-item" onclick="this.classList.toggle('open')">
+      <div class="hist-date">March 28, 2026</div>
+      <div class="hist-summary">Denial letter — what it means, appeal timeline, next steps</div>
+      <div class="hist-tags">
+        <span class="hist-tag">SSDI</span>
+        <span class="hist-tag">Denial</span>
+        <span class="hist-tag">Appeal</span>
+      </div>
+      <div class="hist-body">
+        <div class="hist-q">I got a denial letter. Does this mean it's over?</div>
+        <div class="hist-a">No — first denials are extremely common. About 65% of initial SSDI claims are denied. You have 60 days from the date on the letter to file for reconsideration.</div>
+        <button class="hist-continue" onclick="focusChat()">Continue this conversation →</button>
+      </div>
+    </div>
+    <div class="hist-item" onclick="this.classList.toggle('open')">
+      <div class="hist-date">March 22, 2026</div>
+      <div class="hist-summary">HEN program eligibility and how to apply through DSHS</div>
+      <div class="hist-tags">
+        <span class="hist-tag">HEN</span>
+        <span class="hist-tag">Housing</span>
+        <span class="hist-tag">DSHS</span>
+      </div>
+      <div class="hist-body">
+        <div class="hist-q">What is the HEN program and do I qualify?</div>
+        <div class="hist-a">HEN provides rental assistance to people applying for SSDI or SSI in Washington. Since you have an active application, you likely qualify. Apply through DSHS first — they refer you to Goodwill or another org that administers it.</div>
+        <button class="hist-continue" onclick="focusChat()">Continue this conversation →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSISTENT CHAT BAR -->
+  <div class="chat-bar">
+    <textarea class="chat-input" id="chat-input" placeholder="Ask Navigator anything about your case…" rows="1"></textarea>
+    <button class="chat-send">↑</button>
+  </div>
+</div>
+
+<div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+  <button onclick="showTab('home',document.querySelectorAll('.tabbtn')[0])" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Home</button>
+  <button onclick="showTab('docs',document.querySelectorAll('.tabbtn')[1])" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Documents</button>
+  <button onclick="showTab('programs',document.querySelectorAll('.tabbtn')[2])" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Programs</button>
+  <button onclick="showTab('contacts',document.querySelectorAll('.tabbtn')[3])" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Contacts</button>
+  <button onclick="showTab('history',document.querySelectorAll('.tabbtn')[4])" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">History</button>
+</div>
+
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById('tab-'+name);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function toggleCheck(row) {
+  const box = row.querySelector('.check-box');
+  const text = row.querySelector('.check-text');
+  box.classList.toggle('checked');
+  text.classList.toggle('done');
+  const checks = document.querySelectorAll('#tab-home .check-box.checked').length;
+  const total = document.querySelectorAll('#tab-home .check-box').length;
+  const fill = document.getElementById('prog-fill');
+  const label = document.getElementById('prog-label');
+  if (fill) fill.style.width = Math.round(checks/total*100) + '%';
+  if (label) label.textContent = checks + ' of ' + total + ' done';
+}
+function selectPath(path) {
+  document.getElementById('path-a-content').style.display = path === 'a' ? 'block' : 'none';
+  document.getElementById('path-b-content').style.display = path === 'b' ? 'block' : 'none';
+  document.getElementById('path-a-btn').classList.toggle('active', path === 'a');
+  document.getElementById('path-b-btn').classList.toggle('active', path === 'b');
+}
+function focusChat() {
+  const inp = document.getElementById('chat-input');
+  if (inp) inp.focus();
+}
+</script>

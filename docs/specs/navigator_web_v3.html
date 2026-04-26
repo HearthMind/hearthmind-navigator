@@ -1,0 +1,453 @@
+
+<style>
+:root {
+  --bg: #0f1a14;
+  --surface: #162010;
+  --card: #1c2a18;
+  --border: rgba(120,180,90,0.15);
+  --accent: #7eb85a;
+  --accent-dim: #4a7a30;
+  --warm: #d4803a;
+  --text: #dde8d0;
+  --muted: #7a9070;
+  --hint: #4a6040;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.shell {
+  font-family: Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 600px;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--border);
+}
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.logo { color: var(--accent); font-size: 12px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; }
+.slash { color: var(--hint); font-size: 12px; }
+.appname { color: var(--muted); font-size: 12px; }
+.topbadge { margin-left: auto; font-size: 10px; color: var(--muted); background: rgba(120,180,90,0.08); border: 0.5px solid var(--border); border-radius: 20px; padding: 3px 10px; }
+
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
+
+.center-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
+.inner { width: 100%; max-width: 460px; }
+
+.pbar-track { height: 2px; background: var(--hint); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
+.pbar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+.eyebrow { font-size: 11px; color: var(--hint); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.big-q { font-size: 22px; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+.sub-q { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.6; }
+.minute-note { font-size: 11px; color: var(--hint); margin-bottom: 22px; }
+
+.opts { display: flex; flex-direction: column; gap: 7px; }
+.opt {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: var(--text);
+  font-family: Georgia, serif;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.12s;
+  line-height: 1.4;
+  width: 100%;
+}
+.opt:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.06); }
+.opt.sel { border-color: var(--accent); background: rgba(120,180,90,0.12); color: #b8e09a; }
+.opt.multi { border-color: var(--accent-dim); background: rgba(120,180,90,0.08); color: #a0d080; }
+.opt.skip { color: var(--muted); font-size: 13px; background: none; border-color: var(--hint); }
+.opt.skip:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.btn-row { margin-top: 18px; display: flex; align-items: center; gap: 10px; }
+.btn-primary { background: var(--accent); color: #0a1208; border: none; border-radius: 8px; padding: 10px 22px; font-family: Georgia, serif; font-size: 13px; cursor: pointer; font-weight: bold; transition: all 0.15s; }
+.btn-primary:hover { background: #9ad070; }
+.btn-ghost { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 10px 18px; font-family: Georgia, serif; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.name-input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-family: Georgia, serif;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 8px;
+}
+.name-input:focus { border-color: var(--accent); }
+.name-input::placeholder { color: var(--hint); }
+.nosave-note { font-size: 11px; color: var(--hint); margin-top: 6px; }
+
+.plan-shell { flex-direction: row; overflow: hidden; }
+.plan-left { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; border-right: 1px solid var(--border); }
+.plan-right { width: 275px; flex-shrink: 0; display: flex; flex-direction: column; background: var(--surface); }
+
+.sec-label { font-size: 10px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+
+.action-card { background: rgba(212,128,58,0.1); border: 1px solid rgba(212,128,58,0.35); border-radius: 10px; padding: 14px 16px; }
+.action-label { font-size: 10px; color: var(--warm); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+.action-text { font-size: 15px; color: #e8c090; line-height: 1.45; margin-bottom: 4px; }
+.action-sub { font-size: 12px; color: rgba(212,128,58,0.6); }
+.stop-note { background: rgba(120,180,90,0.06); border: 1px solid rgba(120,180,90,0.15); border-radius: 8px; padding: 9px 14px; margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+.steps-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.step-row { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(120,180,90,0.08); }
+.step-row:last-child { border-bottom: none; }
+.step-n { width: 22px; height: 22px; border-radius: 50%; background: rgba(120,180,90,0.1); border: 1px solid var(--accent-dim); color: var(--accent); font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-t { font-size: 13px; color: var(--text); line-height: 1.5; }
+.step-s { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.prog { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 7px; cursor: pointer; transition: all 0.12s; }
+.prog:hover { border-color: var(--accent-dim); }
+.prog.open { border-color: var(--accent-dim); background: rgba(120,180,90,0.04); }
+.prog-t { font-size: 13px; color: var(--text); margin-bottom: 2px; line-height: 1.4; }
+.prog-a { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+.prog-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(120,180,90,0.1); color: var(--accent); }
+.prog-body { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.prog.open .prog-body { display: block; }
+.prog-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+.prog-action { font-size: 11px; color: var(--accent); background: rgba(120,180,90,0.08); border: 1px solid rgba(120,180,90,0.2); border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: Georgia, serif; }
+
+.skip-direct { background: rgba(120,180,90,0.06); border: 1px solid rgba(120,180,90,0.2); border-radius: 10px; padding: 12px 16px; cursor: pointer; color: var(--muted); font-family: Georgia, serif; font-size: 13px; text-align: left; width: 100%; margin-top: 4px; transition: all 0.15s; line-height: 1.5; }
+.skip-direct:hover { border-color: var(--accent-dim); color: var(--text); }
+.skip-arrow { color: var(--accent); }
+
+.tool-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tool-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 14px; font-family: Georgia, serif; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.tool-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.orient-line { font-size: 11px; color: var(--hint); text-align: center; padding: 4px 0 2px; font-style: italic; }
+
+.chat-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.chat-title { font-size: 13px; color: #d4c060; font-weight: bold; }
+.chat-sub { font-size: 11px; color: var(--muted); }
+.chat-msgs { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.bubble { font-size: 12px; padding: 8px 11px; border-radius: 8px; line-height: 1.6; font-family: Georgia, serif; }
+.bai { background: var(--card); border: 1px solid var(--border); color: var(--muted); align-self: flex-start; max-width: 92%; }
+.buser { background: rgba(120,180,90,0.1); border: 1px solid rgba(120,180,90,0.2); color: #b0d090; align-self: flex-end; max-width: 92%; }
+.chat-in { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; }
+.chat-field { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; color: var(--muted); font-family: Georgia, serif; font-size: 11px; resize: none; height: 46px; outline: none; }
+.chat-send { background: var(--warm); border: none; border-radius: 6px; width: 32px; color: #0a0a0a; font-size: 14px; cursor: pointer; align-self: flex-end; height: 32px; }
+
+.save-bar { border-top: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; background: var(--surface); flex-shrink: 0; }
+.save-note { font-size: 11px; color: var(--hint); flex: 1; line-height: 1.5; }
+.save-note em { color: var(--accent); font-style: normal; }
+.print-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 6px 12px; font-family: Georgia, serif; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.print-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.privacy-link { font-size: 10px; color: var(--hint); text-decoration: none; border-bottom: 1px dotted var(--hint); margin-left: 6px; cursor: pointer; }
+.privacy-link:hover { color: var(--muted); }
+</style>
+
+<div class="shell">
+  <div class="topbar">
+    <span class="logo">HearthMind</span>
+    <span class="slash">/</span>
+    <span class="appname">Navigator: Web</span>
+    <span class="topbadge">Free · No account needed</span>
+  </div>
+
+  <!-- Q0: Name -->
+  <div class="screen active" id="s0">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="big-q" style="font-size:26px; margin-bottom:10px;">Hi. I'm Navigator.</div>
+        <div class="big-q" style="font-size:20px; color:var(--muted); margin-bottom:28px;">What should I call you?</div>
+        <input class="name-input" id="name-input" type="text" placeholder="Anything you like…" autocomplete="off" />
+        <div class="nosave-note">Optional. Just for this session — Navigator won't remember.</div>
+        <div class="btn-row" style="margin-top: 20px;">
+          <button class="btn-primary" onclick="submitName()">Let's go</button>
+          <button class="btn-ghost" onclick="skipName()">Skip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1: Goal -->
+  <div class="screen" id="s1">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:16%"></div></div>
+        <div class="eyebrow">Step 1 of 5</div>
+        <div class="big-q" id="q1-greeting">What would help most right now?</div>
+        <div class="minute-note">This takes about a minute.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s1','s2')">Find benefits or assistance</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Handle a notice or paperwork</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Figure out my next steps</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">Reduce overwhelm and get organized</button>
+          <button class="opt" onclick="pick(this,'s1','s2')">I don't know yet — just exploring</button>
+        </div>
+        <button class="skip-direct" onclick="goTo('plan')">
+          <span class="skip-arrow">→</span> I don't know where to start — just talk me through it
+        </button>
+        <div style="margin-top:14px;"><span class="nosave-note">No account needed. Nothing is saved.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2: Barriers -->
+  <div class="screen" id="s2">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:32%"></div></div>
+        <div class="eyebrow">Step 2 of 5</div>
+        <div class="big-q">What's making this hardest right now?</div>
+        <div class="sub-q">Pick everything that applies. No wrong answers.</div>
+        <div class="opts">
+          <button class="opt" onclick="toggle(this)">I can't focus / brain fog</button>
+          <button class="opt" onclick="toggle(this)">I'm overwhelmed and don't know where to start</button>
+          <button class="opt" onclick="toggle(this)">I'm afraid I'll lose benefits I already have</button>
+          <button class="opt" onclick="toggle(this)">Paperwork and forms</button>
+          <button class="opt" onclick="toggle(this)">Phone calls</button>
+          <button class="opt" onclick="toggle(this)">Deadlines I might miss</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="goTo('s3')">Continue</button>
+          <button class="btn-ghost" onclick="goTo('s1')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3: Urgency -->
+  <div class="screen" id="s3">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:50%"></div></div>
+        <div class="eyebrow">Step 3 of 5</div>
+        <div class="big-q">How urgent is this?</div>
+        <div class="sub-q">Helps Navigator show you what matters first.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s3','s4')">I need to act today</button>
+          <button class="opt" onclick="pick(this,'s3','s4')">This week</button>
+          <button class="opt" onclick="pick(this,'s3','s4')">No hard deadline — I'm planning ahead</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s2')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4: Style -->
+  <div class="screen" id="s4">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:66%"></div></div>
+        <div class="eyebrow">Step 4 of 5</div>
+        <div class="big-q">How do you want Navigator to talk with you?</div>
+        <div class="sub-q">Sets the tone for everything — you can change it anytime.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s4','s5')">Direct and step-by-step</button>
+          <button class="opt" onclick="pick(this,'s4','s5')">Gentle and supportive</button>
+          <button class="opt" onclick="pick(this,'s4','s5')">Fast — just give me the summary</button>
+          <button class="opt" onclick="pick(this,'s4','s5')">Just show me resources, minimal chat</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s3')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5: State -->
+  <div class="screen" id="s5">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track"><div class="pbar-fill" style="width:84%"></div></div>
+        <div class="eyebrow">Step 5 of 5</div>
+        <div class="big-q">What state are you in?</div>
+        <div class="sub-q">Used only to find local programs. Not stored anywhere.</div>
+        <div class="opts">
+          <button class="opt" onclick="pick(this,'s5','plan')">Washington</button>
+          <button class="opt" onclick="pick(this,'s5','plan')">Oregon</button>
+          <button class="opt" onclick="pick(this,'s5','plan')">Idaho</button>
+          <button class="opt" onclick="pick(this,'s5','plan')">Other state</button>
+          <button class="opt" onclick="pick(this,'s5','plan')">Prefer not to say</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s4')">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plan view -->
+  <div class="screen plan-shell" id="plan">
+    <div class="plan-left">
+
+      <div class="action-card">
+        <div class="action-label">One action — right now</div>
+        <div class="action-text">Call 211 and ask what disability benefits you qualify for in Washington</div>
+        <div class="action-sub">You're orienting. One call counts.</div>
+        <div class="stop-note">Done for today when: you have a reference number or a name to follow up with.</div>
+      </div>
+
+      <div>
+        <div class="sec-label">Your next steps</div>
+        <div class="steps-card">
+          <div class="step-row">
+            <div class="step-n">1</div>
+            <div>
+              <div class="step-t">Identify which benefit you're targeting first</div>
+              <div class="step-s">SSDI, SSI, SNAP, Medicaid, housing — pick one</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-n">2</div>
+            <div>
+              <div class="step-t">Gather documents before you need them</div>
+              <div class="step-s">ID, proof of address, income or medical letters</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-n">3</div>
+            <div>
+              <div class="step-t">Write down three questions you need answered</div>
+              <div class="step-s">So you don't have to remember them under pressure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-label">Programs that may match you</div>
+        <div class="prog" onclick="this.classList.toggle('open')">
+          <div class="prog-t">Social Security Disability Insurance (SSDI)</div>
+          <div class="prog-a">Social Security Administration</div>
+          <span class="prog-badge">Direct payments</span>
+          <div class="prog-body">
+            <div class="prog-desc">Monthly payments for people with disabilities who have enough work history. Based on your earnings record, not current income or assets.</div>
+            <button class="prog-action">Next step: Check your work credits →</button>
+          </div>
+        </div>
+        <div class="prog" onclick="this.classList.toggle('open')">
+          <div class="prog-t">Supplemental Nutrition Assistance (SNAP)</div>
+          <div class="prog-a">USDA Food and Nutrition Service</div>
+          <span class="prog-badge">Direct payments</span>
+          <div class="prog-body">
+            <div class="prog-desc">Monthly food assistance on an EBT card. Eligibility based on income and household size. Apply through Washington DSHS.</div>
+            <button class="prog-action">Next step: Check WA income limits →</button>
+          </div>
+        </div>
+        <div class="prog" onclick="this.classList.toggle('open')">
+          <div class="prog-t">WA Apple Health (Medicaid)</div>
+          <div class="prog-a">Washington State HCA</div>
+          <span class="prog-badge">Services</span>
+          <div class="prog-body">
+            <div class="prog-desc">Free or low-cost health coverage including medical, dental, vision, and mental health. Available to most Washington residents.</div>
+            <button class="prog-action">Next step: Apply at wahealthplanfinder.org →</button>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--hint); margin-top:6px;">Tap any card to expand · + 12 more programs</div>
+      </div>
+
+      <div>
+        <div class="sec-label">Tools</div>
+        <div class="tool-row">
+          <button class="tool-btn">Phone script helper</button>
+          <button class="tool-btn">Letter / form helper</button>
+        </div>
+      </div>
+
+      <div class="orient-line">You're not behind. You're orienting.</div>
+
+    </div>
+
+    <div class="plan-right">
+      <div class="chat-hdr">
+        <div class="chat-title">Ask Navigator</div>
+        <div class="chat-sub" id="chat-sub-name">Ask anything about your plan</div>
+      </div>
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="bubble bai" id="chat-opener">Based on what you told me, SSDI looks like your most relevant starting point. Want me to walk you through eligibility basics?</div>
+        <div class="bubble buser">Do I qualify if I worked part time?</div>
+        <div class="bubble bai">Part-time history can still count. SSDI looks at total work credits over your lifetime — not just recent jobs. Want me to walk through the credit calculation?</div>
+      </div>
+      <div class="chat-in">
+        <textarea class="chat-field" placeholder="Ask anything…"></textarea>
+        <button class="chat-send">↑</button>
+      </div>
+      <div class="save-bar">
+        <div class="save-note"><em>Navigator doesn't keep anything.</em> Save before you go. <a class="privacy-link" onclick="alert('Navigator collects nothing. No account, no tracking, no PII stored. This session ends when you close the tab.')">How this works</a></div>
+        <button class="print-btn">Print / PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+  <button onclick="goTo('s0')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Intro</button>
+  <button onclick="goTo('s1')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q1</button>
+  <button onclick="goTo('s2')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q2</button>
+  <button onclick="goTo('s3')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q3</button>
+  <button onclick="goTo('s4')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q4 — style</button>
+  <button onclick="goTo('s5')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Q5 — state</button>
+  <button onclick="goTo('plan')" style="font-size:11px;padding:5px 10px;background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;color:var(--color-text-secondary);cursor:pointer;">Plan view</button>
+</div>
+
+<script>
+let userName = '';
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  el.classList.add('active');
+}
+
+function submitName() {
+  const val = document.getElementById('name-input').value.trim();
+  userName = val || '';
+  applyName();
+  goTo('s1');
+}
+
+function skipName() {
+  userName = '';
+  goTo('s1');
+}
+
+function applyName() {
+  const q1 = document.getElementById('q1-greeting');
+  if (userName && q1) q1.textContent = 'Hi, ' + userName + '. What would help most right now?';
+  const chatSub = document.getElementById('chat-sub-name');
+  if (userName && chatSub) chatSub.textContent = 'Ask anything, ' + userName;
+  const opener = document.getElementById('chat-opener');
+  if (userName && opener) opener.textContent = 'Hi ' + userName + '. Based on what you told me, SSDI looks like your most relevant starting point. Want me to walk you through eligibility basics?';
+}
+
+function pick(btn, cur, next) {
+  document.querySelectorAll('#'+cur+' .opt').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  setTimeout(() => goTo(next), 260);
+}
+
+function toggle(btn) { btn.classList.toggle('multi'); }
+
+document.getElementById('name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitName();
+});
+
+document.querySelectorAll('.screen').forEach((s,i) => { if(i > 0) s.style.display = 'none'; });
+</script>
