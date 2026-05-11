@@ -6,3 +6,5 @@ __pycache__/
 *.key
 *.pem
 venv/
+data/navigator.db
+data/navigator.db-journal

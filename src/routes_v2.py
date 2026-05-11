@@ -8,7 +8,7 @@ import os
 import json
 import urllib.request
 import urllib.error
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, current_app
 
 bp = Blueprint('main', __name__)
 
@@ -201,3 +201,120 @@ def client_app():
 @bp.route('/copilot')
 def copilot():
     return render_template('navigator_copilot.html')
+
+
+# ---------------------------------------------------------------------------
+# Client store API
+# TODO: real auth. caseworker_id is trusted from the client (localStorage UUID)
+# this pass. Replace with an authenticated session before any non-demo use.
+# ---------------------------------------------------------------------------
+
+def _client_db_path():
+    return current_app.config.get('CLIENTS_DB_PATH') if current_app else None
+
+
+def _bad(msg, code=400):
+    return jsonify({'error': msg}), code
+
+
+def _coerce_json_field(payload, key):
+    """Return (value, error). value is None if absent. Accepts dict only."""
+    if key not in payload:
+        return None, None
+    val = payload[key]
+    if val is None:
+        return None, None
+    if isinstance(val, dict):
+        return val, None
+    return None, f"'{key}' must be a JSON object"
+
+
+@bp.route('/api/clients', methods=['POST'])
+def api_clients_create():
+    from clients_db import create_client
+    data = request.get_json(silent=True) or {}
+    caseworker_id = (data.get('caseworker_id') or '').strip()
+    name = (data.get('name') or '').strip()
+    if not caseworker_id:
+        return _bad("'caseworker_id' is required")
+    if not name:
+        return _bad("'name' is required")
+    state = data.get('state')
+    if state is not None and not isinstance(state, str):
+        return _bad("'state' must be a string")
+    intake, err = _coerce_json_field(data, 'intake')
+    if err: return _bad(err)
+    plan, err = _coerce_json_field(data, 'plan')
+    if err: return _bad(err)
+    rec = create_client(caseworker_id, name, state=state, intake=intake, plan=plan,
+                        db_path=_client_db_path())
+    return jsonify(rec), 201
+
+
+@bp.route('/api/clients', methods=['GET'])
+def api_clients_list():
+    from clients_db import list_clients
+    caseworker_id = (request.args.get('caseworker_id') or '').strip()
+    if not caseworker_id:
+        return _bad("'caseworker_id' query param is required")
+    raw = (request.args.get('include_archived') or '').lower()
+    include_archived = raw in ('1', 'true', 'yes', 'on')
+    clients = list_clients(caseworker_id, include_archived=include_archived,
+                           db_path=_client_db_path())
+    return jsonify({'clients': clients})
+
+
+@bp.route('/api/clients/<client_id>', methods=['GET'])
+def api_clients_get(client_id):
+    from clients_db import get_client
+    rec = get_client(client_id, db_path=_client_db_path())
+    if not rec:
+        return _bad('Client not found', 404)
+    return jsonify(rec)
+
+
+@bp.route('/api/clients/<client_id>', methods=['PUT'])
+def api_clients_update(client_id):
+    from clients_db import update_client
+    data = request.get_json(silent=True) or {}
+    kwargs = {}
+    if 'name' in data:
+        name = (data.get('name') or '').strip()
+        if not name:
+            return _bad("'name' cannot be empty")
+        kwargs['name'] = name
+    if 'state' in data:
+        state = data.get('state')
+        if state is not None and not isinstance(state, str):
+            return _bad("'state' must be a string or null")
+        kwargs['state'] = state
+    if 'intake' in data:
+        intake, err = _coerce_json_field(data, 'intake')
+        if err: return _bad(err)
+        kwargs['intake'] = intake
+    if 'plan' in data:
+        plan, err = _coerce_json_field(data, 'plan')
+        if err: return _bad(err)
+        kwargs['plan'] = plan
+    rec = update_client(client_id, db_path=_client_db_path(), **kwargs)
+    if not rec:
+        return _bad('Client not found', 404)
+    return jsonify(rec)
+
+
+@bp.route('/api/clients/<client_id>/archive', methods=['POST'])
+def api_clients_archive(client_id):
+    from clients_db import archive_client
+    rec = archive_client(client_id, db_path=_client_db_path())
+    if not rec:
+        return _bad('Client not found', 404)
+    return jsonify(rec)
+
+
+@bp.route('/api/clients/<client_id>/unarchive', methods=['POST'])
+def api_clients_unarchive(client_id):
+    from clients_db import unarchive_client
+    rec = unarchive_client(client_id, db_path=_client_db_path())
+    if not rec:
+        return _bad('Client not found', 404)
+    return jsonify(rec)

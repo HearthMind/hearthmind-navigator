@@ -3,523 +3,1095 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navigator Copilot — HearthMind</title>
+<title>Navigator: Copilot — HearthMind</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --navy:#0d1b2a;--navy-mid:#1a2e42;--navy-light:#243b55;
-  --amber:#EF9F27;--amber-light:#FAC775;
-  --text-light:#e8edf2;--text-muted:#8fa3b8;
-  --border:rgba(255,255,255,0.08);
-  --green:#4caf50;--green-dim:rgba(76,175,80,0.15);
-  --blue:#85b7eb;--blue-dim:rgba(55,138,221,0.1);
-  --red-dim:rgba(229,57,53,0.12);--red:#e55353;
+:root {
+  --bg: #0f1a14;
+  --surface: #162010;
+  --card: #1c2a18;
+  --border: rgba(120,180,90,0.22);
+  --accent: #9ed47a;
+  --accent-dim: #6a9648;
+  --warm: #e0954a;
+  --text: #e8f0dc;
+  --muted: #9aae8c;
+  --hint: #6a8060;
+  --focus: #ffd166;
+  --danger: #d97766;
 }
-body{background:var(--navy);color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-.topbar{background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.logo{font-size:16px;font-weight:500;color:var(--amber);}
-.logo span{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;}
-.topbar-right{display:flex;align-items:center;gap:16px;}
-.id-chip{display:flex;align-items:center;gap:6px;background:var(--navy-light);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;cursor:pointer;}
-.id-label{font-size:10px;color:var(--text-muted);}
-.id-val{font-size:12px;color:var(--amber);font-weight:500;}
-.copy-icon{width:20px;height:20px;border-radius:50%;background:rgba(239,159,39,0.15);border:1px solid rgba(239,159,39,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--amber);}
-.sw-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);}
-.sw-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
-</style>
-<style>
-/* SPLIT LAYOUT */
-.workspace{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px);}
-.left-panel{width:380px;flex-shrink:0;background:var(--navy-mid);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--navy);}
-.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;}
-.panel-scroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
-.panel-scroll::-webkit-scrollbar{width:4px;}
-.panel-scroll::-webkit-scrollbar-thumb{background:var(--navy-light);border-radius:2px;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+.skip-nav {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: #0a1208;
+  padding: 10px 16px; border-radius: 0 0 8px 0;
+  font-weight: bold; z-index: 100; text-decoration: none;
+}
+.skip-nav:focus { left: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button:focus, .opt:focus, input:focus, textarea:focus, a:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-/* LEFT — Navigator agent */
-.search-row{display:flex;gap:6px;}
-.search-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-light);font-size:13px;}
-.search-input::placeholder{color:var(--text-muted);}
-.search-btn{background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;}
-.section-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;}
-.result-mini{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;cursor:pointer;}
-.result-mini:hover{border-color:rgba(239,159,39,0.3);}
-.result-mini.active{border-color:var(--amber);background:rgba(239,159,39,0.05);}
-.result-mini-title{font-size:12px;font-weight:500;}
-.result-mini-tags{display:flex;gap:4px;flex-wrap:wrap;}
-.tag{font-size:10px;padding:1px 6px;border-radius:6px;background:var(--navy-mid);color:var(--text-muted);}
-.tag.match{background:var(--green-dim);color:var(--green);}
-.elig-mini{display:flex;align-items:center;gap:6px;}
-.elig-track{flex:1;height:3px;background:var(--navy-mid);border-radius:2px;overflow:hidden;}
-.elig-fill{height:100%;border-radius:2px;}
-.elig-pct{font-size:10px;color:var(--text-muted);min-width:24px;text-align:right;}
-.mini-actions{display:flex;gap:6px;}
-.btn-mini{font-size:10px;padding:4px 8px;border-radius:5px;cursor:pointer;border:1px solid;}
-.btn-load{background:var(--blue-dim);color:var(--blue);border-color:rgba(55,138,221,0.3);}
-.btn-send{background:var(--green-dim);color:var(--green);border-color:rgba(76,175,80,0.3);}
-.btn-send.sent{background:var(--green);color:#fff;border-color:var(--green);}
-</style>
-<style>
-/* RIGHT — document/form viewer */
-.doc-toolbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--navy-mid);flex-shrink:0;}
-.doc-url-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text-light);font-size:12px;}
-.doc-url-input::placeholder{color:var(--text-muted);}
-.doc-btn{background:var(--navy-light);color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:11px;cursor:pointer;}
-.doc-btn.primary{background:var(--amber);color:var(--navy);border-color:var(--amber);font-weight:500;}
-.doc-frame{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.doc-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text-muted);padding:40px;}
-.doc-placeholder-icon{font-size:48px;opacity:0.3;}
-.doc-placeholder-title{font-size:15px;color:var(--text-light);}
-.doc-placeholder-sub{font-size:12px;line-height:1.6;text-align:center;max-width:340px;}
-.doc-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:24px 32px;text-align:center;cursor:pointer;transition:border-color 0.2s;}
-.doc-drop-zone:hover{border-color:rgba(239,159,39,0.4);}
-.doc-drop-zone-label{font-size:13px;color:var(--text-muted);margin-top:8px;}
+.shell { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 22px;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.logo { color: var(--accent); font-size: 12px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; }
+.slash { color: var(--hint); font-size: 12px; }
+.appname { color: var(--muted); font-size: 12px; }
+.topbadge {
+  margin-left: auto;
+  font-size: 10px; color: var(--muted);
+  background: rgba(120,180,90,0.08);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px 10px;
+}
+.saved-pill {
+  font-size: 10px; color: var(--accent);
+  background: rgba(120,180,90,0.12);
+  border: 1px solid var(--accent-dim);
+  border-radius: 20px; padding: 3px 10px;
+  margin-left: 8px;
+}
+.start-over-btn {
+  margin-left: 8px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px; padding: 5px 12px;
+  font-family: Georgia, serif; font-size: 11px;
+  cursor: pointer; transition: all 0.15s;
+}
+.start-over-btn:hover { border-color: var(--danger); color: var(--danger); }
 
-/* COPILOT HINT PANEL */
-.hint-panel{background:var(--navy-mid);border-top:1px solid var(--border);padding:12px 16px;flex-shrink:0;}
-.hint-title{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
-.hint-card{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;}
-.hint-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
-.hint-text{font-size:12px;color:var(--text-muted);line-height:1.5;}
-.hint-text strong{color:var(--text-light);}
-.hint-action{font-size:11px;color:var(--amber);cursor:pointer;margin-top:3px;}
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
 
-/* UPLOAD QUEUE */
-.upload-queue{display:flex;flex-direction:column;gap:6px;}
-.upload-item{background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
-.upload-icon{font-size:14px;}
-.upload-name{font-size:12px;flex:1;}
-.upload-status{font-size:10px;}
-.upload-status.ready{color:var(--amber);}
-.upload-status.sent{color:var(--green);}
-.upload-btn{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3);cursor:pointer;}
-.divider{height:1px;background:var(--border);margin:6px 0;}
-</style>
+.center-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.inner { width: 100%; max-width: 480px; }
+
+.pbar-track { height: 3px; background: rgba(120,180,90,0.15); border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
+.pbar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+.eyebrow { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.big-q { font-size: 22px; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+.sub-q { font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.6; }
+.minute-note { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  cursor: pointer; color: var(--text);
+  font-family: Georgia, serif; font-size: 14px;
+  text-align: left; transition: all 0.12s;
+  line-height: 1.4; width: 100%;
+}
+.opt:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.06); }
+.opt.sel { border-color: var(--accent); background: rgba(120,180,90,0.14); color: #d4eab8; }
+.opt.multi { border-color: var(--accent-dim); background: rgba(120,180,90,0.10); color: #c2dca0; }
+
+.btn-row { margin-top: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--accent); color: #0a1208;
+  border: none; border-radius: 8px; padding: 10px 22px;
+  font-family: Georgia, serif; font-size: 13px;
+  cursor: pointer; font-weight: bold; transition: all 0.15s;
+}
+.btn-primary:hover { background: #b8e09a; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ghost {
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 8px; padding: 10px 18px;
+  font-family: Georgia, serif; font-size: 12px;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.name-input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  color: var(--text);
+  font-family: Georgia, serif; font-size: 16px;
+  outline: none; transition: border-color 0.2s;
+  margin-bottom: 8px;
+}
+.name-input:focus { border-color: var(--accent); }
+.name-input::placeholder { color: var(--hint); }
+.nosave-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+.skip-direct {
+  background: rgba(120,180,90,0.06);
+  border: 1px solid rgba(120,180,90,0.2);
+  border-radius: 10px; padding: 12px 16px;
+  cursor: pointer; color: var(--muted);
+  font-family: Georgia, serif; font-size: 13px;
+  text-align: left; width: 100%; margin-top: 10px;
+  transition: all 0.15s; line-height: 1.5;
+}
+.skip-direct:hover { border-color: var(--accent-dim); color: var(--text); }
+.skip-arrow { color: var(--accent); margin-right: 4px; }
+
+.plan-shell { flex-direction: row; overflow: hidden; min-height: calc(100vh - 50px); }
+.plan-left {
+  flex: 1; overflow-y: auto;
+  padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 18px;
+  border-right: 1px solid var(--border);
+}
+.plan-right {
+  width: 340px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+}
+
+.sec-label {
+  font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.action-card {
+  background: rgba(224,149,74,0.10);
+  border: 1px solid rgba(224,149,74,0.40);
+  border-radius: 10px; padding: 14px 16px;
+}
+.action-label {
+  font-size: 10px; color: var(--warm);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.action-text { font-size: 15px; color: #f0c89a; line-height: 1.45; margin-bottom: 4px; }
+.action-sub { font-size: 12px; color: rgba(224,149,74,0.75); }
+.stop-note {
+  background: rgba(120,180,90,0.06);
+  border: 1px solid rgba(120,180,90,0.18);
+  border-radius: 8px; padding: 10px 14px; margin-top: 10px;
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+}
+
+.steps-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+}
+.step-row {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(120,180,90,0.08);
+}
+.step-row:last-child { border-bottom: none; }
+.step-n {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(120,180,90,0.12);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent); font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-t { font-size: 13px; color: var(--text); line-height: 1.5; }
+.step-s { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.prog {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 11px 14px; margin-bottom: 8px;
+  cursor: pointer; transition: all 0.12s;
+}
+.prog:hover { border-color: var(--accent-dim); }
+.prog.open { border-color: var(--accent-dim); background: rgba(120,180,90,0.04); }
+.prog-t { font-size: 13px; color: var(--text); margin-bottom: 2px; line-height: 1.4; font-weight: bold; }
+.prog-a { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.prog-badge {
+  display: inline-block; font-size: 10px;
+  padding: 2px 8px; border-radius: 10px;
+  background: rgba(120,180,90,0.12); color: var(--accent);
+}
+.prog-body {
+  display: none; margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.prog.open .prog-body { display: block; }
+.prog-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+.prog-action {
+  font-size: 11px; color: var(--accent);
+  background: rgba(120,180,90,0.10);
+  border: 1px solid rgba(120,180,90,0.25);
+  border-radius: 6px; padding: 6px 12px;
+  cursor: pointer; font-family: Georgia, serif;
+  text-decoration: none; display: inline-block;
+}
+.prog-action:hover { background: rgba(120,180,90,0.18); }
+.prog-empty { font-size: 12px; color: var(--muted); padding: 8px 0; }
+
+.tool-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tool-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 8px;
+  padding: 9px 14px; font-family: Georgia, serif;
+  font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.tool-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.orient-line {
+  font-size: 12px; color: var(--muted);
+  text-align: center; padding: 6px 0 4px;
+  font-style: italic;
+}
+
+.chat-hdr { padding: 14px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.chat-title { font-size: 13px; color: #e8c060; font-weight: bold; }
+.chat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.chat-msgs {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 200px;
+}
+.bubble { font-size: 13px; padding: 10px 13px; border-radius: 10px; line-height: 1.6; font-family: Georgia, serif; }
+.bai { background: var(--card); border: 1px solid var(--border); color: var(--text); align-self: flex-start; max-width: 92%; }
+.buser { background: rgba(120,180,90,0.12); border: 1px solid rgba(120,180,90,0.25); color: #d4eab8; align-self: flex-end; max-width: 92%; }
+.bubble.thinking { color: var(--muted); font-style: italic; }
+.chat-in { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; }
+.chat-field {
+  flex: 1; background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 10px; color: var(--text);
+  font-family: Georgia, serif; font-size: 12px;
+  resize: none; height: 50px; outline: none;
+}
+.chat-field:focus { border-color: var(--accent); }
+.chat-field::placeholder { color: var(--hint); }
+.chat-send {
+  background: var(--warm); border: none;
+  border-radius: 6px; width: 36px; color: #0a0a0a;
+  font-size: 16px; cursor: pointer;
+  align-self: flex-end; height: 36px; font-weight: bold;
+}
+.chat-send:hover { background: #f0a55a; }
+.chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.save-bar {
+  border-top: 1px solid var(--border);
+  padding: 11px 16px;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); flex-shrink: 0;
+}
+.save-note { font-size: 11px; color: var(--muted); flex: 1; line-height: 1.5; }
+.save-note em { color: var(--accent); font-style: normal; font-weight: bold; }
+.print-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 6px;
+  padding: 7px 13px; font-family: Georgia, serif;
+  font-size: 11px; cursor: pointer; white-space: nowrap;
+}
+.print-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+
+.tool-modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); z-index: 50;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.tool-modal-bg.open { display: flex; }
+.tool-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-width: 520px; width: 100%;
+  padding: 22px; max-height: 85vh; overflow-y: auto;
+}
+.tool-modal h3 { font-size: 16px; color: var(--accent); margin-bottom: 12px; }
+.tool-modal p { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 10px; }
+.tool-modal pre {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px;
+  font-family: Georgia, serif; font-size: 12px;
+  color: var(--text); white-space: pre-wrap;
+  line-height: 1.6; margin: 10px 0;
+}
+
+@media (max-width: 760px) {
+  .plan-shell { flex-direction: column; }
+  .plan-right { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+  .plan-left { border-right: none; }
+}
+
+@media print {
+  .topbar, .plan-right, .save-bar, .skip-direct, .btn-row { display: none !important; }
+  body, .shell, .plan-left { background: white !important; color: black !important; }
+  .step-t, .prog-t, .action-text, .big-q { color: black !important; }
+  .step-s, .prog-a, .prog-desc, .action-sub, .sec-label, .orient-line { color: #444 !important; }
+  .action-card, .steps-card, .prog { border-color: #999 !important; background: white !important; }
+}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="logo">Navigator <span>copilot — desktop</span></div>
-  <div class="topbar-right">
-    <div class="sw-link"><div class="sw-dot"></div>Sarah W. linked · Case 2026-WA-04412</div>
-    <div class="id-chip" onclick="copyId()">
-      <div><div class="id-label">Your ID</div><div class="id-val">NV-7742</div></div>
-      <div class="copy-icon" id="copy-icon">⧉</div>
+<a href="#main" class="skip-nav">Skip to main content</a>
+
+<div class="shell">
+  <header class="topbar" role="banner">
+    <span class="logo" aria-label="HearthMind">HearthMind</span>
+    <span class="slash" aria-hidden="true">/</span>
+    <span class="appname">Navigator: Copilot</span>
+    <span class="topbadge" aria-label="Saved on this device">Saved on this device</span>
+    <span class="saved-pill" id="saved-pill" style="display:none" aria-live="polite"></span>
+    <button class="start-over-btn" id="start-over-btn" style="display:none" onclick="startOver()" aria-label="Start over and clear saved plan">Start over</button>
+  </header>
+
+  <main id="main" role="main">
+
+  <section class="screen active" id="s0" aria-labelledby="s0-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <h1 class="big-q" id="s0-q" style="font-size:26px; margin-bottom:10px;">Hi. I'm Navigator.</h1>
+        <p class="big-q" style="font-size:20px; color:var(--muted); margin-bottom:28px;">What should I call you?</p>
+        <label for="name-input" class="nosave-note" style="display:block; margin-bottom:6px;">Your name (optional)</label>
+        <input class="name-input" id="name-input" type="text" placeholder="Anything you like…" autocomplete="off" aria-describedby="name-help" />
+        <p id="name-help" class="nosave-note">Optional. Saved only in your browser on this device.</p>
+        <div class="btn-row" style="margin-top: 20px;">
+          <button class="btn-primary" onclick="submitName()">Let's go</button>
+          <button class="btn-ghost" onclick="skipName()">Skip</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s1" aria-labelledby="s1-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="Step 1 of 5"><div class="pbar-fill" style="width:20%"></div></div>
+        <div class="eyebrow">Step 1 of 5</div>
+        <h2 class="big-q" id="s1-q">What would help most right now?</h2>
+        <p class="minute-note">This takes about a minute.</p>
+        <div class="opts" role="radiogroup" aria-labelledby="s1-q">
+          <button class="opt" role="radio" aria-checked="false" data-val="benefits"   onclick="pickGoal(this,'benefits')">Find benefits or assistance</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="paperwork"  onclick="pickGoal(this,'paperwork')">Handle a notice or paperwork</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="nextsteps"  onclick="pickGoal(this,'nextsteps')">Figure out my next steps</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="overwhelm"  onclick="pickGoal(this,'overwhelm')">Reduce overwhelm and get organized</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="exploring"  onclick="pickGoal(this,'exploring')">I don't know yet — just exploring</button>
+        </div>
+        <button class="skip-direct" onclick="skipToPlan()">
+          <span class="skip-arrow" aria-hidden="true">→</span> I don't know where to start — just talk me through it
+        </button>
+        <div style="margin-top:14px;"><span class="nosave-note">Stored only in your browser on this device.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s2" aria-labelledby="s2-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Step 2 of 5"><div class="pbar-fill" style="width:40%"></div></div>
+        <div class="eyebrow">Step 2 of 5</div>
+        <h2 class="big-q" id="s2-q">What's making this hardest right now?</h2>
+        <p class="sub-q">Pick everything that applies. No wrong answers.</p>
+        <div class="opts" role="group" aria-labelledby="s2-q">
+          <button class="opt" role="checkbox" aria-checked="false" data-val="focus"           onclick="toggleBarrier(this,'focus')">I can't focus / brain fog</button>
+          <button class="opt" role="checkbox" aria-checked="false" data-val="overwhelm"       onclick="toggleBarrier(this,'overwhelm')">I'm overwhelmed and don't know where to start</button>
+          <button class="opt" role="checkbox" aria-checked="false" data-val="losing_benefits" onclick="toggleBarrier(this,'losing_benefits')">I'm afraid I'll lose benefits I already have</button>
+          <button class="opt" role="checkbox" aria-checked="false" data-val="paperwork"       onclick="toggleBarrier(this,'paperwork')">Paperwork and forms</button>
+          <button class="opt" role="checkbox" aria-checked="false" data-val="phone"           onclick="toggleBarrier(this,'phone')">Phone calls</button>
+          <button class="opt" role="checkbox" aria-checked="false" data-val="deadlines"       onclick="toggleBarrier(this,'deadlines')">Deadlines I might miss</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="goTo('s3')">Continue</button>
+          <button class="btn-ghost" onclick="goTo('s1')">Back</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s3" aria-labelledby="s3-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Step 3 of 5"><div class="pbar-fill" style="width:60%"></div></div>
+        <div class="eyebrow">Step 3 of 5</div>
+        <h2 class="big-q" id="s3-q">How urgent is this?</h2>
+        <p class="sub-q">Helps Navigator show you what matters first.</p>
+        <div class="opts" role="radiogroup" aria-labelledby="s3-q">
+          <button class="opt" role="radio" aria-checked="false" data-val="today"    onclick="pickUrgency(this,'today')">I need to act today</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="week"     onclick="pickUrgency(this,'week')">This week</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="planning" onclick="pickUrgency(this,'planning')">No hard deadline — I'm planning ahead</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s2')">Back</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s4" aria-labelledby="s4-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" aria-label="Step 4 of 5"><div class="pbar-fill" style="width:80%"></div></div>
+        <div class="eyebrow">Step 4 of 5</div>
+        <h2 class="big-q" id="s4-q">How do you want Navigator to talk with you?</h2>
+        <p class="sub-q">Sets the tone for everything — you can change it anytime.</p>
+        <div class="opts" role="radiogroup" aria-labelledby="s4-q">
+          <button class="opt" role="radio" aria-checked="false" data-val="direct"  onclick="pickStyle(this,'direct')">Direct and step-by-step</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="gentle"  onclick="pickStyle(this,'gentle')">Gentle and supportive</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="fast"    onclick="pickStyle(this,'fast')">Fast — just give me the summary</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="minimal" onclick="pickStyle(this,'minimal')">Just show me resources, minimal chat</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s3')">Back</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s5" aria-labelledby="s5-q">
+    <div class="center-wrap">
+      <div class="inner">
+        <div class="pbar-track" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" aria-label="Step 5 of 5"><div class="pbar-fill" style="width:95%"></div></div>
+        <div class="eyebrow">Step 5 of 5</div>
+        <h2 class="big-q" id="s5-q">What state are you in?</h2>
+        <p class="sub-q">Used only to find local programs.</p>
+        <div class="opts" role="radiogroup" aria-labelledby="s5-q">
+          <button class="opt" role="radio" aria-checked="false" data-val="Washington"        onclick="pickState(this,'Washington')">Washington</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="Oregon"            onclick="pickState(this,'Oregon')">Oregon</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="Idaho"             onclick="pickState(this,'Idaho')">Idaho</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="Other"             onclick="pickState(this,'Other')">Other state</button>
+          <button class="opt" role="radio" aria-checked="false" data-val="Prefer not to say" onclick="pickState(this,'Prefer not to say')">Prefer not to say</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn-ghost" onclick="goTo('s4')">Back</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen plan-shell" id="plan" aria-labelledby="plan-heading">
+    <h2 id="plan-heading" style="position:absolute; left:-9999px;">Your plan</h2>
+    <div class="plan-left">
+
+      <div class="action-card" id="action-card" style="display:none;" role="region" aria-label="Immediate action">
+        <div class="action-label">One action — right now</div>
+        <div class="action-text" id="action-text"></div>
+        <div class="action-sub" id="action-sub"></div>
+        <div class="stop-note" id="action-stop"></div>
+      </div>
+
+      <div role="region" aria-labelledby="steps-label">
+        <div class="sec-label" id="steps-label">Your next steps</div>
+        <div class="steps-card" id="steps-card"></div>
+      </div>
+
+      <div role="region" aria-labelledby="programs-label">
+        <div class="sec-label" id="programs-label">Programs that may match you</div>
+        <div id="programs-list" aria-live="polite" aria-busy="false">
+          <div class="prog-empty">Loading programs…</div>
+        </div>
+      </div>
+
+      <div role="region" aria-labelledby="tools-label">
+        <div class="sec-label" id="tools-label">Tools</div>
+        <div class="tool-row">
+          <button class="tool-btn" onclick="openTool('phone')" aria-label="Open phone script helper">Phone script helper</button>
+          <button class="tool-btn" onclick="openTool('letter')" aria-label="Open letter and form helper">Letter / form helper</button>
+        </div>
+      </div>
+
+      <div class="orient-line" id="orient-line">You're not behind. You're orienting.</div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="editIntake()" aria-label="Edit my answers and regenerate plan">Edit my answers</button>
+        <button class="btn-ghost" onclick="startOver()" aria-label="Start over from the beginning">Start over</button>
+      </div>
+
+    </div>
+
+    <aside class="plan-right" role="complementary" aria-label="Ask Navigator chat panel">
+      <div class="chat-hdr">
+        <div class="chat-title">Ask Navigator</div>
+        <div class="chat-sub" id="chat-sub-name">Ask anything about your plan</div>
+      </div>
+      <div class="chat-msgs" id="chat-msgs" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation with Navigator">
+        <div class="bubble bai" id="chat-opener">Hi. Tell me a little about what you're working through, and I'll help you make sense of it.</div>
+      </div>
+      <form class="chat-in" onsubmit="sendChat(event)" aria-label="Send a message to Navigator">
+        <label for="chat-field" style="position:absolute;left:-9999px;">Your message</label>
+        <textarea class="chat-field" id="chat-field" placeholder="Ask anything…" aria-label="Message to Navigator"></textarea>
+        <button class="chat-send" type="submit" aria-label="Send message" id="chat-send">↑</button>
+      </form>
+      <div class="save-bar">
+        <div class="save-note">
+          <em>Saved in your browser.</em> Clears when you choose Start over.
+        </div>
+        <button class="print-btn" onclick="window.print()" aria-label="Print or save as PDF">Print / PDF</button>
+      </div>
+    </aside>
+  </section>
+
+  </main>
+</div>
+
+<div class="tool-modal-bg" id="tool-modal-bg" role="dialog" aria-modal="true" aria-labelledby="tool-modal-title" onclick="closeTool(event)">
+  <div class="tool-modal" onclick="event.stopPropagation()">
+    <h3 id="tool-modal-title">Tool</h3>
+    <div id="tool-modal-body"></div>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="closeTool()">Close</button>
     </div>
   </div>
 </div>
 
-<div class="workspace">
-  <!-- LEFT PANEL — Navigator Agent -->
-  <div class="left-panel">
-    <div class="panel-header">
-      <span class="panel-title">Navigator</span>
-      <span style="font-size:11px;color:var(--text-muted);">Spokane, WA</span>
-    </div>
-    <div class="panel-scroll">
-      <div class="search-row">
-        <input class="search-input" placeholder="What do you need help with?" value="emergency rental assistance" />
-        <button class="search-btn">Find</button>
-      </div>
-      <div class="section-label">Top matches</div>
-      <div class="result-mini active" onclick="loadDoc('erap')">
-        <div class="result-mini-title">WA Emergency Rental Assistance (ERAP)</div>
-        <div class="result-mini-tags"><span class="tag match">88% match</span><span class="tag">State</span><span class="tag">Housing</span></div>
-        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:88%;background:var(--green);"></div></div><span class="elig-pct">88%</span></div>
-        <div class="mini-actions">
-          <button class="btn-mini btn-load" onclick="loadDoc('erap');event.stopPropagation();">Load form →</button>
-          <button class="btn-mini btn-send sent">Sent to Sarah</button>
-        </div>
-      </div>
-      <div class="result-mini" onclick="loadDoc('snap')">
-        <div class="result-mini-title">SNAP Emergency Eviction Prevention</div>
-        <div class="result-mini-tags"><span class="tag match">82% match</span><span class="tag">Local</span></div>
-        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:82%;background:var(--green);"></div></div><span class="elig-pct">82%</span></div>
-        <div class="mini-actions">
-          <button class="btn-mini btn-load" onclick="loadDoc('snap');event.stopPropagation();">Load form →</button>
-          <button class="btn-mini btn-send">Send to Sarah</button>
-        </div>
-      </div>
-      <div class="result-mini" onclick="loadDoc('hud')">
-        <div class="result-mini-title">HUD Transitional Housing — CoC</div>
-        <div class="result-mini-tags"><span class="tag">61% match</span><span class="tag">Federal</span></div>
-        <div class="elig-mini"><div class="elig-track"><div class="elig-fill" style="width:61%;background:var(--amber);"></div></div><span class="elig-pct">61%</span></div>
-        <div class="mini-actions">
-          <button class="btn-mini btn-load" onclick="loadDoc('hud');event.stopPropagation();">Load form →</button>
-          <button class="btn-mini btn-send">Send to Sarah</button>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="section-label">Upload documents to Sarah</div>
-      <div class="upload-queue">
-        <div class="upload-item"><span class="upload-icon">📄</span><span class="upload-name">Eviction_Notice_March2026.pdf</span><span class="upload-status sent">Sent ✓</span></div>
-        <div class="upload-item"><span class="upload-icon">📄</span><span class="upload-name">SSI_application_confirmation.pdf</span><span class="upload-status ready">Ready</span><button class="upload-btn">Send</button></div>
-        <div class="upload-item"><span class="upload-icon">🖼</span><span class="upload-name">lease_agreement_photo.jpg</span><span class="upload-status ready">Ready</span><button class="upload-btn">Send</button></div>
-        <div class="upload-item" style="border-style:dashed;cursor:pointer;justify-content:center;color:var(--text-muted);font-size:12px;">+ Add document</div>
-      </div>
-    </div>
-  </div>
-  <!-- RIGHT PANEL — Document / Form Viewer -->
-  <div class="right-panel">
-    <div class="doc-toolbar">
-      <input class="doc-url-input" id="doc-url" placeholder="Paste a form URL, or load a program from the left panel..." />
-      <button class="doc-btn" onclick="loadUrl()">Load</button>
-      <button class="doc-btn primary" onclick="showUpload()">Upload PDF</button>
-    </div>
-    <div class="doc-frame" id="doc-frame">
-      <div class="doc-placeholder" id="doc-placeholder">
-        <div class="doc-placeholder-icon">📋</div>
-        <div class="doc-placeholder-title">Your form goes here</div>
-        <div class="doc-placeholder-sub">Click "Load form →" on any resource to open the agency's application here. Or paste a URL above. Navigator will guide you through it.</div>
-        <div class="doc-drop-zone" onclick="showUpload()">
-          <div style="font-size:28px;opacity:0.4;">📎</div>
-          <div class="doc-drop-zone-label">Drop documents here or click to upload</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">PDF, JPG, PNG — sent directly to Sarah W.</div>
-        </div>
-      </div>
-      <div id="doc-loaded" style="display:none;flex:1;flex-direction:column;">
-        <div style="background:var(--navy-mid);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-size:13px;font-weight:500;" id="doc-title">WA Emergency Rental Assistance — Application</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="doc-source">commerce.wa.gov · Opens in secure viewer</div>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <button class="doc-btn" onclick="closeDoc()">✕ Close</button>
-            <button class="doc-btn primary">Open in browser ↗</button>
-          </div>
-        </div>
-        <div style="flex:1;background:#1e2d3d;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--text-muted);">
-          <div style="font-size:32px;opacity:0.3;">📄</div>
-          <div style="font-size:13px;">Agency form loads here in live deployment</div>
-          <div style="font-size:11px;opacity:0.6;">iframe / PDF viewer · secure sandbox</div>
-        </div>
-      </div>
-    </div>
-    <div class="hint-panel">
-      <div class="hint-title">Copilot hints</div>
-      <div id="hint-default">
-        <div class="hint-card">
-          <span class="hint-icon">💡</span>
-          <div>
-            <div class="hint-text"><strong>Load a form on the right</strong> — Navigator will highlight which fields match your saved information.</div>
-          </div>
-        </div>
-        <div class="hint-card">
-          <span class="hint-icon">📎</span>
-          <div>
-            <div class="hint-text"><strong>Bulk upload ready</strong> — 3 documents queued. Send them all to Sarah W. at once or one at a time.</div>
-            <div class="hint-action" onclick="sendAll()">Send all to Sarah W. →</div>
-          </div>
-        </div>
-      </div>
-      <div id="hint-erap" style="display:none;">
-        <div class="hint-card">
-          <span class="hint-icon">✓</span>
-          <div><div class="hint-text"><strong>You likely qualify.</strong> ERAP requires income ≤80% AMI + eviction notice. You have the notice — it's already in your upload queue.</div></div>
-        </div>
-        <div class="hint-card">
-          <span class="hint-icon">📋</span>
-          <div><div class="hint-text"><strong>You'll need:</strong> Photo ID, proof of income (last 2 pay stubs or benefit letter), eviction notice, lease agreement.</div></div>
-        </div>
-        <div class="hint-card">
-          <span class="hint-icon">💬</span>
-          <div>
-            <div class="hint-text"><strong>Tell Sarah you're applying</strong> — she can add a supporting note to your case.</div>
-            <div class="hint-action">Send update to Sarah W. →</div>
-          </div>
-        </div>
-      </div>
-      <div id="hint-snap" style="display:none;">
-        <div class="hint-card">
-          <span class="hint-icon">🚶</span>
-          <div><div class="hint-text"><strong>Walk-in intake</strong> Mon–Thu 8am–4pm at 3102 W. Fort George Wright Dr. No appointment needed. Bring ID and eviction notice.</div></div>
-        </div>
-        <div class="hint-card">
-          <span class="hint-icon">✓</span>
-          <div><div class="hint-text"><strong>SSI pending is fine</strong> — SNAP emergency fund does not require active benefits. Your application won't be rejected for this.</div></div>
-        </div>
-      </div>
-      <div id="hint-hud" style="display:none;">
-        <div class="hint-card">
-          <span class="hint-icon">⏳</span>
-          <div><div class="hint-text"><strong>Waitlist is 3–6 weeks.</strong> Apply now even if you have short-term help lined up. A case manager referral speeds things up — ask Sarah.</div></div>
-        </div>
-        <div class="hint-card">
-          <span class="hint-icon">📞</span>
-          <div><div class="hint-text"><strong>Apply via 211</strong> — call or text 211, tell them you need CoC transitional housing in Spokane.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <script>
-var activeDoc = null;
-var docs = {
-  erap: { title:'WA Emergency Rental Assistance — Application', source:'commerce.wa.gov · Opens in secure viewer' },
-  snap: { title:'SNAP Emergency Eviction Prevention — Intake Form', source:'spokanesnap.org · Opens in secure viewer' },
-  hud:  { title:'HUD CoC Transitional Housing — Referral Form', source:'hud.gov · Opens in secure viewer' }
-};
+const STORAGE_KEY = 'nav_copilot_state';
+const STATE_FOCUS = ['Washington', 'Oregon', 'Idaho'];
 
-function loadDoc(key) {
-  document.querySelectorAll('.result-mini').forEach(el=>el.classList.remove('active'));
-  event && event.currentTarget && event.currentTarget.classList.add('active');
-  var d = docs[key];
-  document.getElementById('doc-title').textContent = d.title;
-  document.getElementById('doc-source').textContent = d.source;
-  document.getElementById('doc-placeholder').style.display='none';
-  document.getElementById('doc-loaded').style.display='flex';
-  document.getElementById('hint-default').style.display='none';
-  document.getElementById('hint-erap').style.display='none';
-  document.getElementById('hint-snap').style.display='none';
-  document.getElementById('hint-hud').style.display='none';
-  document.getElementById('hint-'+key).style.display='block';
-  activeDoc = key;
+const intake = { name: '', goal: '', barriers: [], urgency: '', style: '', state: '' };
+let savedAt = null;
+let restoredPrograms = null;
+let chatHistory = [];
+let chatBusy = false;
+
+function readState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.intake) return null;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
 }
 
-function closeDoc() {
-  document.getElementById('doc-placeholder').style.display='flex';
-  document.getElementById('doc-loaded').style.display='none';
-  document.getElementById('hint-default').style.display='block';
-  document.getElementById('hint-erap').style.display='none';
-  document.getElementById('hint-snap').style.display='none';
-  document.getElementById('hint-hud').style.display='none';
-  document.querySelectorAll('.result-mini').forEach(el=>el.classList.remove('active'));
-  activeDoc = null;
+function writeState() {
+  const payload = {
+    intake: {
+      name: intake.name || null,
+      goal: intake.goal || '',
+      barriers: Array.isArray(intake.barriers) ? intake.barriers.slice() : [],
+      urgency: intake.urgency || '',
+      style: intake.style || '',
+      state: intake.state || null
+    },
+    plan: {
+      action_card: buildActionCardData(),
+      next_steps: buildStepsData(),
+      programs_snapshot: restoredPrograms || [],
+      generated_at: new Date().toISOString()
+    },
+    saved_at: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    savedAt = payload.saved_at;
+    renderSavedPill();
+  } catch (e) {}
 }
 
-function loadUrl() {
-  var url = document.getElementById('doc-url').value.trim();
-  if(!url) return;
-  document.getElementById('doc-title').textContent = 'External form';
-  document.getElementById('doc-source').textContent = url;
-  document.getElementById('doc-placeholder').style.display='none';
-  document.getElementById('doc-loaded').style.display='flex';
-  document.getElementById('hint-default').style.display='block';
+function clearState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  savedAt = null;
+  restoredPrograms = null;
 }
 
-function showUpload() { alert('File picker — live in deployed version'); }
-function sendAll() { alert('Sending all queued documents to Sarah W. — live in deployed version'); }
-
-function copyId() {
-  var icon=document.getElementById('copy-icon');
-  icon.textContent='✓';
-  icon.style.background='var(--green-dim)';
-  icon.style.color='var(--green)';
-  setTimeout(()=>{ icon.textContent='⧉'; icon.style.background=''; icon.style.color=''; },2000);
+function timeAgo(iso) {
+  if (!iso) return '';
+  const then = new Date(iso).getTime();
+  if (isNaN(then)) return '';
+  const secs = Math.max(1, Math.floor((Date.now() - then) / 1000));
+  if (secs < 60) return 'saved just now';
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return 'saved ' + mins + ' min ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return 'saved ' + hrs + ' hr ago';
+  const days = Math.floor(hrs / 24);
+  return 'saved ' + days + ' day' + (days === 1 ? '' : 's') + ' ago';
 }
 
-// Auto-load ERAP on page load to demo the copilot state
-window.onload = function() {
-  setTimeout(()=>{
-    document.querySelectorAll('.result-mini')[0].classList.add('active');
-    loadDoc('erap');
-  }, 400);
-};
+function renderSavedPill() {
+  const pill = document.getElementById('saved-pill');
+  const btn  = document.getElementById('start-over-btn');
+  if (savedAt) {
+    pill.textContent = timeAgo(savedAt);
+    pill.style.display = 'inline-block';
+    btn.style.display = 'inline-block';
+  } else {
+    pill.style.display = 'none';
+    btn.style.display = 'none';
+  }
+}
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('active');
+  const heading = el.querySelector('h1, h2');
+  if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus(); }
+  if (id === 'plan') renderPlan();
+}
+
+function submitName() {
+  intake.name = document.getElementById('name-input').value.trim();
+  applyName();
+  goTo('s1');
+}
+function skipName() { intake.name = ''; goTo('s1'); }
+
+function applyName() {
+  const q1 = document.getElementById('s1-q');
+  if (intake.name && q1) q1.textContent = 'Hi, ' + intake.name + '. What would help most right now?';
+  const chatSub = document.getElementById('chat-sub-name');
+  if (intake.name && chatSub) chatSub.textContent = 'Ask anything, ' + intake.name;
+}
+
+function clearSelected(scopeId) {
+  document.querySelectorAll('#' + scopeId + ' .opt').forEach(b => {
+    b.classList.remove('sel');
+    b.setAttribute('aria-checked', 'false');
+  });
+}
+function selectRadio(btn, scopeId) {
+  clearSelected(scopeId);
+  btn.classList.add('sel');
+  btn.setAttribute('aria-checked', 'true');
+}
+
+function pickGoal(btn, val)    { intake.goal = val;    selectRadio(btn, 's1'); setTimeout(() => goTo('s2'), 220); }
+function pickUrgency(btn, val) { intake.urgency = val; selectRadio(btn, 's3'); setTimeout(() => goTo('s4'), 220); }
+function pickStyle(btn, val)   { intake.style = val;   selectRadio(btn, 's4'); setTimeout(() => goTo('s5'), 220); }
+function pickState(btn, val)   { intake.state = val;   selectRadio(btn, 's5'); setTimeout(() => goTo('plan'), 220); }
+
+function toggleBarrier(btn, val) {
+  const idx = intake.barriers.indexOf(val);
+  if (idx >= 0) {
+    intake.barriers.splice(idx, 1);
+    btn.classList.remove('multi');
+    btn.setAttribute('aria-checked', 'false');
+  } else {
+    intake.barriers.push(val);
+    btn.classList.add('multi');
+    btn.setAttribute('aria-checked', 'true');
+  }
+}
+
+function skipToPlan() { intake.goal = ''; goTo('plan'); }
+
+function startOver() {
+  if (savedAt && !confirm('This will clear your saved answers and plan on this device. Continue?')) return;
+  clearState();
+  intake.name = ''; intake.goal = ''; intake.barriers = [];
+  intake.urgency = ''; intake.style = ''; intake.state = '';
+  chatHistory = [];
+  const nameInput = document.getElementById('name-input');
+  if (nameInput) nameInput.value = '';
+  document.querySelectorAll('.opt').forEach(b => {
+    b.classList.remove('sel'); b.classList.remove('multi');
+    b.setAttribute('aria-checked', 'false');
+  });
+  document.getElementById('s1-q').textContent = 'What would help most right now?';
+  document.getElementById('chat-sub-name').textContent = 'Ask anything about your plan';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML = '<div class="bubble bai" id="chat-opener">Hi. Tell me a little about what you\'re working through, and I\'ll help you make sense of it.</div>';
+  renderSavedPill();
+  goTo('s0');
+}
+
+function editIntake() {
+  document.getElementById('name-input').value = intake.name || '';
+  applyName();
+  prefillOpts('s1', intake.goal);
+  prefillBarriers(intake.barriers);
+  prefillOpts('s3', intake.urgency);
+  prefillOpts('s4', intake.style);
+  prefillOpts('s5', intake.state);
+  goTo('s0');
+}
+
+function prefillOpts(scopeId, val) {
+  clearSelected(scopeId);
+  if (!val) return;
+  const btn = document.querySelector('#' + scopeId + ' .opt[data-val="' + cssEscape(val) + '"]');
+  if (btn) { btn.classList.add('sel'); btn.setAttribute('aria-checked', 'true'); }
+}
+
+function prefillBarriers(vals) {
+  document.querySelectorAll('#s2 .opt').forEach(b => {
+    b.classList.remove('multi'); b.setAttribute('aria-checked', 'false');
+  });
+  (vals || []).forEach(v => {
+    const btn = document.querySelector('#s2 .opt[data-val="' + cssEscape(v) + '"]');
+    if (btn) { btn.classList.add('multi'); btn.setAttribute('aria-checked', 'true'); }
+  });
+}
+
+function cssEscape(s) { return String(s).replace(/"/g, '\\"'); }
+
+document.getElementById('name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); submitName(); }
+});
+
+function buildActionCardData() {
+  if (intake.urgency !== 'today') return null;
+  const stateLabel = (intake.state && intake.state !== 'Prefer not to say' && intake.state !== 'Other')
+    ? ' in ' + intake.state : '';
+  const byGoal = {
+    benefits:  { text: 'Call 211 and ask what benefits you may qualify for' + stateLabel + '.',
+                 sub:  'You\'re orienting. One call counts.',
+                 stop: 'Done for today when: you have a reference number or a name to follow up with.' },
+    paperwork: { text: 'Open the most recent notice or letter and read just the first paragraph.',
+                 sub:  'You don\'t have to solve it today. You only have to know what it says.',
+                 stop: 'Done for today when: you can name the deadline (or confirm there isn\'t one yet).' },
+    nextsteps: { text: 'Write down the one thing weighing on you most right now.',
+                 sub:  'Naming it is the step.',
+                 stop: 'Done for today when: it\'s written down somewhere you can see it tomorrow.' },
+    overwhelm: { text: 'Pick one task. Write it on a sticky note. Just one.',
+                 sub:  'You\'re not behind. You\'re organizing.',
+                 stop: 'Done for today when: that one task is on paper, in front of you.' },
+    exploring: { text: 'Pick one program below and read just its description.',
+                 sub:  'Looking is doing. You\'re not committing to anything.',
+                 stop: 'Done for today when: you can name one program you want to learn more about.' },
+    '':        { text: 'Take three slow breaths. Then come back and pick one thing.',
+                 sub:  'Today\'s job is just to start.',
+                 stop: 'Done for today when: you\'ve oriented. That\'s enough.' }
+  };
+  const cfg = byGoal[intake.goal] || byGoal[''];
+  return { title: 'One action — right now', text: cfg.text, sub: cfg.sub, stop: cfg.stop };
+}
+
+function buildStepsData() {
+  const stepsByGoal = {
+    benefits: [
+      { t: 'Identify which benefit you\'re targeting first', s: 'SSDI, SSI, SNAP, Medicaid, housing — pick one' },
+      { t: 'Gather documents before you need them',         s: 'ID, proof of address, income or medical letters' },
+      { t: 'Write down three questions you need answered',  s: 'So you don\'t have to remember them under pressure' }
+    ],
+    paperwork: [
+      { t: 'Open the notice and find the deadline',         s: 'Circle it. That\'s your anchor.' },
+      { t: 'Identify what they\'re actually asking for',    s: 'A signature, a document, a phone call — one thing' },
+      { t: 'Decide what you can answer today vs later',     s: 'You don\'t have to do it all at once' }
+    ],
+    nextsteps: [
+      { t: 'Name the most pressing concern',                s: 'The one you keep thinking about' },
+      { t: 'Break it into a question someone can answer',   s: '\u201cHow do I…\u201d or \u201cWho handles…\u201d' },
+      { t: 'Pick where to start: program, person, or paper',s: 'Use the chat to think it through' }
+    ],
+    overwhelm: [
+      { t: 'Make a list of every task on your mind',        s: 'It\'ll feel less infinite once it\'s on paper' },
+      { t: 'Mark which two are urgent',                     s: 'Everything else can wait — even by an hour' },
+      { t: 'Pick one and start it for ten minutes',         s: 'Ten minutes counts. You can stop after.' }
+    ],
+    exploring: [
+      { t: 'Browse programs below and read three',          s: 'You\'re scouting, not deciding' },
+      { t: 'Note which feel relevant to your situation',    s: 'Even just \u201cmaybe\u201d is useful' },
+      { t: 'Use the chat to ask about anything unclear',    s: 'Navigator can explain plain-language' }
+    ],
+    '': [
+      { t: 'Tell Navigator what you\'re working through',   s: 'In the chat panel — your words, no script' },
+      { t: 'Look at the programs below',                    s: 'You don\'t have to apply, just notice' },
+      { t: 'Save what helps before you close the tab',      s: 'Print or PDF anytime' }
+    ]
+  };
+  const base = stepsByGoal[intake.goal] || stepsByGoal[''];
+  let steps = base.slice();
+  if (intake.barriers.includes('phone')) {
+    steps.unshift({ t: 'Write your one phone question on paper before you call', s: 'So you don\'t have to think on the spot' });
+  }
+  if (intake.barriers.includes('deadlines') && intake.goal !== 'paperwork') {
+    steps.unshift({ t: 'Find the soonest deadline you know about', s: 'Write it where you\'ll see it daily' });
+  }
+  if (intake.barriers.includes('focus') && intake.goal !== 'overwhelm') {
+    steps.unshift({ t: 'Set a 15-minute timer before starting any task', s: 'Working with brain fog, not against it' });
+  }
+  if (intake.barriers.includes('losing_benefits')) {
+    steps.push({ t: 'Don\'t change anything until you know the rules', s: 'Most benefits programs let you ask first, no penalty' });
+  }
+  return steps.slice(0, 4);
+}
+
+function renderPlan() {
+  renderActionCard();
+  renderSteps();
+  renderChatOpener();
+  loadPrograms();
+}
+
+function renderActionCard() {
+  const card = document.getElementById('action-card');
+  const data = buildActionCardData();
+  if (!data) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('action-text').textContent = data.text;
+  document.getElementById('action-sub').textContent  = data.sub;
+  document.getElementById('action-stop').textContent = data.stop;
+}
+
+function renderSteps() {
+  const steps = buildStepsData();
+  const html = steps.map((step, i) => `
+    <div class="step-row">
+      <div class="step-n" aria-hidden="true">${i+1}</div>
+      <div>
+        <div class="step-t">${escapeHtml(step.t)}</div>
+        <div class="step-s">${escapeHtml(step.s)}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('steps-card').innerHTML = html;
+}
+
+function renderChatOpener() {
+  const opener = document.getElementById('chat-opener');
+  if (!opener) return;
+  const greet = intake.name ? ('Hi ' + intake.name + '. ') : '';
+  const goalText = {
+    benefits:  'Based on what you told me, you\'re looking for benefits or assistance. The programs on the left are a starting point — want me to walk through how to figure out which one fits first?',
+    paperwork: 'Sounds like there\'s a notice or some paperwork in front of you. Want to tell me what it says, even just a sentence? I can help you decide what it actually wants.',
+    nextsteps: 'You\'re trying to figure out where to start. That\'s a real question. Tell me a little about what\'s on your plate and I\'ll help you sort it.',
+    overwhelm: 'Overwhelm makes things feel bigger than they are. Want to tell me one thing on your list? We can pull it apart together.',
+    exploring: 'No pressure to know what you\'re looking for. Tell me what brought you here and we\'ll figure it out from there.',
+    '':        'Tell me a little about what you\'re working through, and I\'ll help you make sense of it.'
+  };
+  opener.textContent = greet + (goalText[intake.goal] || goalText['']);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+function buildProgramsParams() {
+  const params = new URLSearchParams();
+  const goalCategory = { benefits: 'direct_payments', paperwork: 'advisory' };
+  if (goalCategory[intake.goal]) params.set('category', goalCategory[intake.goal]);
+  if (STATE_FOCUS.includes(intake.state)) params.set('q', intake.state);
+  params.set('limit', '8');
+  return params.toString();
+}
+
+async function loadPrograms() {
+  const list = document.getElementById('programs-list');
+  list.setAttribute('aria-busy', 'true');
+
+  if (restoredPrograms && restoredPrograms.length) {
+    renderPrograms(restoredPrograms);
+  } else {
+    list.innerHTML = '<div class="prog-empty">Loading programs…</div>';
+  }
+
+  try {
+    const qs = buildProgramsParams();
+    const res = await fetch('/api/programs?' + qs);
+    if (!res.ok) throw new Error('Programs request failed: ' + res.status);
+    const data = await res.json();
+    let results = data.results || [];
+    if (results.length === 0) {
+      const fallback = await fetch('/api/programs?limit=8');
+      if (fallback.ok) {
+        const fbData = await fallback.json();
+        results = fbData.results || [];
+      }
+    }
+    restoredPrograms = (results || []).slice(0, 6).map(p => ({
+      id: p.id || null, title: p.title, agency_short: p.agency_short || '', url: p.url || null
+    }));
+    renderPrograms(results);
+    writeState();
+  } catch (err) {
+    list.setAttribute('aria-busy', 'false');
+    if (!restoredPrograms || !restoredPrograms.length) {
+      list.innerHTML = '<div class="prog-empty">Couldn\'t load programs right now. The chat panel still works.</div>';
+    }
+    writeState();
+  }
+}
+
+function renderPrograms(results) {
+  const list = document.getElementById('programs-list');
+  list.setAttribute('aria-busy', 'false');
+  if (!results || results.length === 0) {
+    list.innerHTML = '<div class="prog-empty">No programs matched. Try asking Navigator in the chat panel.</div>';
+    return;
+  }
+  const top = results.slice(0, 6);
+  const badgeText = {
+    direct_payments: 'Direct payments', grants: 'Grants', loans: 'Loans',
+    services: 'Services', advisory: 'Advisory', training: 'Training',
+    insurance: 'Insurance', information: 'Information', other: 'Federal program'
+  };
+  const html = top.map((p, i) => {
+    const id = 'prog-' + i;
+    const badge = badgeText[p.category] || 'Federal program';
+    const action = p.url
+      ? `<a class="prog-action" href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">Learn more →</a>`
+      : '';
+    return `
+      <div class="prog" id="${id}" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open');}" role="button" tabindex="0" aria-expanded="false">
+        <div class="prog-t">${escapeHtml(p.title)}</div>
+        <div class="prog-a">${escapeHtml(p.agency_short || '')}</div>
+        <span class="prog-badge">${escapeHtml(badge)}</span>
+        <div class="prog-body">
+          <div class="prog-desc">${escapeHtml((p.objectives || '').slice(0, 320))}</div>
+          ${action}
+        </div>
+      </div>
+    `;
+  }).join('');
+  const more = results.length > top.length
+    ? `<div style="font-size:11px; color:var(--muted); margin-top:6px;">Tap any card to expand · ${results.length - top.length} more available</div>`
+    : '<div style="font-size:11px; color:var(--muted); margin-top:6px;">Tap any card to expand</div>';
+  list.innerHTML = html + more;
+}
+
+function sendChat(e) {
+  e.preventDefault();
+  if (chatBusy) return;
+  const field = document.getElementById('chat-field');
+  const message = field.value.trim();
+  if (!message) return;
+  field.value = '';
+  appendChat('user', message);
+  chatHistory.push({ role: 'user', text: message });
+  postChat(message);
+}
+
+function appendChat(who, text, opts) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'bubble ' + (who === 'user' ? 'buser' : 'bai') + (opts && opts.thinking ? ' thinking' : '');
+  div.textContent = text;
+  if (opts && opts.id) div.id = opts.id;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function postChat(message) {
+  chatBusy = true;
+  document.getElementById('chat-send').disabled = true;
+  const thinking = appendChat('ai', 'Thinking…', { thinking: true, id: 'chat-thinking' });
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: message,
+        history: chatHistory.slice(0, -1),
+        session: {
+          name: intake.name || null,
+          goal: intake.goal || null,
+          barriers: intake.barriers,
+          urgency: intake.urgency || null,
+          style: intake.style || null,
+          state: intake.state || null
+        }
+      })
+    });
+    thinking.remove();
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      appendChat('ai', err.error || ('Sorry — chat is unavailable right now (' + res.status + ').'));
+      return;
+    }
+    const data = await res.json();
+    const reply = data.reply || 'No response.';
+    appendChat('ai', reply);
+    chatHistory.push({ role: 'assistant', text: reply });
+  } catch (err) {
+    thinking.remove();
+    appendChat('ai', 'Sorry — couldn\'t reach Navigator. Check your connection and try again.');
+  } finally {
+    chatBusy = false;
+    document.getElementById('chat-send').disabled = false;
+    document.getElementById('chat-field').focus();
+  }
+}
+
+document.getElementById('chat-field').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    document.querySelector('.chat-in').requestSubmit();
+  }
+});
+
+function buildTool(key) {
+  if (key === 'phone') {
+    const name = escapeHtml(intake.name || '[your name]');
+    const reason = intake.goal === 'paperwork' ? 'a notice I received' : 'benefits I might qualify for';
+    return {
+      title: 'Phone script helper',
+      body: `<p>A short script for your call. Read what you need, hang up when you're done.</p>
+<pre>"Hi, my name is ${name}.
+I'm calling about ${reason}.
+
+Can you tell me:
+1. What I qualify for based on my situation?
+2. What documents I'll need?
+3. Is there a deadline I should know about?
+
+Could you give me a reference number for this call?
+And your name, so I know who I spoke with?"</pre>
+<p style="font-size:12px; color:var(--muted);">Write down their reference number and name before you hang up. That's your anchor for any follow-up.</p>`
+    };
+  }
+  if (key === 'letter') {
+    return {
+      title: 'Letter / form helper',
+      body: `<p>Three questions to ask any letter or form before you respond:</p>
+<pre>1. WHAT do they want?
+   (Signature, document, payment, decision)
+
+2. WHEN do they want it by?
+   (Find the deadline. Circle it.)
+
+3. WHAT happens if I don't?
+   (Usually less scary than it feels.)</pre>
+<p style="font-size:12px; color:var(--muted);">If the answer to #1 isn't clear after one read, that's okay — bring the letter to the chat panel and Navigator can help translate it.</p>`
+    };
+  }
+  return null;
+}
+
+function openTool(key) {
+  const tool = buildTool(key);
+  if (!tool) return;
+  document.getElementById('tool-modal-title').textContent = tool.title;
+  document.getElementById('tool-modal-body').innerHTML = tool.body;
+  document.getElementById('tool-modal-bg').classList.add('open');
+}
+function closeTool(e) {
+  if (e && e.currentTarget !== e.target && e.type === 'click') return;
+  document.getElementById('tool-modal-bg').classList.remove('open');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('tool-modal-bg').classList.remove('open');
+  }
+});
+
+(function boot() {
+  const saved = readState();
+  if (!saved) return;
+  const si = saved.intake || {};
+  intake.name = si.name || '';
+  intake.goal = si.goal || '';
+  intake.barriers = Array.isArray(si.barriers) ? si.barriers.slice() : [];
+  intake.urgency = si.urgency || '';
+  intake.style = si.style || '';
+  intake.state = si.state || '';
+  savedAt = saved.saved_at || null;
+  restoredPrograms = (saved.plan && Array.isArray(saved.plan.programs_snapshot))
+    ? saved.plan.programs_snapshot : null;
+  applyName();
+  renderSavedPill();
+  goTo('plan');
+})();
 </script>
 </body>
 </html>
-
-<!-- CHAT PANEL INJECTION — appended -->
-<style>
-.lp-ask{display:none;flex-direction:column;flex:1;overflow:hidden;}
-.chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
-.chat-messages::-webkit-scrollbar{width:4px;}
-.chat-messages::-webkit-scrollbar-thumb{background:var(--navy-light);border-radius:2px;}
-.chat-msg{display:flex;flex-direction:column;gap:3px;max-width:92%;}
-.chat-msg.user{align-self:flex-end;}
-.chat-msg.assistant{align-self:flex-start;}
-.chat-bubble{padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;}
-.chat-msg.user .chat-bubble{background:var(--amber);color:var(--navy);border-radius:10px 10px 2px 10px;}
-.chat-msg.assistant .chat-bubble{background:var(--navy-light);color:var(--text-light);border-radius:10px 10px 10px 2px;}
-.chat-time{font-size:10px;color:var(--text-muted);padding:0 4px;}
-.chat-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--border);background:var(--navy-mid);flex-shrink:0;}
-.chat-input{flex:1;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-light);font-size:12px;font-family:inherit;resize:none;}
-.chat-input::placeholder{color:var(--text-muted);}
-.chat-send{background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:500;cursor:pointer;flex-shrink:0;}
-.chat-send:disabled{opacity:0.5;cursor:not-allowed;}
-.chat-typing{display:flex;gap:4px;align-items:center;padding:9px 12px;background:var(--navy-light);border-radius:10px;width:fit-content;}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--text-muted);animation:bounce 1.2s infinite;}
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-4px);}}
-.chat-suggestion{font-size:11px;padding:5px 10px;border-radius:16px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;background:var(--navy-light);}
-.chat-suggestion:hover{border-color:rgba(239,159,39,0.4);color:var(--amber-light);}
-</style>
-
-<script>
-// Left panel tab switcher
-function switchLeftPanel(panel) {
-  var findEl = document.getElementById('lp-find');
-  var askEl = document.getElementById('lp-ask');
-  var tabFind = document.getElementById('lp-tab-find');
-  var tabAsk = document.getElementById('lp-tab-ask');
-  if(!findEl || !askEl) return;
-  if(panel==='find') {
-    findEl.style.display='flex'; findEl.style.flexDirection='column';
-    askEl.style.display='none';
-    tabFind.style.color='var(--amber)'; tabFind.style.borderBottom='2px solid var(--amber)';
-    tabAsk.style.color='var(--text-muted)'; tabAsk.style.borderBottom='2px solid transparent';
-  } else {
-    findEl.style.display='none';
-    askEl.style.display='flex';
-    tabAsk.style.color='var(--amber)'; tabAsk.style.borderBottom='2px solid var(--amber)';
-    tabFind.style.color='var(--text-muted)'; tabFind.style.borderBottom='2px solid transparent';
-  }
-}
-
-// Chat state
-var chatHistory = [];
-var chatTyping = false;
-
-function buildAskPanel() {
-  var leftPanel = document.querySelector('.left-panel');
-  if(!leftPanel || document.getElementById('lp-ask')) return;
-
-  // Add id to existing panel-scroll so we can toggle it
-  var scroll = leftPanel.querySelector('.panel-scroll');
-  if(scroll && !scroll.id) scroll.id = 'lp-find';
-
-  // Add tab bar to panel-header
-  var header = leftPanel.querySelector('.panel-header');
-  if(header && !document.getElementById('lp-tab-find')) {
-    header.style.cssText += 'padding:0;flex-direction:column;align-items:stretch;gap:0;';
-    var inner = document.createElement('div');
-    inner.style.cssText = 'display:flex;padding:8px 16px 0;justify-content:space-between;align-items:center;';
-    inner.innerHTML = '<span class="panel-title">Navigator</span><span style="font-size:11px;color:var(--text-muted);">Spokane, WA</span>';
-    var tabs = document.createElement('div');
-    tabs.style.cssText = 'display:flex;border-bottom:1px solid var(--border);';
-    tabs.innerHTML = '<div id="lp-tab-find" onclick="switchLeftPanel(\'find\')" style="flex:1;padding:8px 12px;font-size:11px;color:var(--amber);text-align:center;cursor:pointer;border-bottom:2px solid var(--amber);">Find resources</div><div id="lp-tab-ask" onclick="switchLeftPanel(\'ask\')" style="flex:1;padding:8px 12px;font-size:11px;color:var(--text-muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;">Ask Navigator</div>';
-    header.innerHTML = '';
-    header.appendChild(inner);
-    header.appendChild(tabs);
-  }
-
-  // Build ask panel
-  var askEl = document.createElement('div');
-  askEl.id = 'lp-ask';
-  askEl.className = 'lp-ask';
-  askEl.innerHTML = `
-    <div class="chat-messages" id="chat-messages">
-      <div style="text-align:center;padding:16px 8px;">
-        <div style="font-size:13px;color:var(--text-light);margin-bottom:6px;">Ask Navigator anything</div>
-        <div style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;">Not sure what a form is asking for? Confused about a letter from your caseworker? Ask in plain language.</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div class="chat-suggestion" onclick="sendSuggestion('What is a W-2 and where do I get one?')">What is a W-2 and where do I get one?</div>
-          <div class="chat-suggestion" onclick="sendSuggestion('My caseworker asked for proof of income. What counts?')">My caseworker asked for proof of income — what counts?</div>
-          <div class="chat-suggestion" onclick="sendSuggestion('What does 80% AMI mean?')">What does 80% AMI mean?</div>
-          <div class="chat-suggestion" onclick="sendSuggestion('I got a denial letter. What do I do?')">I got a denial letter. What do I do?</div>
-        </div>
-      </div>
-    </div>
-    <div class="chat-input-row">
-      <textarea class="chat-input" id="chat-input" rows="2" placeholder="Ask anything — no question is too basic..."></textarea>
-      <button class="chat-send" id="chat-send" onclick="sendChat()">Send</button>
-    </div>
-  `;
-  leftPanel.appendChild(askEl);
-
-  // Enter key sends
-  setTimeout(()=>{
-    var inp = document.getElementById('chat-input');
-    if(inp) inp.addEventListener('keydown', function(e){
-      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
-    });
-  }, 100);
-}
-
-function sendSuggestion(text) {
-  var inp = document.getElementById('chat-input');
-  if(inp) inp.value = text;
-  sendChat();
-}
-
-function addMessage(role, text) {
-  var msgs = document.getElementById('chat-messages');
-  if(!msgs) return;
-  var wrap = document.createElement('div');
-  wrap.className = 'chat-msg ' + role;
-  var now = new Date();
-  var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
-  wrap.innerHTML = '<div class="chat-bubble">'+text.replace(/\n/g,'<br>')+'</div><div class="chat-time">'+time+'</div>';
-  msgs.appendChild(wrap);
-  msgs.scrollTop = msgs.scrollHeight;
-  return wrap;
-}
-
-function showTyping() {
-  var msgs = document.getElementById('chat-messages');
-  if(!msgs) return null;
-  var wrap = document.createElement('div');
-  wrap.className = 'chat-msg assistant';
-  wrap.id = 'typing-indicator';
-  wrap.innerHTML = '<div class="chat-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  msgs.appendChild(wrap);
-  msgs.scrollTop = msgs.scrollHeight;
-  return wrap;
-}
-
-async function sendChat() {
-  if(chatTyping) return;
-  var inp = document.getElementById('chat-input');
-  var btn = document.getElementById('chat-send');
-  if(!inp) return;
-  var msg = inp.value.trim();
-  if(!msg) return;
-  inp.value = '';
-  chatTyping = true;
-  if(btn) btn.disabled = true;
-  addMessage('user', msg);
-  chatHistory.push({role:'user', text:msg});
-  var typingEl = showTyping();
-  try {
-    var resp = await fetch('/api/chat', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({message: msg, history: chatHistory.slice(-8)})
-    });
-    var data = await resp.json();
-    if(typingEl) typingEl.remove();
-    var reply = data.reply || data.error || 'Something went wrong — please try again.';
-    addMessage('assistant', reply);
-    chatHistory.push({role:'assistant', text:reply});
-  } catch(e) {
-    if(typingEl) typingEl.remove();
-    addMessage('assistant', 'Sorry, I couldn\'t reach Navigator right now. Try again in a moment.');
-  }
-  chatTyping = false;
-  if(btn) btn.disabled = false;
-  if(inp) inp.focus();
-}
-
-// Init on load
-document.addEventListener('DOMContentLoaded', function(){ buildAskPanel(); });
-</script>
-
-<!-- AI DISCLAIMER — appended to both chat panels -->
-<style>
-.ai-disclaimer{font-size:10px;color:var(--text-muted);text-align:center;padding:6px 12px;border-top:1px solid var(--border);background:var(--navy-mid);line-height:1.5;flex-shrink:0;}
-.ai-disclaimer a{color:var(--amber);text-decoration:none;}
-</style>
-<script>
-// Inject disclaimer into copilot Ask panel and client chat
-document.addEventListener('DOMContentLoaded', function(){
-  // Copilot — inject after chat input row in lp-ask
-  var lpAsk = document.getElementById('lp-ask');
-  if(lpAsk) {
-    var d = document.createElement('div');
-    d.className = 'ai-disclaimer';
-    d.textContent = 'Navigator can make mistakes. Always verify with your caseworker or the agency directly.';
-    lpAsk.appendChild(d);
-  }
-  // Client app — inject after client chat input row
-  var tabAsk = document.getElementById('tab-ask');
-  if(tabAsk) {
-    var d2 = document.createElement('div');
-    d2.className = 'ai-disclaimer';
-    d2.textContent = 'Navigator can make mistakes. Always verify important information with your caseworker or the agency directly.';
-    tabAsk.appendChild(d2);
-  }
-});
-</script>
