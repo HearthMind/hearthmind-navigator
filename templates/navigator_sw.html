@@ -299,7 +299,8 @@ button:focus, .opt:focus, input:focus, textarea:focus, a:focus { outline: 2px so
 }
 .opt:hover { border-color: var(--accent-dim); background: rgba(120,180,90,0.06); }
 .opt.sel { border-color: var(--accent); background: rgba(120,180,90,0.14); color: #d4eab8; }
-.opt.multi { border-color: var(--accent-dim); background: rgba(120,180,90,0.10); color: #c2dca0; }
+.opt.multi { border-color: var(--accent); background: rgba(120,180,90,0.14); color: #d4eab8; }
+.opt.multi::before { content: "✓ "; color: var(--accent); font-weight: bold; }
 
 .btn-row { margin-top: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .btn-primary {
