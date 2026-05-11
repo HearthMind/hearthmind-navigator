@@ -888,8 +888,13 @@ function buildActionCardData() {
   if (intake.urgency !== 'today') return null;
   const stateLabel = (intake.state && intake.state !== 'Prefer not to say' && intake.state !== 'Other')
     ? ' in ' + intake.state : '';
+  const phoneIsBarrier = intake.barriers.includes('phone');
   const byGoal = {
-    benefits:  { text: 'Call 211 and ask what benefits this client may qualify for' + stateLabel + '.',
+    benefits:  phoneIsBarrier
+      ? { text: 'Visit 211.org and search by the client\'s ZIP to see what benefits this client may qualify for' + stateLabel + '.',
+          sub:  '211.org has the same info — no phone call needed.',
+          stop: 'Done for today when: you have one program name + URL to follow up on.' }
+      : { text: 'Call 211 and ask what benefits this client may qualify for' + stateLabel + '.',
                  sub:  'One call counts.',
                  stop: 'Done for today when: you have a reference number or contact name for follow-up.' },
     paperwork: { text: 'Open the most recent notice or letter and read the first paragraph aloud.',
