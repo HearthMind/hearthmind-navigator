@@ -10,6 +10,8 @@ import urllib.request
 import urllib.error
 from flask import Blueprint, render_template, request, jsonify, current_app
 
+from constraints import validate_recommendation_text
+
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
@@ -40,7 +42,8 @@ Your tone: calm, direct, never condescending. No jargon without explanation.
 You say "I found some programs that might help" not "Based on your query parameters..."
 Always mention the URL when referencing a specific program.
 If you don't know something, say so honestly.
-Keep responses concise — 2-4 short paragraphs max."""
+Keep responses concise — 2-4 short paragraphs max.
+When you recommend any program or resource, always state HOW to contact or access it (online URL, mail-in address, walk-in location, or phone number) and prefer methods accessible to the user given their stated barriers."""
 
 
 _STYLE_GUIDANCE = {
@@ -63,7 +66,7 @@ _BARRIER_NOTES = {
     'overwhelm':       "they feel overwhelmed — one thing at a time, no long lists",
     'losing_benefits': "they're afraid of losing existing benefits — be cautious before suggesting changes",
     'paperwork':       "paperwork is hard for them — explain forms in plain language",
-    'phone':           "phone calls are a barrier — suggest scripts or written alternatives when possible",
+    'phone':           "phone calls are not available to this user. Do NOT recommend calling a number as the primary action. Lead with online application, mail-in forms, or in-person options. If the only path is phone, name that honestly and offer a script or advocate-assisted-calling — but never present 'call N-N-N' as the first recommendation.",
     'deadlines':       "they worry about missing deadlines — surface dates and timing clearly",
 }
 
@@ -106,6 +109,53 @@ def _build_system_prompt(session: dict) -> str:
     return "\n".join(parts)
 
 
+def _call_model_with_system_prompt(system_prompt: str, user_message: str,
+                                   conversation_history: list) -> str:
+    """Call Azure OpenAI with a given system prompt + user message + prior turns.
+
+    Extracted from api_chat() so the reply-side validator can re-invoke the
+    model with a repair-augmented system prompt while keeping call shape
+    identical to the first pass.
+    """
+    api_key    = os.environ.get('AZURE_OPENAI_KEY', '')
+    endpoint   = os.environ.get('AZURE_OPENAI_ENDPOINT', '').rstrip('/')
+    deployment = os.environ.get('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
+
+    messages = [{"role": "system", "content": system_prompt}]
+    for turn in (conversation_history or [])[-6:]:
+        role = turn.get("role", "user")
+        # Azure uses "assistant" not "model"
+        if role == "model":
+            role = "assistant"
+        messages.append({"role": role, "content": turn.get("text", "")})
+    messages.append({"role": "user", "content": user_message})
+
+    payload = json.dumps({
+        "messages":   messages,
+        "max_tokens": 600,
+        "temperature": 0.7,
+    }).encode()
+
+    url = (
+        f"{endpoint}/openai/deployments/{deployment}"
+        f"/chat/completions?api-version=2024-08-01-preview"
+    )
+
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Content-Type":  "application/json",
+            "api-key":       api_key,
+        }
+    )
+
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        result = json.loads(resp.read())
+
+    return result["choices"][0]["message"]["content"]
+
+
 @bp.route('/api/chat', methods=['POST'])
 def api_chat():
     data       = request.get_json(force=True)
@@ -118,7 +168,6 @@ def api_chat():
 
     api_key    = os.environ.get('AZURE_OPENAI_KEY', '')
     endpoint   = os.environ.get('AZURE_OPENAI_ENDPOINT', '').rstrip('/')
-    deployment = os.environ.get('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
 
     if not api_key or not endpoint:
         return jsonify({'error': 'Chat not configured — Azure credentials missing'}), 503
@@ -138,15 +187,6 @@ def api_chat():
 
         system_prompt = _build_system_prompt(session)
 
-        # Build message history for Azure OpenAI format
-        messages = [{"role": "system", "content": system_prompt}]
-        for turn in history[-6:]:
-            role = turn.get("role", "user")
-            # Azure uses "assistant" not "model"
-            if role == "model":
-                role = "assistant"
-            messages.append({"role": role, "content": turn.get("text", "")})
-
         user_text = f"""User message: {message}
 
 Relevant federal programs from our database:
@@ -154,33 +194,42 @@ Relevant federal programs from our database:
 
 Please help this person based on what they've shared."""
 
-        messages.append({"role": "user", "content": user_text})
+        reply = _call_model_with_system_prompt(system_prompt, user_text, history)
 
-        payload = json.dumps({
-            "messages":   messages,
-            "max_tokens": 600,
-            "temperature": 0.7,
-        }).encode()
+        # Reply-side validator: enforce barrier constraints per
+        # docs/handoffs/CODEX_HANDOFF_CONSTRAINTS_2026-05-16.md
+        session_barriers = session.get('barriers') if session else None
+        validation = validate_recommendation_text(reply, session_barriers)
 
-        # Azure OpenAI Chat Completions endpoint
-        url = (
-            f"{endpoint}/openai/deployments/{deployment}"
-            f"/chat/completions?api-version=2024-08-01-preview"
-        )
+        if not validation['valid']:
+            # First-pass violation. Regenerate once with repair guidance
+            # appended to the system prompt.
+            repair_system_prompt = (
+                system_prompt
+                + "\n\n--- ENFORCEMENT NOTE ---\n"
+                + validation['repair_suggestion']
+                + "\n\nRewrite your previous response following this guidance. "
+                  "Do not apologize or mention this note."
+            )
+            reply = _call_model_with_system_prompt(
+                repair_system_prompt, user_text, history
+            )
 
-        req = urllib.request.Request(
-            url,
-            data=payload,
-            headers={
-                "Content-Type":  "application/json",
-                "api-key":       api_key,
-            }
-        )
+            # Second-pass validation. If still violating, ship the response
+            # with a fallback notice rather than infinite-loop.
+            second_validation = validate_recommendation_text(reply, session_barriers)
+            if not second_validation['valid']:
+                violated_barriers = sorted(
+                    {v['barrier'] for v in second_validation['violations']}
+                )
+                reply = reply + (
+                    "\n\n*Note: based on your stated barriers ("
+                    + ", ".join(violated_barriers)
+                    + "), the recommendation above may not fully match your "
+                      "access needs. Reply with 'help me find another way' if "
+                      "this approach won't work for you.*"
+                )
 
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            result = json.loads(resp.read())
-
-        reply = result["choices"][0]["message"]["content"]
         return jsonify({"reply": reply, "programs": programs[:3]})
 
     except urllib.error.HTTPError as e:

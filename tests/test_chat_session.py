@@ -40,7 +40,7 @@ class BuildSystemPromptTests(unittest.TestCase):
         self.assertTrue(prompt.startswith(_BASE_SYSTEM_PROMPT))
         self.assertIn('Sam', prompt)
         self.assertIn('benefits or assistance', prompt)
-        self.assertIn('phone calls are a barrier', prompt)
+        self.assertIn('phone calls are not available', prompt)
         self.assertIn('act today', prompt)
         self.assertIn('gentle', prompt)
         self.assertIn('Washington', prompt)
@@ -63,7 +63,7 @@ class BuildSystemPromptTests(unittest.TestCase):
         self.assertNotIn('mystery', prompt)
         self.assertNotIn('flying', prompt)
         # known barrier still picked up
-        self.assertIn('phone calls are a barrier', prompt)
+        self.assertIn('phone calls are not available', prompt)
 
 
 if __name__ == '__main__':
