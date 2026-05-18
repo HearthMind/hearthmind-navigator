@@ -230,6 +230,11 @@ body {
       <button class="filter-btn" data-category="advisory" onclick="setCategory(this)">Advisory <span class="filter-count" id="count-advisory"></span></button>
     </div>
     <div class="panel-section">
+      <div class="panel-label">Language</div>
+      <button class="filter-btn active" data-lang="en" onclick="setLanguage(this)">English <span class="filter-count" aria-hidden="true">EN</span></button>
+      <button class="filter-btn" data-lang="es" onclick="setLanguage(this)">Español <span class="filter-count" aria-hidden="true">ES</span></button>
+    </div>
+    <div class="panel-section">
       <div class="panel-label">Database</div>
       <div class="stat-row"><span class="stat-lbl">Programs</span><span class="stat-val" id="stat-total">—</span></div>
       <div class="stat-row"><span class="stat-lbl">Source</span><span class="stat-plain">SAM.gov</span></div>
@@ -266,7 +271,13 @@ body {
 </div>
 
 <script>
-let currentCategory = 'all', currentQuery = '', searchTimer = null, chatHistory = [], isThinking = false;
+let currentCategory = 'all', currentQuery = '', searchTimer = null, chatHistory = [], isThinking = false, currentLanguage = 'en';
+
+function setLanguage(btn) {
+  document.querySelectorAll('.filter-btn[data-lang]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentLanguage = btn.dataset.lang;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   loadCategories();
@@ -293,7 +304,7 @@ async function loadCategories() {
 }
 
 function setCategory(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-btn[data-category]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentCategory = btn.dataset.category;
   loadPrograms();

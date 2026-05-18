@@ -106,6 +106,13 @@ def _build_system_prompt(session: dict) -> str:
     if state and state not in ('Other', 'Prefer not to say'):
         parts.append(f"They are in {state}. Prefer state-specific resources where you know them.")
 
+    language = (session.get('language') or '').strip()
+    if language and language != 'en':
+        parts.append(
+            f"Respond entirely in {language}. All resource names, instructions, "
+            f"and explanations must be in {language}."
+        )
+
     return "\n".join(parts)
 
 

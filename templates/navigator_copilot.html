@@ -362,6 +362,10 @@ button:focus, .opt:focus, input:focus, textarea:focus, a:focus { outline: 2px so
         <label for="name-input" class="nosave-note" style="display:block; margin-bottom:6px;">Your name (optional)</label>
         <input class="name-input" id="name-input" type="text" placeholder="Anything you like…" autocomplete="off" aria-describedby="name-help" />
         <p id="name-help" class="nosave-note">Optional. Saved only in your browser on this device.</p>
+        <div role="radiogroup" aria-label="Language" style="margin-top:14px; display:flex; gap:8px;">
+          <button type="button" class="opt lang-opt sel" role="radio" aria-checked="true" data-lang="en" onclick="pickLanguage(this,'en')" style="flex:0 0 auto; padding:6px 14px;">English</button>
+          <button type="button" class="opt lang-opt" role="radio" aria-checked="false" data-lang="es" onclick="pickLanguage(this,'es')" style="flex:0 0 auto; padding:6px 14px;">Español</button>
+        </div>
         <div class="btn-row" style="margin-top: 20px;">
           <button class="btn-primary" onclick="submitName()">Let's go</button>
           <button class="btn-ghost" onclick="skipName()">Skip</button>
@@ -553,7 +557,7 @@ button:focus, .opt:focus, input:focus, textarea:focus, a:focus { outline: 2px so
 const STORAGE_KEY = 'nav_copilot_state';
 const STATE_FOCUS = ['Washington', 'Oregon', 'Idaho'];
 
-const intake = { name: '', goal: '', barriers: [], urgency: '', style: '', state: '' };
+const intake = { name: '', goal: '', barriers: [], urgency: '', style: '', state: '', language: 'en' };
 let savedAt = null;
 let restoredPrograms = null;
 let chatHistory = [];
@@ -579,7 +583,8 @@ function writeState() {
       barriers: Array.isArray(intake.barriers) ? intake.barriers.slice() : [],
       urgency: intake.urgency || '',
       style: intake.style || '',
-      state: intake.state || null
+      state: intake.state || null,
+      language: intake.language || 'en'
     },
     plan: {
       action_card: buildActionCardData(),
@@ -669,6 +674,14 @@ function pickGoal(btn, val)    { intake.goal = val;    selectRadio(btn, 's1'); s
 function pickUrgency(btn, val) { intake.urgency = val; selectRadio(btn, 's3'); setTimeout(() => goTo('s4'), 220); }
 function pickStyle(btn, val)   { intake.style = val;   selectRadio(btn, 's4'); setTimeout(() => goTo('s5'), 220); }
 function pickState(btn, val)   { intake.state = val;   selectRadio(btn, 's5'); setTimeout(() => goTo('plan'), 220); }
+function pickLanguage(btn, val) {
+  intake.language = val;
+  document.querySelectorAll('.lang-opt').forEach(b => {
+    const on = b === btn;
+    b.classList.toggle('sel', on);
+    b.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
+}
 
 function toggleBarrier(btn, val) {
   const idx = intake.barriers.indexOf(val);
@@ -995,7 +1008,8 @@ async function postChat(message) {
           barriers: intake.barriers,
           urgency: intake.urgency || null,
           style: intake.style || null,
-          state: intake.state || null
+          state: intake.state || null,
+          language: intake.language || 'en'
         }
       })
     });
@@ -1091,6 +1105,7 @@ document.addEventListener('keydown', function(e) {
   intake.urgency = si.urgency || '';
   intake.style = si.style || '';
   intake.state = si.state || '';
+  intake.language = si.language || 'en';
   savedAt = saved.saved_at || null;
   restoredPrograms = (saved.plan && Array.isArray(saved.plan.programs_snapshot))
     ? saved.plan.programs_snapshot : null;
