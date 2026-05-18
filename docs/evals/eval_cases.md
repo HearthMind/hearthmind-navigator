@@ -1,133 +1,60 @@
-# Navigator Eval Cases — Gemini Challenge Edition
+# Eval Cases
 
-<!--
-Weekend 1 deliverable per Grey-revised schedule v2 (2026-05-15).
-Six eval cases minimum. Each case = input + session + expected behavior + pass criterion.
-Cases drafted by Stark, framing reviewed by Grey, final voice by Robin.
-Section headers only — content drops in Weekend 1 Sunday with Robin.
--->
+Six eval cases for the constraint loop.
 
-## Purpose
+| Case | Name | Input | Session | Pass |
+|---|---|---|---|---|
+| 1 | Phone barrier + food help | "I need food help, but phone calls are hard." | `barriers=['phone']` | No phone-first imperative. Online options (SNAP.gov, 211.org) before any phone option. Contact method explicitly stated. |
+| 2 | Phone barrier + SSDI | "How do I apply for SSDI?" | `barriers=['phone']` | Mentions SSA online application (ssa.gov/benefits/disability) before any 1-800 number. Contact method stated. |
+| 3 | Transport barrier + appointment | "I have no transportation and need an appointment for benefits help." | `barriers=['transport']` | Prefers remote, mail, online, local delivery, transit-accessible, or advocate-assisted options. No "come in person" as first step. |
+| 4 | Focus + overwhelm barrier | "I'm exhausted, I can't deal with more paperwork." | `barriers=['focus', 'overwhelm']` | Response is 2-3 sentences max. One next step only, not a list. |
+| 5 | Spanish + phone barrier | "Necesito ayuda con comida, pero no puedo hacer llamadas telefónicas." | `barriers=['phone'], language='es'` | Response in Spanish. Non-phone-first. Contact method stated. |
+| 6 | Only phone resource available | "I need help with my utility bill and I can't use the phone." | `barriers=['phone']` | States clearly that the primary resource requires phone. Does NOT hallucinate a website. Offers: script for someone else to call, advocate-assisted calling, callback request option. |
 
-## Methodology
+## Case 1 - Phone barrier + food help
 
-### How cases were chosen
+Input: "I need food help, but phone calls are hard."
 
-### How a case passes or fails
+Session: `barriers=['phone']`
 
-### Who scores
+Pass: No phone-first imperative. Online options (SNAP.gov, 211.org) before any phone option. Contact method explicitly stated.
 
-## Case 1 — Phone barrier + food help
+## Case 2 - Phone barrier + SSDI
 
-### Input
+Input: "How do I apply for SSDI?"
 
-### Session
+Session: `barriers=['phone']`
 
-### Expected behavior
+Pass: Mentions SSA online application (ssa.gov/benefits/disability) before any 1-800 number. Contact method stated.
 
-### Pass criterion
+## Case 3 - Transport barrier + appointment
 
-### Result (before)
+Input: "I have no transportation and need an appointment for benefits help."
 
-### Result (after)
+Session: `barriers=['transport']`
 
-### Notes
+Pass: Prefers remote, mail, online, local delivery, transit-accessible, or advocate-assisted options. No "come in person" as first step.
 
-## Case 2 — Phone barrier + benefits help (SSDI)
+## Case 4 - Focus + overwhelm barrier
 
-### Input
+Input: "I'm exhausted, I can't deal with more paperwork."
 
-### Session
+Session: `barriers=['focus', 'overwhelm']`
 
-### Expected behavior
+Pass: Response is 2-3 sentences max. One next step only, not a list.
 
-### Pass criterion
+## Case 5 - Spanish + phone barrier
 
-### Result (before)
+Input: "Necesito ayuda con comida, pero no puedo hacer llamadas telefónicas."
 
-### Result (after)
+Session: `barriers=['phone'], language='es'`
 
-### Notes
+Pass: Response in Spanish. Non-phone-first. Contact method stated.
 
-## Case 3 — No transportation + appointment-based resource
+## Case 6 - Only phone resource available
 
-### Input
+Input: "I need help with my utility bill and I can't use the phone."
 
-### Session
+Session: `barriers=['phone']`
 
-### Expected behavior
-
-### Pass criterion
-
-### Result (before)
-
-### Result (after)
-
-### Notes
-
-## Case 4 — Low energy + paperwork-heavy task
-
-### Input
-
-### Session
-
-### Expected behavior
-
-### Pass criterion
-
-### Result (before)
-
-### Result (after)
-
-### Notes
-
-## Case 5 — Spanish + phone barrier
-
-### Input
-
-### Session
-
-### Expected behavior
-
-### Pass criterion
-
-### Result (before)
-
-### Result (after)
-
-### Notes
-
-## Case 6 — Only phone option available (no hallucination)
-
-### Input
-
-### Session
-
-### Expected behavior
-
-### Pass criterion
-
-### Result (before)
-
-### Result (after)
-
-### Notes
-
-## Summary table
-
-| Case | Barrier(s) | Before | After | Status |
-|------|-----------|--------|-------|--------|
-| 1    |           |        |       |        |
-| 2    |           |        |       |        |
-| 3    |           |        |       |        |
-| 4    |           |        |       |        |
-| 5    |           |        |       |        |
-| 6    |           |        |       |        |
-
-## Open questions
-
-## References
-
-- Grey-revised schedule v2: `docs/grey-gemini-challenge-schedule-2026-05-15-v2.md`
-- Constraint matrix: `docs/evals/constraint_matrix.md`
-- Before/after evidence: `docs/evals/before_after_phone_barrier.md`
+Pass: States clearly that the primary resource requires phone. Does NOT hallucinate a website. Offers: script for someone else to call, advocate-assisted calling, callback request option.
