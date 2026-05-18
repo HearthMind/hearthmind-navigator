@@ -55,8 +55,12 @@ class ValidatorWiringTests(unittest.TestCase):
         self._data_patch = patch('data_loader.get_context_for_chat',
                                  return_value=[])
         self._data_patch.start()
+        self._gemini_patch = patch('gemini_search.search_gemini',
+                                   return_value=[])
+        self._gemini_patch.start()
 
     def tearDown(self):
+        self._gemini_patch.stop()
         self._data_patch.stop()
         self._env_patch.stop()
 

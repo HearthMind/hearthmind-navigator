@@ -107,9 +107,9 @@ def validate_recommendation_text(text: str, barriers: Any) -> dict:
     if "transport" in barriers_checked:
         violations.extend(_transport_violations(text))
     if "focus" in barriers_checked:
-        _focus_violations(text)
+        violations.extend(_focus_violations(text))
     if "overwhelm" in barriers_checked:
-        _overwhelm_violations(text)
+        violations.extend(_overwhelm_violations(text))
 
     repair_suggestions = []
     violated_barriers = {violation["barrier"] for violation in violations}
