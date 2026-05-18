@@ -174,6 +174,7 @@ def api_chat():
 
     try:
         from data_loader import get_context_for_chat
+        from gemini_search import search_gemini
         programs = get_context_for_chat(message, limit=6)
 
         context_lines = []
@@ -183,6 +184,27 @@ def api_chat():
                 f" | Eligibility: {p['eligibility'][:150]}"
                 f" | More: {p['url']}"
             )
+
+        gemini_barriers = session.get('barriers') if session else None
+        if not isinstance(gemini_barriers, list):
+            gemini_barriers = None
+        gemini_location = (session.get('state') or '').strip() or None
+        gemini_language = (session.get('language') or 'en').strip() or 'en'
+
+        web_results = search_gemini(
+            message,
+            barriers=gemini_barriers,
+            location=gemini_location,
+            language=gemini_language,
+        )
+        for r in web_results:
+            access = r.get('recommended_access_mode') or 'unspecified'
+            context_lines.append(
+                f"- [{r.get('source', 'gemini')}] {r['title']}: {r['snippet'][:200]}"
+                f" | How to access: {access}"
+                f" | More: {r['source_url']}"
+            )
+
         context_block = "\n".join(context_lines) if context_lines else "No specific programs found."
 
         system_prompt = _build_system_prompt(session)
