@@ -8,7 +8,17 @@ small for v1 and will expand Weekend 1 Sunday.
 """
 
 import re
-from typing import Any
+from typing import Any, TypedDict
+
+
+class ResourceResult(TypedDict):
+    title: str
+    source_url: str
+    snippet: str
+    contact_methods: list[str]
+    recommended_access_mode: str
+    barriers_active: list[str]
+    source: str
 
 
 CANONICAL_BARRIERS = ["phone", "transport", "focus", "overwhelm"]
