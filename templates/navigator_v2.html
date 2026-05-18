@@ -363,7 +363,7 @@ async function sendMessage() {
   document.getElementById('chat-send').disabled = true;
   const thinking = appendMessage('thinking', 'Looking through programs…');
   try {
-    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, history: chatHistory.slice(-6) }) });
+    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, history: chatHistory.slice(-6), session: { barriers: [], language: currentLanguage } }) });
     const data = await res.json();
     thinking.remove();
     appendMessage('assistant', data.error ? `Sorry, I ran into an issue: ${data.error}` : data.reply);
