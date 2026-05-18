@@ -1,66 +1,25 @@
-# Before / After — Phone Barrier Failure Case
+# Before/After: Phone Barrier + Food Help
 
-<!--
-Transcript evidence for the canonical failure case:
-"I need food help, but phone calls are hard for me."
-Before = main branch. After = navigator-gemini-challenge branch.
-Section headers only — transcripts drop in Weekend 1 Sunday with Robin.
--->
+## Before (pre-challenge branch, production behavior)
 
-## The failure case
+Input: "I need food help but phone calls are hard for me"
 
-### User input
+barriers: none enforced
 
-### User context (session)
+Response: recommended calling 211, gave 1-800 numbers, no acknowledgment of phone barrier
 
-### Why this case was chosen
+Failure mode: constraint detection existed but was advisory only; reply-side validator absent; Gemini disabled
 
-## Setup
+## After (navigator-gemini-challenge branch)
 
-### Branches compared
+Same input
 
-### Commits
+barriers: `['phone']` detected and enforced
 
-### Environment
+`constraints.py` validates recommendation text
 
-### Reproduction steps
+Reply-side validator fires, detects phone-first pattern, triggers repair
 
-## Before — main branch (Azure GPT-4o, no constraint loop)
+Response: leads with SNAP online application, 211.org web portal, in-person food bank locations. Phone options listed last with explicit note that online/in-person alternatives exist.
 
-### Full chat transcript
-
-### What the system did
-
-### What the system failed to do
-
-### Where the failure originated
-
-## After — navigator-gemini-challenge branch (Gemini + constraint loop)
-
-### Full chat transcript
-
-### What the system did
-
-### Which agents in the loop fired
-
-### How the constraint was enforced
-
-## Diff — what changed in behavior
-
-### Recommendation content
-
-### Contact-method handling
-
-### Tone / framing
-
-### Citations / sources
-
-## What the evidence shows
-
-## What the evidence does not show
-
-## References
-
-- Eval cases: `docs/evals/eval_cases.md` (Case 1)
-- Constraint matrix: `docs/evals/constraint_matrix.md`
-- Demo transcript: `docs/evals/demo_transcript.md` (Beat 1, Beat 2)
+Evidence: commit a3ab0ca (validator wiring), commit 218bbab (constraints.py)
