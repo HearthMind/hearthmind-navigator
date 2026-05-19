@@ -110,7 +110,12 @@ def _build_system_prompt(session: dict) -> str:
     if language and language != 'en':
         parts.append(
             f"Respond entirely in {language}. All resource names, instructions, "
-            f"and explanations must be in {language}."
+            f"and explanations must be in {language}. "
+            f"When citing a URL, use a single markdown link in the form "
+            f"[descriptive text](https://example.org). Never nest links or "
+            f"double-wrap a URL — do not output [[text](url)](url) or any "
+            f"variation. One link per resource, one set of brackets, one set "
+            f"of parentheses."
         )
 
     return "\n".join(parts)
